@@ -1,15 +1,14 @@
 package name.maxaller.konfigurator.runtime
 
 import name.maxaller.konfigurator.runtime.constraints.IntConstraint
-import kotlin.reflect.KProperty
 
 class IntConfigurationValue(
+    private val name: String,
     private val source: Source,
     private val default: Int,
     private val constraints: List<IntConstraint>
-) {
-    operator fun getValue(generatedConfig: Any?, property: KProperty<*>): Int {
-        val name = property.name
+) : ConfigurationValue<Int> {
+    override fun resolve(): Int {
         val value = source.getInt(name) ?: default
         if (constraints.isNotEmpty()) {
             for (constraint in constraints) {

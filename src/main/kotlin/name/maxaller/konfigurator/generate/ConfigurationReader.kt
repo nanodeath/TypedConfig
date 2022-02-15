@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.squareup.kotlinpoet.*
 import name.maxaller.konfigurator.runtime.IntConfigurationValue
 import name.maxaller.konfigurator.runtime.Source
+import name.maxaller.konfigurator.runtime.StringConfigurationValue
 import name.maxaller.konfigurator.runtime.constraints.NonNegativeConstraint
 import java.io.File
 
@@ -13,7 +14,7 @@ class ConfigurationReader {
 
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
-        val configs = mutableListOf<IntConfig>()
+        val configs = mutableListOf<ConfigDef>()
         for ((key, value) in node.fields().asSequence().filter { (_, v) -> v.isObject }) {
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
             when (val datatype = value.path("datatype").textValue()) {
@@ -21,7 +22,13 @@ class ConfigurationReader {
                     val defaultValue: Int? = value.get("default")?.intValue()
                     val constraints: List<String>? = (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
 
-                    configs.add(IntConfig(key, defaultValue, constraints))
+                    configs.add(IntConfigDef(key, defaultValue, constraints.orEmpty()))
+                }
+                "str" -> {
+                    val defaultValue: String? = value.get("default")?.textValue()
+                    val constraints: List<String>? = (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+
+                    configs.add(StringConfigDef(key, defaultValue, constraints.orEmpty()))
                 }
                 else -> throw IllegalArgumentException("Unsupported datatype: `${datatype}` in $file")
             }
@@ -40,25 +47,46 @@ class ConfigurationReader {
                 .addModifiers(KModifier.PRIVATE)
                 .build()
         )
-        for (config in configs) {
-            val constraints = config.constraints.orEmpty().map {
-                when (it) {
-                    "nonnegative" -> NonNegativeConstraint::class
-                    else -> throw IllegalArgumentException("Unsupported constraint: $it")
+        for (configDef in configs) {
+            when (configDef) {
+                is IntConfigDef -> {
+                    val constraints = configDef.constraints.map {
+                        when (it) {
+                            "nonnegative" -> NonNegativeConstraint::class
+                            else -> throw IllegalArgumentException("Unsupported constraint: $it")
+                        }
+                    }
+                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+                    configClass.addProperty(
+                        PropertySpec.builder(configDef.key, Int::class)
+                            .delegate(
+                                "%T(%S, %N, %L, listOf($constraintsInterpolation))",
+                                IntConfigurationValue::class,
+                                configDef.key,
+                                "source",
+                                configDef.defaultValue,
+                                *constraints.toTypedArray()
+                            )
+                            .build()
+                    )
+                }
+                is StringConfigDef -> {
+                    val constraints = emptyList<Nothing>() // TODO populate
+                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+                    configClass.addProperty(
+                        PropertySpec.builder(configDef.key, String::class)
+                            .delegate(
+                                "%T(%S, %N, %S, listOf($constraintsInterpolation))",
+                                StringConfigurationValue::class,
+                                configDef.key,
+                                "source",
+                                configDef.defaultValue.orEmpty(),
+                                *constraints.toTypedArray()
+                            )
+                            .build()
+                    )
                 }
             }
-            val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-            configClass.addProperty(
-                PropertySpec.builder(config.key, Int::class)
-                    .delegate(
-                        "%T(%N, %L, listOf($constraintsInterpolation))",
-                        IntConfigurationValue::class,
-                        "source",
-                        config.defaultValue,
-                        *constraints.toTypedArray()
-                    )
-                    .build()
-            )
         }
         val packageName = node.get("package").textValue()
         return FileSpec.builder(packageName, className)
@@ -66,9 +94,3 @@ class ConfigurationReader {
             .build()
     }
 }
-
-//fun main() {
-//    name.maxaller.konfigurator.generate.ConfigurationReader().readFile(Paths.get("/home/maxaller/Projects/konfigurator/tool/src/test/resources/basic_test/konfig.toml"))
-//
-//    GeneratedConfig(EnvSource).maxLoginTries.let { println(it) }
-//}

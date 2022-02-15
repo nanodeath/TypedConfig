@@ -1,7 +1,7 @@
 package name.maxaller.konfigurator.generate
 
-data class IntConfig(
+data class IntConfigDef(
     val key: String,
     val defaultValue: Int?,
-    val constraints: List<String>?
-)
+    val constraints: List<String>
+) : ConfigDef

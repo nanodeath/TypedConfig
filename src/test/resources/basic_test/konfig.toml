@@ -5,3 +5,6 @@ class = "GeneratedConfig"
 datatype = "int"
 default = 0
 constraints = [ "nonnegative" ]
+
+[nameOfTestUser]
+datatype = "str"
