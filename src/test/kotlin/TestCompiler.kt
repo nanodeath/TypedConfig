@@ -1,3 +1,4 @@
+import name.maxaller.konfigurator.generate.ConfigurationReader
 import java.io.File
 
 fun main() {

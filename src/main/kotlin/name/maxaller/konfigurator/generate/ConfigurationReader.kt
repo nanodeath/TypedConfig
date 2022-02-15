@@ -1,7 +1,8 @@
+package name.maxaller.konfigurator.generate
+
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.squareup.kotlinpoet.*
-import name.maxaller.konfigurator.IntConfig
 import name.maxaller.konfigurator.runtime.IntConfigurationValue
 import name.maxaller.konfigurator.runtime.Source
 import name.maxaller.konfigurator.runtime.constraints.NonNegativeConstraint
@@ -67,7 +68,7 @@ class ConfigurationReader {
 }
 
 //fun main() {
-//    ConfigurationReader().readFile(Paths.get("/home/maxaller/Projects/konfigurator/tool/src/test/resources/basic_test/konfig.toml"))
+//    name.maxaller.konfigurator.generate.ConfigurationReader().readFile(Paths.get("/home/maxaller/Projects/konfigurator/tool/src/test/resources/basic_test/konfig.toml"))
 //
 //    GeneratedConfig(EnvSource).maxLoginTries.let { println(it) }
 //}

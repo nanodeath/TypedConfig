@@ -1,4 +1,4 @@
-package name.maxaller.konfigurator
+package name.maxaller.konfigurator.generate
 
 data class IntConfig(
     val key: String,
