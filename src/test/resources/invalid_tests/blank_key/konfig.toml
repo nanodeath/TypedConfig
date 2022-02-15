@@ -1,0 +1,6 @@
+package = "name.maxaller.konfigurator.test"
+class = "InvalidIdentifierConfig"
+
+[""]
+datatype = "int"
+default = 0

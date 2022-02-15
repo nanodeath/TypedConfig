@@ -1,0 +1,7 @@
+package = "name.maxaller.konfigurator.test"
+class = "GeneratedConfig"
+
+[maxLoginTries]
+datatype = "int"
+default = 0
+constraints = [ "nonnegative" ]
