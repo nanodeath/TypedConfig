@@ -36,7 +36,6 @@ class ConfigurationReader {
 
         val className = node.get("class").textValue()
         val configClass = TypeSpec.classBuilder(className)
-        val sourceClassName = ClassName("name.maxaller.konfigurator.runtime.source", "Source")
         configClass.primaryConstructor(
             FunSpec.constructorBuilder()
                 .addParameter("source", sourceClassName)
@@ -53,7 +52,7 @@ class ConfigurationReader {
                 is IntConfigDef -> {
                     val constraints = configDef.constraints.map {
                         when (it) {
-                            "nonnegative" -> ClassName("name.maxaller.konfigurator.runtime.constraints", "NonNegativeConstraint")
+                            "nonnegative" -> nonNegativeConstraintClassName
                             else -> throw IllegalArgumentException("Unsupported constraint: $it")
                         }
                     }
@@ -62,7 +61,7 @@ class ConfigurationReader {
                         PropertySpec.builder(configDef.key, Int::class)
                             .delegate(
                                 "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                ClassName("name.maxaller.konfigurator.runtime", "IntConfigurationValue"),
+                                intConfigurationValueClassName,
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue,
@@ -78,7 +77,7 @@ class ConfigurationReader {
                         PropertySpec.builder(configDef.key, String::class)
                             .delegate(
                                 "%T(%S, %N, %S, listOf($constraintsInterpolation))",
-                                ClassName("name.maxaller.konfigurator.runtime", "StringConfigurationValue"),
+                                stringConfigurationValueClassName,
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue.orEmpty(),
