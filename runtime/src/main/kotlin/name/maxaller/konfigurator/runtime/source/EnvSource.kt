@@ -2,7 +2,8 @@ package name.maxaller.konfigurator.runtime.source
 
 import name.maxaller.konfigurator.runtime.camelToUpperSnake
 
-object EnvSource : Source {
-    override fun getInt(key: String): Int? = System.getenv(key.camelToUpperSnake())?.toIntOrNull()
-    override fun getString(key: String): String? = System.getenv(key.camelToUpperSnake())
+class EnvSource internal constructor(private val env: Env) : Source {
+    constructor() : this(Env())
+    override fun getInt(key: String): Int? = env.get(key.camelToUpperSnake())?.toIntOrNull()
+    override fun getString(key: String): String? = env.get(key.camelToUpperSnake())
 }
