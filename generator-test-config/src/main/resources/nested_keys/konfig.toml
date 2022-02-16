@@ -1,0 +1,13 @@
+package = "name.maxaller.konfigurator.test"
+class = "NestedConfig"
+
+[app.port]
+datatype = "int"
+default = 8080
+
+[database.port]
+datatype = "int"
+default = 5432
+
+[database.username]
+datatype = "str"
