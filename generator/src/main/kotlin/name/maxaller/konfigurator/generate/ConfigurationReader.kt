@@ -10,25 +10,29 @@ class ConfigurationReader {
 
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
-        val configs = mutableListOf<ConfigDef>()
-        for ((key, value) in node.fields().asSequence().filter { (_, v) -> v.isObject }) {
-            require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
-            when (val datatype = value.path("datatype").textValue()) {
-                "int" -> {
-                    val defaultValue: Int? = value.get("default")?.intValue()
-                    val constraints: List<String>? = (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+        val configs: List<ConfigDef> = node.fields().asSequence()
+            .filter { (_, v) -> v.isObject }
+            .map { (key, value) ->
+                require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
+                when (val datatype = value.path("datatype").textValue()) {
+                    "int" -> {
+                        val defaultValue: Int? = value.get("default")?.intValue()
+                        val constraints: List<String>? =
+                            (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
 
-                    configs.add(IntConfigDef(key, defaultValue, constraints.orEmpty()))
-                }
-                "str" -> {
-                    val defaultValue: String? = value.get("default")?.textValue()
-                    val constraints: List<String>? = (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+                        IntConfigDef(key, defaultValue, constraints.orEmpty())
+                    }
+                    "str" -> {
+                        val defaultValue: String? = value.get("default")?.textValue()
+                        val constraints: List<String>? =
+                            (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
 
-                    configs.add(StringConfigDef(key, defaultValue, constraints.orEmpty()))
+                        StringConfigDef(key, defaultValue, constraints.orEmpty())
+                    }
+                    else -> throw IllegalArgumentException("Unsupported datatype: `${datatype}` in $file")
                 }
-                else -> throw IllegalArgumentException("Unsupported datatype: `${datatype}` in $file")
             }
-        }
+            .toList()
 
         val className = node.get("class").textValue()
         val configClass = TypeSpec.classBuilder(className)
