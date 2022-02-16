@@ -3,10 +3,6 @@ package name.maxaller.konfigurator.generate
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.squareup.kotlinpoet.*
-import name.maxaller.konfigurator.runtime.IntConfigurationValue
-import name.maxaller.konfigurator.runtime.Source
-import name.maxaller.konfigurator.runtime.StringConfigurationValue
-import name.maxaller.konfigurator.runtime.constraints.NonNegativeConstraint
 import java.io.File
 
 class ConfigurationReader {
@@ -36,13 +32,14 @@ class ConfigurationReader {
 
         val className = node.get("class").textValue()
         val configClass = TypeSpec.classBuilder(className)
+        val sourceClassName = ClassName("name.maxaller.konfigurator.runtime", "Source")
         configClass.primaryConstructor(
             FunSpec.constructorBuilder()
-                .addParameter("source", Source::class)
+                .addParameter("source", sourceClassName)
                 .build()
         )
         configClass.addProperty(
-            PropertySpec.builder("source", Source::class)
+            PropertySpec.builder("source", sourceClassName)
                 .initializer("source")
                 .addModifiers(KModifier.PRIVATE)
                 .build()
@@ -52,7 +49,7 @@ class ConfigurationReader {
                 is IntConfigDef -> {
                     val constraints = configDef.constraints.map {
                         when (it) {
-                            "nonnegative" -> NonNegativeConstraint::class
+                            "nonnegative" -> ClassName("name.maxaller.konfigurator.runtime.constraints", "NonNegativeConstraint")
                             else -> throw IllegalArgumentException("Unsupported constraint: $it")
                         }
                     }
@@ -61,7 +58,7 @@ class ConfigurationReader {
                         PropertySpec.builder(configDef.key, Int::class)
                             .delegate(
                                 "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                IntConfigurationValue::class,
+                                ClassName("name.maxaller.konfigurator.runtime", "IntConfigurationValue"),
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue,
@@ -77,7 +74,7 @@ class ConfigurationReader {
                         PropertySpec.builder(configDef.key, String::class)
                             .delegate(
                                 "%T(%S, %N, %S, listOf($constraintsInterpolation))",
-                                StringConfigurationValue::class,
+                                ClassName("name.maxaller.konfigurator.runtime", "StringConfigurationValue"),
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue.orEmpty(),
