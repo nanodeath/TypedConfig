@@ -1,4 +1,4 @@
-package name.maxaller.konfigurator.runtime
+package name.maxaller.konfigurator.runtime.source
 
 interface Source {
     fun getInt(key: String): Int?

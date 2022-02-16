@@ -1,6 +1,7 @@
 package name.maxaller.konfigurator.runtime
 
 import name.maxaller.konfigurator.runtime.constraints.IntConstraint
+import name.maxaller.konfigurator.runtime.source.Source
 
 class IntConfigurationValue(
     private val name: String,

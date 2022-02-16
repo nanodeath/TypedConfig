@@ -36,7 +36,7 @@ class ConfigurationReader {
 
         val className = node.get("class").textValue()
         val configClass = TypeSpec.classBuilder(className)
-        val sourceClassName = ClassName("name.maxaller.konfigurator.runtime", "Source")
+        val sourceClassName = ClassName("name.maxaller.konfigurator.runtime.source", "Source")
         configClass.primaryConstructor(
             FunSpec.constructorBuilder()
                 .addParameter("source", sourceClassName)

@@ -1,7 +1,9 @@
-package name.maxaller.konfigurator.runtime
+package name.maxaller.konfigurator.runtime.source
 
+import name.maxaller.konfigurator.runtime.KeyCase
 import name.maxaller.konfigurator.runtime.KeyCase.LOWER_CAMEL_CASE
 import name.maxaller.konfigurator.runtime.KeyCase.SCREAMING_SNAKE_CASE
+import name.maxaller.konfigurator.runtime.camelToUpperSnake
 
 class MapSource(private val map: Map<String, Any>, private val caseOfKeys: KeyCase = LOWER_CAMEL_CASE) : Source {
     override fun getInt(key: String): Int? {

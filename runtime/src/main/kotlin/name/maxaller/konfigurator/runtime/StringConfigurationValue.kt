@@ -1,7 +1,7 @@
 package name.maxaller.konfigurator.runtime
 
 import name.maxaller.konfigurator.runtime.constraints.StringConstraint
-import kotlin.reflect.KProperty
+import name.maxaller.konfigurator.runtime.source.Source
 
 class StringConfigurationValue(
     private val name: String,

@@ -1,4 +1,4 @@
-package name.maxaller.konfigurator.runtime
+package name.maxaller.konfigurator.runtime.source
 
 import java.util.concurrent.ConcurrentHashMap
 
