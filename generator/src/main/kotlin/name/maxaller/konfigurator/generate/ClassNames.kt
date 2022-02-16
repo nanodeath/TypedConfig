@@ -8,3 +8,4 @@ internal val nonNegativeIntClassName = ClassName("$basePkg.constraints", "NonNeg
 internal val notBlankStringClassName = ClassName("$basePkg.constraints", "NotBlankStringConstraint")
 internal val intKeyClassName = ClassName("$basePkg.key", "IntKey")
 internal val stringKeyClassName = ClassName("$basePkg.key", "StringKey")
+internal val doubleKeyClassName = ClassName("$basePkg.key", "DoubleKey")

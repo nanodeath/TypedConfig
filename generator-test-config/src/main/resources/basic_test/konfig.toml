@@ -9,3 +9,7 @@ constraints = ["nonnegative"]
 [nameOfTestUser]
 datatype = "str"
 constraints = ["notblank"]
+
+[timeBetweenFailedLogins]
+datatype = "double"
+default = 0.0

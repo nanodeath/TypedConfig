@@ -76,6 +76,24 @@ class ConfigurationReader {
                             .build()
                     )
                 }
+                is DoubleConfigDef -> {
+                    val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass)
+
+                    val constraints = emptyList<Any>()
+                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+                    classToUpdate.addProperty(
+                        PropertySpec.builder(configDef.key.substringAfterLast('.'), Double::class)
+                            .delegate(
+                                "%T(%S, %N, %L, listOf($constraintsInterpolation))",
+                                doubleKeyClassName,
+                                configDef.key,
+                                "source",
+                                configDef.defaultValue,
+                                *constraints.toTypedArray()
+                            )
+                            .build()
+                    )
+                }
             }
         }
         for ((innerTypeSpec, innerTypeBuilder) in innerClasses) {
@@ -137,6 +155,13 @@ class ConfigurationReader {
                         (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
 
                     sequenceOf(StringConfigDef(fullKey, defaultValue, constraints.orEmpty()))
+                }
+                "double" -> {
+                    val defaultValue: Double? = value.get("default")?.doubleValue()
+                    val constraints: List<String>? =
+                        (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+
+                    sequenceOf(DoubleConfigDef(fullKey, defaultValue, constraints.orEmpty()))
                 }
                 null -> {
                     if (value.isObject) {
