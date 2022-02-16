@@ -1,10 +1,11 @@
+package name.maxaller.konfigurator.test
+
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verifyAll
 import name.maxaller.konfigurator.runtime.source.Source
-import name.maxaller.konfigurator.test.NestedConfig
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

@@ -1,9 +1,10 @@
+package name.maxaller.konfigurator.test
+
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifyAll
 import name.maxaller.konfigurator.runtime.source.Source
-import name.maxaller.konfigurator.test.GeneratedConfig
 import org.junit.jupiter.api.Test
 
 class BasicTest {
