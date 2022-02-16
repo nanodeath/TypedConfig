@@ -1,5 +1,7 @@
 plugins {
     kotlin("jvm")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    application
 }
 
 dependencies {
@@ -11,4 +13,8 @@ dependencies {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("name.maxaller.konfigurator.generate.GeneratorKt")
 }
