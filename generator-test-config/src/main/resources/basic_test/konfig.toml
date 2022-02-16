@@ -4,7 +4,8 @@ class = "GeneratedConfig"
 [maxLoginTries]
 datatype = "int"
 default = 0
-constraints = [ "nonnegative" ]
+constraints = ["nonnegative"]
 
 [nameOfTestUser]
 datatype = "str"
+constraints = ["notblank"]

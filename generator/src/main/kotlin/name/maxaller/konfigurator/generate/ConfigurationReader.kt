@@ -52,7 +52,7 @@ class ConfigurationReader {
                 is IntConfigDef -> {
                     val constraints = configDef.constraints.map {
                         when (it) {
-                            "nonnegative" -> nonNegativeConstraintClassName
+                            "nonnegative" -> nonNegativeIntClassName
                             else -> throw IllegalArgumentException("Unsupported constraint: $it")
                         }
                     }
@@ -61,7 +61,7 @@ class ConfigurationReader {
                         PropertySpec.builder(configDef.key, Int::class)
                             .delegate(
                                 "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                intConfigurationValueClassName,
+                                intKeyClassName,
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue,
@@ -71,13 +71,18 @@ class ConfigurationReader {
                     )
                 }
                 is StringConfigDef -> {
-                    val constraints = emptyList<Nothing>() // TODO populate
+                    val constraints = configDef.constraints.map {
+                        when (it) {
+                            "notblank" -> notBlankStringClassName
+                            else -> throw IllegalArgumentException("Unsupported constraint: $it")
+                        }
+                    }
                     val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
                     configClass.addProperty(
                         PropertySpec.builder(configDef.key, String::class)
                             .delegate(
                                 "%T(%S, %N, %S, listOf($constraintsInterpolation))",
-                                stringConfigurationValueClassName,
+                                stringKeyClassName,
                                 configDef.key,
                                 "source",
                                 configDef.defaultValue.orEmpty(),

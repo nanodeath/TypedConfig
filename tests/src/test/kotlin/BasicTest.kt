@@ -17,4 +17,15 @@ class BasicTest {
 
         verifyAll { source.getInt("maxLoginTries") }
     }
+
+    @Test
+    fun stringKeyTest() {
+        val source = mockk<Source>()
+        every { source.getString(any()) } returns "hello"
+
+        val nameOfTestUser = GeneratedConfig(source).nameOfTestUser
+        nameOfTestUser shouldBe "hello"
+
+        verifyAll { source.getString("nameOfTestUser") }
+    }
 }
