@@ -29,6 +29,7 @@ jobs:
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
+      - run: apt-get install gpg
       - checkout
 
       # Download and cache dependencies
