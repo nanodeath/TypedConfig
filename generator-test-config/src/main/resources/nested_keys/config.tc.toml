@@ -9,5 +9,5 @@ default = 8080
 type = "int"
 default = 5432
 
-[database.username]
+[database.credentials.username]
 type = "str"
