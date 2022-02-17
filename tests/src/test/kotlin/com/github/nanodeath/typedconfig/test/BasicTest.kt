@@ -1,10 +1,13 @@
 package com.github.nanodeath.typedconfig.test
 
+import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifyAll
 import com.github.nanodeath.typedconfig.runtime.source.Source
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.should
 import org.junit.jupiter.api.Test
 
 class BasicTest {
@@ -28,5 +31,20 @@ class BasicTest {
         nameOfTestUser shouldBe "hello"
 
         verifyAll { source.getString("nameOfTestUser") }
+    }
+
+    @Test
+    fun missingRequiredConfigTest() {
+        val source = mockk<Source>()
+        every { source.getString(any()) } returns null
+
+        shouldThrow<MissingConfigurationException> {
+            GeneratedConfig(source).requiredConfig
+        } should { ex ->
+            ex.message shouldBe "Config `requiredConfig` is required " +
+                    "but could not be resolved and no default was provided"
+        }
+
+        verifyAll { source.getString("requiredConfig") }
     }
 }

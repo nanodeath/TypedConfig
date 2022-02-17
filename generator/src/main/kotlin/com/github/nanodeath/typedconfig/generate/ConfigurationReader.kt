@@ -11,7 +11,7 @@ class ConfigurationReader {
 
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
-        val configs: List<ConfigDef> = parseNode(node, file)
+        val configDefs: List<ConfigDef> = parseNode(node, file)
 
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
@@ -28,7 +28,7 @@ class ConfigurationReader {
                 .build()
         )
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
-        for (configDef in configs) {
+        for (configDef in configDefs) {
             when (configDef) {
                 is IntConfigDef -> {
                     val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass)
@@ -70,7 +70,7 @@ class ConfigurationReader {
                                 stringKeyClassName,
                                 configDef.key,
                                 "source",
-                                configDef.defaultValue.orEmpty(),
+                                configDef.defaultValue,
                                 *constraints.toTypedArray()
                             )
                             .build()

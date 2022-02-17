@@ -13,3 +13,6 @@ constraints = ["notblank"]
 [timeBetweenFailedLogins]
 type = "double"
 default = 0.0
+
+[requiredConfig]
+type = "str"
