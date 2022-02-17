@@ -1,4 +1,4 @@
-rootProject.name = "konfigurator"
+rootProject.name = "TypedConfig"
 
 // Production projects
 include("generator", "runtime")
