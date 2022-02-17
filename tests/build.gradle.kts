@@ -3,7 +3,7 @@ plugins {
     idea
 }
 
-group = "name.maxaller.konfigurator"
+group = "com.github.nanodeath.typedconfig"
 version = "1.0-SNAPSHOT"
 
 repositories {

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
 }
 
-group = "name.maxaller.konfigurator"
+group = "com.github.nanodeath.typedconfig"
 version = "1.0-SNAPSHOT"
 
 allprojects {

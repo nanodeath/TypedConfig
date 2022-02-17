@@ -16,5 +16,5 @@ tasks.named<Test>("test") {
 }
 
 application {
-    mainClass.set("name.maxaller.konfigurator.generate.GeneratorKt")
+    mainClass.set("com.github.nanodeath.typedconfig.generate.GeneratorKt")
 }

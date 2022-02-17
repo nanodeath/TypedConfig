@@ -1,0 +1,6 @@
+package = "com.github.nanodeath.typedconfig.test"
+class = "InvalidIdentifierConfig"
+
+[""]
+type = "int"
+default = 0

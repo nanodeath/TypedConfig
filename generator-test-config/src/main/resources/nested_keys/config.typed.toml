@@ -1,0 +1,13 @@
+package = "com.github.nanodeath.typedconfig.test"
+class = "NestedConfig"
+
+[app.port]
+type = "int"
+default = 8080
+
+[database.port]
+type = "int"
+default = 5432
+
+[database.username]
+type = "str"
