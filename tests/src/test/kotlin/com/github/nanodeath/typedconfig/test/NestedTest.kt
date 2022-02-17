@@ -24,4 +24,13 @@ class NestedTest {
 
         verifyAll { source.getInt("app.port") }
     }
+
+    @Test
+    fun veryNested() {
+        every { source.getString(any()) } returns "user"
+
+        subject.database.credentials.username shouldBe "user"
+
+        verifyAll { source.getString("database.credentials.username") }
+    }
 }

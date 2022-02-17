@@ -40,7 +40,7 @@ class ConfigurationReader {
         )
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
         for (configDef in configDefs) {
-            val classToUpdate = getClassToUpdate(configDef.key, innerClasses) ?: configClass
+            val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass, className)
 
             val constraints = configDef.constraints
             val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
@@ -57,13 +57,14 @@ class ConfigurationReader {
                     .build()
             )
         }
-        for ((innerTypeSpec, innerTypeBuilder) in innerClasses) {
-            configClass.addProperty(
-                PropertySpec.builder(innerTypeSpec.fieldName, className.nestedClass(innerTypeSpec.className))
-                    .initializer("%T()", className.nestedClass(innerTypeSpec.className))
+        for ((innerTypeSpec, innerTypeBuilder) in innerClasses.toList().asReversed()) {
+            val enclosingClassName = innerTypeSpec.enclosingClassName
+            innerTypeSpec.enclosingClass.addProperty(
+                PropertySpec.builder(innerTypeSpec.fieldName, enclosingClassName.nestedClass(innerTypeSpec.className))
+                    .initializer("%T()", enclosingClassName.nestedClass(innerTypeSpec.className))
                     .build()
             )
-            configClass.addType(innerTypeBuilder.build())
+            innerTypeSpec.enclosingClass.addType(innerTypeBuilder.build())
         }
         return FileSpec.builder(packageName, className.simpleName)
             .addType(configClass.build())
@@ -72,21 +73,35 @@ class ConfigurationReader {
 
     private fun getClassToUpdate(
         key: String,
-        innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>
-    ): TypeSpec.Builder? = if ('.' in key) {
-        // FIXME only supports one level of nesting for now
-        val field = key.substringBeforeLast('.').split('.').single()
-        val innerName = field.replaceFirstChar { it.uppercase() }
-        innerClasses.getOrPut(InnerTypeSpec(field, innerName)) {
-            TypeSpec.classBuilder(innerName)
-                .addModifiers(KModifier.INNER)
-                .primaryConstructor(
-                    FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
-                )
-        }
-    } else null
+        innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>,
+        enclosingClass: TypeSpec.Builder,
+        enclosingClassName: ClassName
+    ): TypeSpec.Builder = if ('.' in key) {
+        val field = key.substringBefore('.')
 
-    private data class InnerTypeSpec(val fieldName: String, val className: String)
+        val innerName = field.replaceFirstChar { it.uppercase() }
+        val newEnclosingClass =
+            innerClasses.getOrPut(InnerTypeSpec(field, innerName, enclosingClass, enclosingClassName)) {
+                TypeSpec.classBuilder(innerName)
+                    .addModifiers(KModifier.INNER)
+                    .primaryConstructor(
+                        FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
+                    )
+            }
+        getClassToUpdate(
+            key.substringAfter('.'),
+            innerClasses,
+            newEnclosingClass,
+            enclosingClassName.nestedClass(innerName)
+        )
+    } else enclosingClass
+
+    private data class InnerTypeSpec(
+        val fieldName: String,
+        val className: String,
+        val enclosingClass: TypeSpec.Builder,
+        val enclosingClassName: ClassName
+    )
 
     private fun parseConfigDefs(
         node: JsonNode,
