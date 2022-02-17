@@ -76,41 +76,25 @@ class ConfigurationReader {
         innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>,
         enclosingClass: TypeSpec.Builder,
         enclosingClassName: ClassName
-    ): TypeSpec.Builder {
-        // If we have a key like app.username, we want to create a new inner clas App and stick the username field in it
-        return if ('.' in key) {
-            val name = key.substringBeforeLast('.')
-            // If we STILL have another ., that means we're in a nested scenario and will need to recurse.
-            if ('.' in name) {
-                val field = name.substringBefore('.')
+    ): TypeSpec.Builder = if ('.' in key) {
+        val field = key.substringBefore('.')
 
-                val innerName = field.replaceFirstChar { it.uppercase() }
-                val newEnclosingClass =
-                    innerClasses.getOrPut(InnerTypeSpec(field, innerName, enclosingClass, enclosingClassName)) {
-                        TypeSpec.classBuilder(innerName)
-                            .addModifiers(KModifier.INNER)
-                            .primaryConstructor(
-                                FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
-                            )
-                    }
-                getClassToUpdate(
-                    key.substringAfter('.'),
-                    innerClasses,
-                    newEnclosingClass,
-                    enclosingClassName.nestedClass(innerName)
-                )
-            } else {
-                val innerName = name.replaceFirstChar { it.uppercase() }
-                innerClasses.getOrPut(InnerTypeSpec(name, innerName, enclosingClass, enclosingClassName)) {
-                    TypeSpec.classBuilder(innerName)
-                        .addModifiers(KModifier.INNER)
-                        .primaryConstructor(
-                            FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
-                        )
-                }
+        val innerName = field.replaceFirstChar { it.uppercase() }
+        val newEnclosingClass =
+            innerClasses.getOrPut(InnerTypeSpec(field, innerName, enclosingClass, enclosingClassName)) {
+                TypeSpec.classBuilder(innerName)
+                    .addModifiers(KModifier.INNER)
+                    .primaryConstructor(
+                        FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
+                    )
             }
-        } else enclosingClass
-    }
+        getClassToUpdate(
+            key.substringAfter('.'),
+            innerClasses,
+            newEnclosingClass,
+            enclosingClassName.nestedClass(innerName)
+        )
+    } else enclosingClass
 
     private data class InnerTypeSpec(
         val fieldName: String,
