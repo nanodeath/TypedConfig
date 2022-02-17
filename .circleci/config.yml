@@ -48,5 +48,5 @@ jobs:
       # run tests!
       - run: gradle test
       - run: gradle koverMergedXmlReport
-      - run: apt-get install -y gpg
+      - run: apt-get update && apt-get install -y gpg
       - codecov/upload
