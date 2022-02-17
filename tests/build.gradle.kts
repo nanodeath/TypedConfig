@@ -12,7 +12,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation(project(":generator"))
     implementation(project(":generator-test-config"))
     implementation(project(":runtime"))
 

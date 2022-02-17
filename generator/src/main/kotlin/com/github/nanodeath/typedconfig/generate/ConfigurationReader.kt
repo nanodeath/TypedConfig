@@ -3,18 +3,29 @@ package com.github.nanodeath.typedconfig.generate
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
+import com.github.nanodeath.typedconfig.generate.configdef.*
+import com.github.nanodeath.typedconfig.generate.configdef.DoubleConfigDefGenerator
+import com.github.nanodeath.typedconfig.generate.configdef.IntConfigDefGenerator
+import com.github.nanodeath.typedconfig.generate.configdef.StringConfigDefGenerator
 import com.squareup.kotlinpoet.*
 import java.io.File
+
+private val sourceClassName = ClassName("$basePkg.source", "Source")
 
 class ConfigurationReader {
     private val tomlMapper = TomlMapper()
 
+    // FIXME associateBy is problematic -- it ignores duplicate keys. We should throw.
+    // TODO this obviously shouldn't be a hardcoded list, should be scanned.
+    private val configDefReaders =
+        listOf(IntConfigDefGenerator, StringConfigDefGenerator, DoubleConfigDefGenerator).associateBy { it.key }
+
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
-        val configDefs: List<ConfigDef> = parseNode(node, file)
-
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
+        val configDefs: List<ConfigDef<*>> = parseConfigDefs(node, file)
+
         val configClass = TypeSpec.classBuilder(className)
         configClass.primaryConstructor(
             FunSpec.constructorBuilder()
@@ -29,72 +40,22 @@ class ConfigurationReader {
         )
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
         for (configDef in configDefs) {
-            when (configDef) {
-                is IntConfigDef -> {
-                    val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass)
+            val classToUpdate = getClassToUpdate(configDef.key, innerClasses) ?: configClass
 
-                    val constraints = configDef.constraints.map {
-                        when (it) {
-                            "nonnegative" -> nonNegativeIntClassName
-                            else -> throw IllegalArgumentException("Unsupported constraint: $it")
-                        }
-                    }
-                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-                    classToUpdate.addProperty(
-                        PropertySpec.builder(configDef.key.substringAfterLast('.'), Int::class)
-                            .delegate(
-                                "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                intKeyClassName,
-                                configDef.key,
-                                "source",
-                                configDef.defaultValue,
-                                *constraints.toTypedArray()
-                            )
-                            .build()
+            val constraints = configDef.constraints
+            val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+            classToUpdate.addProperty(
+                PropertySpec.builder(configDef.key.substringAfterLast('.'), configDef.type)
+                    .delegate(
+                        "%T(%S, %N, %L, listOf($constraintsInterpolation))",
+                        configDef.keyClass,
+                        configDef.key,
+                        "source",
+                        configDef.defaultValue,
+                        *constraints.toTypedArray()
                     )
-                }
-                is StringConfigDef -> {
-                    val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass)
-
-                    val constraints = configDef.constraints.map {
-                        when (it) {
-                            "notblank" -> notBlankStringClassName
-                            else -> throw IllegalArgumentException("Unsupported constraint: $it")
-                        }
-                    }
-                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-                    classToUpdate.addProperty(
-                        PropertySpec.builder(configDef.key.substringAfterLast('.'), String::class)
-                            .delegate(
-                                "%T(%S, %N, %S, listOf($constraintsInterpolation))",
-                                stringKeyClassName,
-                                configDef.key,
-                                "source",
-                                configDef.defaultValue,
-                                *constraints.toTypedArray()
-                            )
-                            .build()
-                    )
-                }
-                is DoubleConfigDef -> {
-                    val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass)
-
-                    val constraints = emptyList<Any>()
-                    val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-                    classToUpdate.addProperty(
-                        PropertySpec.builder(configDef.key.substringAfterLast('.'), Double::class)
-                            .delegate(
-                                "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                doubleKeyClassName,
-                                configDef.key,
-                                "source",
-                                configDef.defaultValue,
-                                *constraints.toTypedArray()
-                            )
-                            .build()
-                    )
-                }
-            }
+                    .build()
+            )
         }
         for ((innerTypeSpec, innerTypeBuilder) in innerClasses) {
             configClass.addProperty(
@@ -111,9 +72,8 @@ class ConfigurationReader {
 
     private fun getClassToUpdate(
         key: String,
-        innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>,
-        configClass: TypeSpec.Builder
-    ) = if ('.' in key) {
+        innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>
+    ): TypeSpec.Builder? = if ('.' in key) {
         // FIXME only supports one level of nesting for now
         val field = key.substringBeforeLast('.').split('.').single()
         val innerName = field.replaceFirstChar { it.uppercase() }
@@ -124,53 +84,37 @@ class ConfigurationReader {
                     FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
                 )
         }
-    } else {
-        configClass
-    }
+    } else null
 
     private data class InnerTypeSpec(val fieldName: String, val className: String)
 
-    private fun parseNode(
+    private fun parseConfigDefs(
         node: JsonNode,
         file: File,
         precedingKey: List<String> = emptyList()
-    ): List<ConfigDef> = node.fields().asSequence()
+    ): List<ConfigDef<*>> = node.fields().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
 
             val fullKey = if (precedingKey.isEmpty()) key else "${precedingKey.joinToString(".")}.$key"
 
-            when (val type = value.path("type").textValue()) {
-                "int" -> {
-                    val defaultValue: Int? = value.get("default")?.intValue()
-                    val constraints: List<String>? =
-                        (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+            val type = value.path("type").textValue()
 
-                    sequenceOf(IntConfigDef(fullKey, defaultValue, constraints.orEmpty()))
-                }
-                "str" -> {
-                    val defaultValue: String? = value.get("default")?.textValue()
-                    val constraints: List<String>? =
-                        (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
+            if (type != null) {
+                // TODO more specific exception
+                val configDefReader =
+                    configDefReaders[type] ?: throw IllegalArgumentException("Unsupported type: `${type}` in $file")
 
-                    sequenceOf(StringConfigDef(fullKey, defaultValue, constraints.orEmpty()))
-                }
-                "double" -> {
-                    val defaultValue: Double? = value.get("default")?.doubleValue()
-                    val constraints: List<String>? =
-                        (value.get("constraints") as ArrayNode?)?.map { it.textValue() }
-
-                    sequenceOf(DoubleConfigDef(fullKey, defaultValue, constraints.orEmpty()))
-                }
-                null -> {
-                    if (value.isObject) {
-                        parseNode(value, file, precedingKey + listOf(key)).asSequence()
-                    } else {
-                        emptySequence()
-                    }
-                }
-                else -> throw IllegalArgumentException("Unsupported type: `${type}` in $file")
+                val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
+                    ?.map(JsonNode::textValue)
+                    ?.map(configDefReader::mapConstraint)
+                sequenceOf(configDefReader.generate(fullKey, value.get("default")?.asText(), constraints.orEmpty()))
+            } else if (value.isObject) {
+                parseConfigDefs(value, file, precedingKey + listOf(key)).asSequence()
+            } else {
+                // FIXME this is an error
+                emptySequence()
             }
         }
         .toList()
