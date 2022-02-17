@@ -141,7 +141,7 @@ class ConfigurationReader {
 
             val fullKey = if (precedingKey.isEmpty()) key else "${precedingKey.joinToString(".")}.$key"
 
-            when (val datatype = value.path("datatype").textValue()) {
+            when (val type = value.path("type").textValue()) {
                 "int" -> {
                     val defaultValue: Int? = value.get("default")?.intValue()
                     val constraints: List<String>? =
@@ -170,7 +170,7 @@ class ConfigurationReader {
                         emptySequence()
                     }
                 }
-                else -> throw IllegalArgumentException("Unsupported datatype: `${datatype}` in $file")
+                else -> throw IllegalArgumentException("Unsupported type: `${type}` in $file")
             }
         }
         .toList()

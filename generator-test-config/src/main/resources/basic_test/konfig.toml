@@ -2,14 +2,14 @@ package = "name.maxaller.konfigurator.test"
 class = "GeneratedConfig"
 
 [maxLoginTries]
-datatype = "int"
+type = "int"
 default = 0
 constraints = ["nonnegative"]
 
 [nameOfTestUser]
-datatype = "str"
+type = "str"
 constraints = ["notblank"]
 
 [timeBetweenFailedLogins]
-datatype = "double"
+type = "double"
 default = 0.0
