@@ -29,7 +29,7 @@ class NestedTest {
     fun veryNested() {
         every { source.getString(any()) } returns "user"
 
-        subject.database.credentials.username
+        subject.database.credentials.username shouldBe "user"
 
         verifyAll { source.getString("database.credentials.username") }
     }
