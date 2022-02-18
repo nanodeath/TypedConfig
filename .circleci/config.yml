@@ -53,6 +53,11 @@ jobs:
       - codecov/upload
       - snyk/scan:
           project: TypedConfig
-          additional-arguments: --all-sub-projects
+          target-file: generator/build.gradle.kts
+          severity-threshold: high
+          fail-on-issues: false
+      - snyk/scan:
+          project: TypedConfig
+          target-file: runtime/build.gradle.kts
           severity-threshold: high
           fail-on-issues: false
