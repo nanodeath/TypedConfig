@@ -3,6 +3,7 @@ package com.github.nanodeath.typedconfig.test
 import com.github.nanodeath.typedconfig.runtime.TypedConfig
 import com.github.nanodeath.typedconfig.runtime.source.EnvSource
 import com.github.nanodeath.typedconfig.runtime.source.Source
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -17,33 +18,37 @@ import kotlin.reflect.jvm.isAccessible
 
 class DefaultConfigTest {
     companion object {
+        private lateinit var writeOnceDelegate: Any
         private lateinit var typedConfigInitialized: KMutableProperty<Boolean>
 
         @BeforeAll
         @JvmStatic
         @Suppress("UNCHECKED_CAST")
         fun getInitializationProperty() {
+            val defaultSource = TypedConfig::class.declaredMemberProperties.single { it.name == "defaultSource" }
+            defaultSource.isAccessible = true
+            writeOnceDelegate = defaultSource.getDelegate(TypedConfig)!!
             typedConfigInitialized =
-                TypedConfig::class.declaredMemberProperties
-                    .single { it.name == "sourceInitialized" } as KMutableProperty<Boolean>
+                writeOnceDelegate::class.declaredMemberProperties
+                    .single { it.name == "initialized" } as KMutableProperty<Boolean>
             typedConfigInitialized.setter.isAccessible = true
         }
 
-        fun markInitialized(initialized: Boolean) {
-            typedConfigInitialized.setter.call(initialized)
+        fun setInitialized(initialized: Boolean) {
+            typedConfigInitialized.setter.call(writeOnceDelegate, initialized)
         }
     }
 
     @BeforeEach
     fun setup() {
-        markInitialized(false)
+        setInitialized(false)
     }
 
     @AfterEach
     fun teardown() {
-        markInitialized(false)
+        setInitialized(false)
         TypedConfig.defaultSource = EnvSource()
-        markInitialized(false)
+        setInitialized(false)
     }
 
     @Test
@@ -56,5 +61,17 @@ class DefaultConfigTest {
         nameOfTestUser shouldBe "hello"
 
         verifyAll { source.getString("nameOfTestUser") }
+    }
+
+    @Suppress("RedundantUnitExpression")
+    @Test
+    fun canOnlySetOnce() {
+        val source = mockk<Source>("Source1")
+        val source2 = mockk<Source>("Source2")
+        TypedConfig.defaultSource = source
+        shouldThrow<IllegalStateException> {
+            TypedConfig.defaultSource = source2
+            Unit
+        }
     }
 }
