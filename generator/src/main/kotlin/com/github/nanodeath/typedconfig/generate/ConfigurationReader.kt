@@ -38,6 +38,16 @@ class ConfigurationReader {
                 .addModifiers(KModifier.PRIVATE)
                 .build()
         )
+        configClass.addType(
+            TypeSpec.companionObjectBuilder("Factory")
+                .addFunction(
+                    FunSpec.builder("default").returns(className)
+                        .addCode("return %T(%T.%N)", className, ClassName(basePkg, "TypedConfig"), "defaultSource")
+                        .build()
+                )
+                .build()
+        )
+
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
         for (configDef in configDefs) {
             val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass, className)
