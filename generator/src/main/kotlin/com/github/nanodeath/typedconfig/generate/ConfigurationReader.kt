@@ -24,6 +24,7 @@ class ConfigurationReader {
         val node = tomlMapper.readTree(file)
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
+        val description = node.path("description").textValue()
         val configDefs: List<ConfigDef<*>> = parseConfigDefs(node, file)
 
         val configClass = TypeSpec.classBuilder(className)
@@ -47,6 +48,10 @@ class ConfigurationReader {
                 )
                 .build()
         )
+
+        if (!description.isNullOrBlank()) {
+            configClass.addKdoc(description)
+        }
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
         for (configDef in configDefs) {

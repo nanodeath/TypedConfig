@@ -1,5 +1,6 @@
 package = "com.github.nanodeath.typedconfig.test"
 class = "GeneratedConfig"
+description = "This is the basic configuration file."
 
 [maxLoginTries]
 type = "int"
