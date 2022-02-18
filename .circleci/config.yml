@@ -52,7 +52,12 @@ jobs:
       - run: apt-get update && apt-get install -y gpg sudo
       - codecov/upload
       - snyk/scan:
-          project: TypedConfig
-          additional-arguments: --all-sub-projects
+          project: TypedConfig/generator
+          target-file: generator/build.gradle.kts
+          severity-threshold: high
+          fail-on-issues: false
+      - snyk/scan:
+          project: TypedConfig/runtime
+          target-file: runtime/build.gradle.kts
           severity-threshold: high
           fail-on-issues: false
