@@ -3,10 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testImplementation("io.kotest:kotest-assertions-core:5.1.0")
-    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation(libs.bundles.tests)
 }
 
 tasks.named<Test>("test") {
