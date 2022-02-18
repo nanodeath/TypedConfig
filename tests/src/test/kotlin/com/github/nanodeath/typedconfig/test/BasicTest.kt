@@ -8,7 +8,9 @@ import io.mockk.verifyAll
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.should
+import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class BasicTest {
     @Test
@@ -46,5 +48,14 @@ class BasicTest {
         }
 
         verifyAll { source.getString("requiredConfig") }
+    }
+
+    @Test
+    fun descriptionIsAttachedToClass() {
+        val sourceText =
+            File("../generator-test-config/build/generated-sources-test/com/github/nanodeath/typedconfig/test/GeneratedConfig.kt")
+                .readText()
+
+        sourceText shouldContain "* This is the basic configuration file."
     }
 }
