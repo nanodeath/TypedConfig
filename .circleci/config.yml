@@ -52,5 +52,7 @@ jobs:
       - run: apt-get update && apt-get install -y gpg sudo
       - codecov/upload
       - snyk/scan:
+          project: TypedConfig
           additional-arguments: --all-sub-projects
+          severity-threshold: high
           fail-on-issues: false
