@@ -53,3 +53,4 @@ jobs:
       - codecov/upload
       - snyk/scan:
           additional-arguments: --all-sub-projects
+          fail-on-issues: false
