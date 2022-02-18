@@ -70,6 +70,7 @@ class ConfigurationReader {
                         configDef.defaultValue,
                         *constraints.toTypedArray()
                     )
+                    .also { if (!metadata.description.isNullOrBlank()) it.addKdoc(metadata.description) }
                     .build()
             )
         }
@@ -143,7 +144,7 @@ class ConfigurationReader {
                 sequenceOf(
                     ConfigSpec(
                         configDefReader.generate(fullKey, value.get("default")?.asText(), constraints.orEmpty()),
-                        ConfigDefMetadata()
+                        ConfigDefMetadata(value.get("description")?.textValue())
                     )
                 )
             } else if (value.isObject) {
