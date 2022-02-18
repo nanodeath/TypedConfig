@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:2.13.1"))
+    implementation(enforcedPlatform("com.fasterxml.jackson:jackson-bom:${libs.versions.jackson.get()}"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml")
     api("com.squareup:kotlinpoet:1.10.2")
