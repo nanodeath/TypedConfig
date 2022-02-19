@@ -4,6 +4,7 @@ description = "This is the basic configuration file."
 
 [maxLoginTries]
 type = "int"
+description = "Maximum number of login tries before locking account."
 default = 0
 constraints = ["nonnegative"]
 

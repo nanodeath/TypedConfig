@@ -58,4 +58,14 @@ class BasicTest {
 
         sourceText shouldContain "* This is the basic configuration file."
     }
+
+    @Test
+    fun descriptionIsAttachedToProperty() {
+        val sourceText =
+            File("../generator-test-config/build/generated-sources-test/com/github/nanodeath/typedconfig/test/GeneratedConfig.kt")
+                .readText()
+
+        // Well, we're at least checking that the file contains this comment somewhere.
+        sourceText shouldContain "* Maximum number of login tries before locking account."
+    }
 }

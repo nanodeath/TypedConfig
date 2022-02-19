@@ -25,7 +25,7 @@ class ConfigurationReader {
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
         val description = node.path("description").textValue()
-        val configDefs: List<ConfigDef<*>> = parseConfigDefs(node, file)
+        val configSpecs: List<ConfigSpec<*>> = parseConfigDefs(node, file)
 
         val configClass = TypeSpec.classBuilder(className)
         configClass.primaryConstructor(
@@ -54,7 +54,8 @@ class ConfigurationReader {
         }
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
-        for (configDef in configDefs) {
+        for (configSpec in configSpecs) {
+            val (configDef, metadata) = configSpec
             val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass, className)
 
             val constraints = configDef.constraints
@@ -69,6 +70,7 @@ class ConfigurationReader {
                         configDef.defaultValue,
                         *constraints.toTypedArray()
                     )
+                    .also { if (!metadata.description.isNullOrBlank()) it.addKdoc(metadata.description) }
                     .build()
             )
         }
@@ -122,7 +124,7 @@ class ConfigurationReader {
         node: JsonNode,
         file: File,
         precedingKey: List<String> = emptyList()
-    ): List<ConfigDef<*>> = node.fields().asSequence()
+    ): List<ConfigSpec<*>> = node.fields().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
@@ -139,7 +141,12 @@ class ConfigurationReader {
                 val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
                     ?.map(JsonNode::textValue)
                     ?.map(configDefReader::mapConstraint)
-                sequenceOf(configDefReader.generate(fullKey, value.get("default")?.asText(), constraints.orEmpty()))
+                sequenceOf(
+                    ConfigSpec(
+                        configDefReader.generate(fullKey, value.get("default")?.asText(), constraints.orEmpty()),
+                        ConfigDefMetadata(value.get("description")?.textValue())
+                    )
+                )
             } else if (value.isObject) {
                 parseConfigDefs(value, file, precedingKey + listOf(key)).asSequence()
             } else {
