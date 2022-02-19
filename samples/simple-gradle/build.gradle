@@ -5,11 +5,12 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    mavenLocal() // This is temporary until TypedConfig is published somewhere
     mavenCentral()
 }
 
 configurations {
+    // Define a custom configuration so that we can construct a classpath just for the generator.
     typedConfigGenerator
 }
 
@@ -19,32 +20,52 @@ application {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT"
-    typedConfigGenerator "com.github.nanodeath.typedconfig:generator:1.0-SNAPSHOT"
+    // These are the two important dependencies.
+    implementation "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT" // Used by the generated config.
+    typedConfigGenerator "com.github.nanodeath.typedconfig:generator:1.0-SNAPSHOT" // Used to generate the config.
 }
+
+// Define where we want to put the generated config.
+// Can be anywhere under build/, really.
+def generatedSourcesDirectory = "$buildDir/generated-sources"
 
 task generateConfig(type: JavaExec) {
-    inputs.file("config.tc.toml")
-    outputs.dir("$buildDir/generated-sources")
+    def inputFile = "config.tc.toml" // This is just by convention.
+
+    // Used by Gradle to only execute this task when inputs change.
+    inputs.file(inputFile)
+    outputs.dir(generatedSourcesDirectory)
+
+    // Point the classpath at the custom configuration defined earlier
     classpath = configurations.typedConfigGenerator
+
+    // Class we're executing
     mainClass.set("com.github.nanodeath.typedconfig.generate.Generator")
-    args("config.tc.toml", "$buildDir/generated-sources")
+
+    // The Generator CLI accepts an input file and an output directory.
+    args(inputFile, generatedSourcesDirectory)
 }
 
+// Require every JVM compile step (Java or Kotlin) to generate config classes first.
 tasks.withType(AbstractCompile) {
     dependsOn("generateConfig")
 }
 
+// Add the generated sources directory to the source set.
+// Without this, there's nothing connecting your source code and the generated source code;
+// they won't be able to "see" each other.
 sourceSets {
     main {
         java {
-            srcDir("$buildDir/generated-sources")
+            srcDir(generatedSourcesDirectory)
         }
     }
 }
 
+// Tell IntelliJ that it's a generated sources directory.
+// This enables IntelliJ to warn you when you're directly modifying generated files.
 idea {
     module {
-        generatedSourceDirs += file("$buildDir/generated-sources")
+        generatedSourceDirs += file(generatedSourcesDirectory)
     }
 }
