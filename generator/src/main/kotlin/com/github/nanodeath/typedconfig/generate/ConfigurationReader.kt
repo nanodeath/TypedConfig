@@ -83,19 +83,21 @@ class ConfigurationReader {
 
         for ((typeSpec, propertySpecs) in configProperties) {
             val myInnerTypes = innerClasses.keys.filter { it.enclosingClass === typeSpec }
-            typeSpec.addFunction(FunSpec.builder("validate")
-                .addKdoc("""
+            typeSpec.addFunction(FunSpec.builder("validate").apply {
+                addKdoc(
+                    """
                     |Checks that all required keys have been provided values.
                     |@throws com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
-                """.trimMargin())
-                .beginControlFlow("return apply {")
-                .also { builder ->
-                    propertySpecs.forEach { builder.addStatement("%N", it.name) }
+                """.trimMargin()
+                )
+                beginControlFlow("return apply {")
+                propertySpecs.forEach { addStatement("%N", it.name) }
+                myInnerTypes.forEach { addStatement("%N.validate()", it.fieldName) }
+                if (typeSpec !== configClass) {
+                    addModifiers(KModifier.INTERNAL)
                 }
-                .also { builder ->
-                    myInnerTypes.forEach { builder.addStatement("%N.validate()", it.fieldName) }
-                }
-                .endControlFlow()
+                endControlFlow()
+            }
                 .build())
         }
 
