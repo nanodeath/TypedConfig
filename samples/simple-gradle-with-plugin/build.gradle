@@ -15,6 +15,5 @@ application {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT" // Used by the generated config.
+    // None required!
 }

@@ -15,17 +15,21 @@ application {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT" // Used by the generated config.
+    // None required!
 }
 
+// In this sample, we're defining two of our own config files.
 typedConfig {
     configs {
+        // This creates a task called generateAppconfigTypedConfig
         create("appconfig") {
             file = file("appconfig.tc.toml")
         }
+        // This creates a task called generateDbconfigTypedConfig
         create("dbconfig") {
             file = file("dbconfig.tc.toml")
         }
+        // In general, the generated task is `generate${titleCase(name))TypedConfig`.
+        // You can also invoke all of them using the generateTypedConfigs task.
     }
 }
