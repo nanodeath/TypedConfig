@@ -3,7 +3,7 @@ package com.github.nanodeath.typedconfig.test
 import com.github.nanodeath.typedconfig.runtime.TypedConfig
 import com.github.nanodeath.typedconfig.runtime.source.EnvSource
 import com.github.nanodeath.typedconfig.runtime.source.Source
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowUnit
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
@@ -63,15 +63,13 @@ class DefaultConfigTest {
         verifyAll { source.getString("nameOfTestUser") }
     }
 
-    @Suppress("RedundantUnitExpression")
     @Test
     fun canOnlySetOnce() {
         val source = mockk<Source>("Source1")
         val source2 = mockk<Source>("Source2")
         TypedConfig.defaultSource = source
-        shouldThrow<IllegalStateException> {
+        shouldThrowUnit<IllegalStateException> {
             TypedConfig.defaultSource = source2
-            Unit
         }
     }
 }
