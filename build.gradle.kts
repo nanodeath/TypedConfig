@@ -16,4 +16,14 @@ allprojects {
 
 subprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
+    detekt {
+        buildUponDefaultConfig = true
+    }
+
+    afterEvaluate {
+        // Run Detekt towards the start of the build instead of the end, for time efficiency...
+        tasks.test {
+            shouldRunAfter("detekt")
+        }
+    }
 }
