@@ -1,0 +1,18 @@
+= Simple Gradle
+
+This is a rough little sample project that shows how to generate a config file and use it.
+
+It does everything by hand (no Gradle plugin) and has a `build.gradle` file (not a `.kts` file).
+
+== Usage
+
+1. Check out the main TypedConfig repository.
+2. Run `./gradlew publishToMavenLocal`. This is because TypedConfig isn't published yet.
+3. Run `./gradlew run` in this directory (`samples/simple-gradle/`). This uses the Gradle Application plugin and will generate the config code, compile it (along with the sample application), and run the main method.
+
+== Interesting files
+
+* link:config.tc.toml[config.tc.toml]
+* link:build.gradle[build.gradle]
+* link:src/main/kotlin/Application.kt[Application.kt]
+* `build/generated-sources/com/example/GeneratedConfig.kt` (after running once)

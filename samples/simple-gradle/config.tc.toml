@@ -1,0 +1,7 @@
+package = "com.example"
+class = "GeneratedConfig"
+
+[greeting]
+type = "str"
+description = "How we should greet the user of this application."
+default = "Hello!"
