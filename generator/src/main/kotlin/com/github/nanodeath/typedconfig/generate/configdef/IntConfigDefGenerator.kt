@@ -1,13 +1,13 @@
 package com.github.nanodeath.typedconfig.generate.configdef
 
-import com.github.nanodeath.typedconfig.generate.basePkg
+import com.github.nanodeath.typedconfig.generate.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 
 internal object IntConfigDefGenerator : ConfigDefGenerator<IntConfigDef> {
     override val key = "int"
 
     override fun mapConstraint(constraint: String): ClassName = when (constraint) {
-        "nonnegative" -> ClassName("$basePkg.constraints", "NonNegativeIntConstraint")
+        "nonnegative" -> ClassName("$RUNTIME_PACKAGE.constraints", "NonNegativeIntConstraint")
         else -> super.mapConstraint(constraint)
     }
 

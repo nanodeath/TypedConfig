@@ -1,6 +1,6 @@
 package com.github.nanodeath.typedconfig.generate.configdef
 
-import com.github.nanodeath.typedconfig.generate.basePkg
+import com.github.nanodeath.typedconfig.generate.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 
 internal data class BooleanConfigDef(
@@ -10,5 +10,6 @@ internal data class BooleanConfigDef(
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Boolean> {
     override val type = Boolean::class
-    override val keyClass = ClassName("$basePkg.key", if (metadata.required) "BooleanKey" else "NullableBooleanKey")
+    override val keyClass =
+        ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "BooleanKey" else "NullableBooleanKey")
 }

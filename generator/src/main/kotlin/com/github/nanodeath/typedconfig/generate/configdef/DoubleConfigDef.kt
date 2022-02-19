@@ -1,6 +1,6 @@
 package com.github.nanodeath.typedconfig.generate.configdef
 
-import com.github.nanodeath.typedconfig.generate.basePkg
+import com.github.nanodeath.typedconfig.generate.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 
 internal data class DoubleConfigDef(
@@ -10,5 +10,6 @@ internal data class DoubleConfigDef(
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Double> {
     override val type = Double::class
-    override val keyClass = ClassName("$basePkg.key", if (metadata.required) "DoubleKey" else "NullableDoubleKey")
+    override val keyClass =
+        ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "DoubleKey" else "NullableDoubleKey")
 }

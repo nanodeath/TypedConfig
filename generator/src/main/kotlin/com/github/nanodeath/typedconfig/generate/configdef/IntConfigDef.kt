@@ -1,6 +1,6 @@
 package com.github.nanodeath.typedconfig.generate.configdef
 
-import com.github.nanodeath.typedconfig.generate.basePkg
+import com.github.nanodeath.typedconfig.generate.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 
 internal data class IntConfigDef(
@@ -10,5 +10,5 @@ internal data class IntConfigDef(
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Int> {
     override val type = Int::class
-    override val keyClass = ClassName("$basePkg.key", if (metadata.required) "IntKey" else "NullableIntKey")
+    override val keyClass = ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "IntKey" else "NullableIntKey")
 }
