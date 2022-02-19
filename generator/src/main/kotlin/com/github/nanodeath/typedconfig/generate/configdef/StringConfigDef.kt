@@ -12,4 +12,5 @@ internal data class StringConfigDef(
     override val type = String::class
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "StringKey" else "NullableStringKey")
+    override val literalPlaceholder: String get() = "%S"
 }

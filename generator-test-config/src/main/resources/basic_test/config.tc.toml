@@ -30,3 +30,7 @@ required = false
 [optionalStr]
 type = "str"
 required = false
+
+[defaultString]
+type = "str"
+default = "localhost"

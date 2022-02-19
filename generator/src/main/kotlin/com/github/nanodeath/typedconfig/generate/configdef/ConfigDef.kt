@@ -10,4 +10,5 @@ interface ConfigDef<T> {
     val type: KClass<*>
     val keyClass: ClassName
     val metadata: ConfigDefMetadata
+    val literalPlaceholder: String get() = "%L"
 }

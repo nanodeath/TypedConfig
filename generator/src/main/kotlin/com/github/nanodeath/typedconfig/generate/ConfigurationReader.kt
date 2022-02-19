@@ -89,7 +89,8 @@ class ConfigurationReader {
                 val configDefProperty = ConfigDefProperty(configDef)
                 PropertySpec.builder(configDef.key.substringAfterLast('.'), configDefProperty.type)
                     .delegate(
-                        "%T(%S, %N, %L, listOf(${configDefProperty.constraintsInterpolation}))",
+                        "%T(%S, %N, ${configDef.literalPlaceholder}, " +
+                                "listOf(${configDefProperty.constraintsInterpolation}))",
                         configDef.keyClass,
                         configDef.key,
                         "source",
