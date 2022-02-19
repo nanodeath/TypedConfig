@@ -9,6 +9,8 @@ import com.github.nanodeath.typedconfig.generate.configdef.IntConfigDefGenerator
 import com.github.nanodeath.typedconfig.generate.configdef.StringConfigDefGenerator
 import com.squareup.kotlinpoet.*
 import java.io.File
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 private val sourceClassName = ClassName("$basePkg.source", "Source")
 
@@ -53,6 +55,8 @@ class ConfigurationReader {
             configClass.addKdoc(description)
         }
 
+        addGeneratedAnnotation(configClass, file)
+
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
         for (configSpec in configSpecs) {
             val (configDef, metadata) = configSpec
@@ -86,6 +90,16 @@ class ConfigurationReader {
         return FileSpec.builder(packageName, className.simpleName)
             .addType(configClass.build())
             .build()
+    }
+
+    private fun addGeneratedAnnotation(configClass: TypeSpec.Builder, file: File) {
+        configClass.addAnnotation(
+            AnnotationSpec.builder(ClassName("javax.annotation", "Generated"))
+                .addMember("%S", ConfigurationReader::class.qualifiedName!!)
+                .addMember("date = %S", Instant.now().truncatedTo(ChronoUnit.SECONDS))
+                .addMember("comments = %S", "Generated from $file")
+                .build()
+        )
     }
 
     private fun getClassToUpdate(
