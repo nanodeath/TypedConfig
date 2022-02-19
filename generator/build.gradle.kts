@@ -20,6 +20,10 @@ application {
     mainClass.set("com.github.nanodeath.typedconfig.generate.GeneratorKt")
 }
 
+java {
+    withSourcesJar()
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
