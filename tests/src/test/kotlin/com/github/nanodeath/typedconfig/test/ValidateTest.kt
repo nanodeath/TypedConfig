@@ -46,7 +46,9 @@ class ValidateTest {
         shouldThrow<MissingConfigurationException> {
             RequiredKeyConfig(source).validate()
         }.should { ex ->
-            ex.shouldHaveMessage("Config `database.port` is required but could not be resolved and no default was provided")
+            ex.shouldHaveMessage(
+                "Config `database.port` is required but could not be resolved and no default was provided"
+            )
         }
     }
 }

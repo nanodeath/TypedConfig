@@ -9,7 +9,7 @@ import java.io.File
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-private val sourceClassName = ClassName("$basePkg.source", "Source")
+private val sourceClassName = ClassName("$RUNTIME_PACKAGE.source", "Source")
 
 class ConfigurationReader {
     private val tomlMapper = TomlMapper()
@@ -139,7 +139,12 @@ class ConfigurationReader {
             TypeSpec.companionObjectBuilder("Factory")
                 .addFunction(
                     FunSpec.builder("default").returns(className)
-                        .addCode("return %T(%T.%N)", className, ClassName(basePkg, "TypedConfig"), "defaultSource")
+                        .addCode(
+                            "return %T(%T.%N)",
+                            className,
+                            ClassName(RUNTIME_PACKAGE, "TypedConfig"),
+                            "defaultSource"
+                        )
                         .build()
                 )
                 .build()
