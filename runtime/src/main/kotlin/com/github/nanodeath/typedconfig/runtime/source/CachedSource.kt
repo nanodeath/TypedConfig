@@ -24,6 +24,13 @@ class CachedSource(private val delegate: Source) : Source {
         }
         return cache[key] as Double?
     }
+
+    override fun getBoolean(key: String): Boolean? {
+        if (!cache.containsKey(key)) {
+            cache.putIfAbsent(key, delegate.getBoolean(key))
+        }
+        return cache[key] as Boolean?
+    }
 }
 
 fun Source.cached(): Source = if (this is CachedSource) this else CachedSource(this)

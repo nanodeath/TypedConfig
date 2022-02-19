@@ -17,7 +17,12 @@ class ConfigurationReader {
     // FIXME associateBy is problematic -- it ignores duplicate keys. We should throw.
     // TODO this obviously shouldn't be a hardcoded list, should be scanned.
     private val configDefReaders =
-        listOf(IntConfigDefGenerator, StringConfigDefGenerator, DoubleConfigDefGenerator).associateBy { it.key }
+        listOf(
+            IntConfigDefGenerator,
+            StringConfigDefGenerator,
+            DoubleConfigDefGenerator,
+            BooleanConfigDefGenerator
+        ).associateBy { it.key }
 
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)

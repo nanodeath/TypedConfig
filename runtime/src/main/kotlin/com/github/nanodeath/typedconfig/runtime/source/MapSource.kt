@@ -32,6 +32,15 @@ class MapSource(private val map: Map<String, Any>, private val keyCase: KeyCase 
         }
     }
 
+    override fun getBoolean(key: String): Boolean? {
+        return when (val value = map[convertKey(key)]) {
+            is Boolean -> value
+            is String -> value.toBoolean()
+            null -> null
+            else -> throw IllegalArgumentException("Unexpected type in map: ${value.javaClass}")
+        }
+    }
+
     private fun convertKey(key: String): String {
         val realKey = when (keyCase) {
             LOWER_CAMEL_CASE -> key
