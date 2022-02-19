@@ -1,0 +1,2 @@
+ignore:
+  - "generator/**/*" # we mostly test generator indirectly via tests/. Might revert this later.
