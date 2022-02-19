@@ -10,5 +10,5 @@ internal data class IntConfigDef(
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Int> {
     override val type = Int::class
-    override val keyClass = ClassName("$basePkg.key", "${if (!metadata.required) "Nullable" else ""}IntKey")
+    override val keyClass = ClassName("$basePkg.key", if (metadata.required) "IntKey" else "NullableIntKey")
 }
