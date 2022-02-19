@@ -9,4 +9,5 @@ interface ConfigDef<T> {
     val constraints: List<ClassName>
     val type: KClass<*>
     val keyClass: ClassName
+    val metadata: ConfigDefMetadata
 }

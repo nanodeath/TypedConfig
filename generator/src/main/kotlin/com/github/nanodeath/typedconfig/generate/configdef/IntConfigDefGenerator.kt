@@ -16,7 +16,7 @@ internal object IntConfigDefGenerator : ConfigDefGenerator<IntConfigDef> {
     ): IntConfigDef {
         // TODO better default value parsing here. Fail if not empty but also not an int.
         return IntConfigDef(
-            key, defaultValue?.toIntOrNull(), constraints, required = metadata.required
+            key, defaultValue?.toIntOrNull(), constraints, metadata
         )
     }
 }

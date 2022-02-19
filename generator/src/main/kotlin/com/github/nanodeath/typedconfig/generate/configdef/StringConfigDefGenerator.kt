@@ -14,6 +14,6 @@ internal object StringConfigDefGenerator : ConfigDefGenerator<StringConfigDef> {
     override fun generate(
         key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata
     ) = StringConfigDef(
-        key, defaultValue, constraints, required = metadata.required
+        key, defaultValue, constraints, metadata
     )
 }

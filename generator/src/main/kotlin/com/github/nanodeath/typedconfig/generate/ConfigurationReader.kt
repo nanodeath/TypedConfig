@@ -27,7 +27,7 @@ class ConfigurationReader {
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
         val description = node.path("description").textValue()
-        val configSpecs: List<ConfigSpec<*>> = parseConfigDefs(node, file)
+        val configDefs: List<ConfigDef<*>> = parseConfigDefs(node, file)
 
         val configClass = TypeSpec.classBuilder(className)
         configClass.primaryConstructor(
@@ -58,8 +58,8 @@ class ConfigurationReader {
         addGeneratedAnnotation(configClass, file)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
-        for (configSpec in configSpecs) {
-            val (configDef, metadata) = configSpec
+        for (configDef in configDefs) {
+            val metadata = configDef.metadata
             val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass, className)
 
             val constraints = configDef.constraints
@@ -139,7 +139,7 @@ class ConfigurationReader {
         node: JsonNode,
         file: File,
         precedingKey: List<String> = emptyList()
-    ): List<ConfigSpec<*>> = node.fields().asSequence()
+    ): List<ConfigDef<*>> = node.fields().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
@@ -161,10 +161,8 @@ class ConfigurationReader {
                     required = value.get("required")?.booleanValue() ?: true
                 )
                 sequenceOf(
-                    ConfigSpec(
-                        configDefReader.generate(
-                            fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
-                        ), metadata
+                    configDefReader.generate(
+                        fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
                     )
                 )
             } else if (value.isObject) {
