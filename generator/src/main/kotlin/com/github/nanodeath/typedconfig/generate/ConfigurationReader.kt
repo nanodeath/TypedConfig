@@ -71,6 +71,24 @@ class ConfigurationReader {
                             val constraints = configDef.constraints
                             val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
                             val type = configDef.type.asTypeName().copy(nullable = !metadata.required)
+                            val kdoc = CodeBlock.builder().apply {
+                                // Add description if provided.
+                                if (!metadata.description.isNullOrBlank()) {
+                                    addStatement(metadata.description)
+                                }
+                                // Add a comment for the default/optional-ness.
+                                addStatement(if (configDef.defaultValue != null) {
+                                    "Default: ${configDef.defaultValue}"
+                                } else if (metadata.required) {
+                                    "Required."
+                                } else {
+                                    "Optional."
+                                })
+                                // Warn about exceptions it might throw.
+                                if (metadata.required && configDef.defaultValue == null) {
+                                    addStatement("@throws %T", missingConfigurationExceptionName)
+                                }
+                            }.build()
                             PropertySpec.builder(configDef.key.substringAfterLast('.'), type)
                                 .delegate(
                                     "%T(%S, %N, %L, listOf($constraintsInterpolation))",
@@ -80,7 +98,7 @@ class ConfigurationReader {
                                     configDef.defaultValue,
                                     *constraints.toTypedArray()
                                 )
-                                .also { if (!metadata.description.isNullOrBlank()) it.addKdoc(metadata.description) }
+                                .addKdoc(kdoc)
                                 .build()
                         })
 
@@ -92,8 +110,9 @@ class ConfigurationReader {
                 addKdoc(
                     """
                     |Checks that all required keys have been provided values.
-                    |@throws com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
-                """.trimMargin()
+                    |@throws %T
+                """.trimMargin(),
+                    missingConfigurationExceptionName
                 )
                 beginControlFlow("return apply {")
                 propertySpecs.forEach { addStatement("%N", it.name) }
