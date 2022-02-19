@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime.source
 
 import com.fasterxml.jackson.jr.ob.JSON
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
@@ -16,7 +17,8 @@ class JsonSourceTest {
             // lists don't make sense here
             "list" to listOf(3),
             "str" to "foo",
-            "double" to 1.23
+            "double" to 1.23,
+            "boolean" to true,
         )
     )
 
@@ -55,6 +57,16 @@ class JsonSourceTest {
     fun doubleKey() {
         source.getDouble("double") shouldBe (1.23 plusOrMinus 0.01)
         source.getDouble("foo") shouldBe null
+    }
+
+    @Test
+    fun booleanKey() {
+        source.getBoolean("boolean") shouldBe true
+        source.getBoolean("unknown") shouldBe null
+        shouldThrow<ClassCastException> {
+            // Hmm...
+            source.getBoolean("foo")
+        }
     }
 
     @Test

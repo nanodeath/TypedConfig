@@ -4,4 +4,5 @@ interface Source {
     fun getInt(key: String): Int?
     fun getString(key: String): String?
     fun getDouble(key: String): Double?
+    fun getBoolean(key: String): Boolean?
 }

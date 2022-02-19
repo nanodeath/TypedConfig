@@ -1,0 +1,18 @@
+package = "com.github.nanodeath.typedconfig.test"
+class = "BooleanConfig"
+description = "All the keys in this config are some kind of boolean type."
+
+[requiredBoolean]
+type = "bool"
+
+[optionalBoolean]
+type = "bool"
+required = false
+
+[defaultTrue]
+type = "bool"
+default = true
+
+[defaultFalse]
+type = "bool"
+default = false
