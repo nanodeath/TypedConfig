@@ -49,6 +49,12 @@ jobs:
       # run tests!
       - run: gradle test
       - run: gradle koverMergedXmlReport
+      - run:
+          name: "Publish to mavenLocal for samples"
+          command: gradle publishToMavenLocal
+      - run:
+          name: "Test sample simple-gradle"
+          command: ( cd samples/simple-gradle && gradle run )
       - run: apt-get update && apt-get install -y gpg sudo
       - codecov/upload
       - snyk/scan:
