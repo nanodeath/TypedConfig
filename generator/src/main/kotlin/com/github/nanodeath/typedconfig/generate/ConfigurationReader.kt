@@ -28,79 +28,20 @@ class ConfigurationReader {
         val node = tomlMapper.readTree(file)
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
-        val description = node.path("description").textValue()
+        val description: String? = node.path("description").textValue()
         val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
         val configDefs: List<ConfigDef<*>> =
             parseConfigDefs(node, file, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
 
-        val configClass = TypeSpec.classBuilder(className)
-        configClass.primaryConstructor(
-            FunSpec.constructorBuilder()
-                .addParameter("source", sourceClassName)
-                .build()
-        )
-        configClass.addProperty(
-            PropertySpec.builder("source", sourceClassName)
-                .initializer("source")
-                .addModifiers(KModifier.PRIVATE)
-                .build()
-        )
+        val configClass = initializeMainConfigClass(className)
 
-        if (!description.isNullOrBlank()) {
-            configClass.addKdoc(description)
-        }
-
+        addDescription(configClass, description)
         addGeneratedAnnotation(configClass, file)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
 
         val configProperties: Map<TypeSpec.Builder, List<PropertySpec>> =
-            mapOf(configClass to emptyList<PropertySpec>()) +
-                    configDefs.groupBy(
-                        keySelector = { configDef ->
-                            getClassToUpdate(
-                                configDef.key,
-                                innerClasses,
-                                configClass,
-                                className
-                            )
-                        },
-                        valueTransform = { configDef ->
-                            val metadata = configDef.metadata
-
-                            val constraints = configDef.constraints
-                            val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-                            val type = configDef.type.asTypeName().copy(nullable = !metadata.required)
-                            val kdoc = CodeBlock.builder().apply {
-                                // Add description if provided.
-                                if (!metadata.description.isNullOrBlank()) {
-                                    addStatement(metadata.description)
-                                }
-                                // Add a comment for the default/optional-ness.
-                                addStatement(if (configDef.defaultValue != null) {
-                                    "Default: ${configDef.defaultValue}"
-                                } else if (metadata.required) {
-                                    "Required."
-                                } else {
-                                    "Optional."
-                                })
-                                // Warn about exceptions it might throw.
-                                if (metadata.required && configDef.defaultValue == null) {
-                                    addStatement("@throws %T", missingConfigurationExceptionName)
-                                }
-                            }.build()
-                            PropertySpec.builder(configDef.key.substringAfterLast('.'), type)
-                                .delegate(
-                                    "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                                    configDef.keyClass,
-                                    configDef.key,
-                                    "source",
-                                    configDef.defaultValue,
-                                    *constraints.toTypedArray()
-                                )
-                                .addKdoc(kdoc)
-                                .build()
-                        })
+            associateEnclosingClassToProperties(configClass, className, configDefs, innerClasses)
 
         configProperties.forEach { (typeSpec, propertySpecs) -> typeSpec.addProperties(propertySpecs) }
 
@@ -125,34 +66,66 @@ class ConfigurationReader {
                 .build())
         }
 
-        for ((innerTypeSpec, innerTypeBuilder) in innerClasses.toList().asReversed()) {
-            val enclosingClassName = innerTypeSpec.enclosingClassName
-            innerTypeSpec.enclosingClass.addProperty(
-                PropertySpec.builder(innerTypeSpec.fieldName, enclosingClassName.nestedClass(innerTypeSpec.className))
-                    .initializer("%T()", enclosingClassName.nestedClass(innerTypeSpec.className))
-                    .build()
-            )
-            innerTypeSpec.enclosingClass.addType(innerTypeBuilder.build())
-        }
+        processInnerClasses(innerClasses)
 
-        configClass.addType(
-            TypeSpec.companionObjectBuilder("Factory")
-                .addFunction(
-                    FunSpec.builder("default").returns(className)
-                        .addCode(
-                            "return %T(%T.%N)",
-                            className,
-                            ClassName(RUNTIME_PACKAGE, "TypedConfig"),
-                            "defaultSource"
-                        )
-                        .build()
-                )
-                .build()
-        )
+        addCompanionObject(configClass, className)
 
         return FileSpec.builder(packageName, className.simpleName)
             .addType(configClass.build())
             .build()
+    }
+
+    private fun associateEnclosingClassToProperties(
+        mainConfigClass: TypeSpec.Builder,
+        mainClassName: ClassName,
+        configDefs: List<ConfigDef<*>>,
+        innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>
+    ): Map<TypeSpec.Builder, List<PropertySpec>> {
+        val propertiesByClass: Map<TypeSpec.Builder, List<PropertySpec>> = configDefs.groupBy(
+            keySelector = { configDef ->
+                getOrCreateClassToUpdate(configDef.key, innerClasses, mainConfigClass, mainClassName)
+            },
+            valueTransform = { configDef ->
+                val configDefProperty = ConfigDefProperty(configDef)
+                PropertySpec.builder(configDef.key.substringAfterLast('.'), configDefProperty.type)
+                    .delegate(
+                        "%T(%S, %N, %L, listOf(${configDefProperty.constraintsInterpolation}))",
+                        configDef.keyClass,
+                        configDef.key,
+                        "source",
+                        configDef.defaultValue,
+                        *configDefProperty.constraints.toTypedArray()
+                    )
+                    .addKdoc(configDefProperty.kdoc)
+                    .build()
+            })
+        // In certain cases (e.g. namespaces), the main config class won't have any direct properties, just inner
+        // classes. We add this stub in just in case to make consuming the returned value easier.
+        // Note that this stub will end up getting overwritten if we actually do have properties (that is,
+        // if propertiesByClass[mainConfigClass] is set).
+        val stubForMainClass = mapOf(mainConfigClass to emptyList<PropertySpec>())
+        return stubForMainClass + propertiesByClass
+    }
+
+    private fun initializeMainConfigClass(className: ClassName): TypeSpec.Builder =
+        TypeSpec.classBuilder(className).apply {
+            primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("source", sourceClassName)
+                    .build()
+            )
+            addProperty(
+                PropertySpec.builder("source", sourceClassName)
+                    .initializer("source")
+                    .addModifiers(KModifier.PRIVATE)
+                    .build()
+            )
+        }
+
+    private fun addDescription(configClass: TypeSpec.Builder, description: String?) {
+        if (!description.isNullOrBlank()) {
+            configClass.addKdoc(description)
+        }
     }
 
     private fun addGeneratedAnnotation(configClass: TypeSpec.Builder, file: File) {
@@ -165,7 +138,39 @@ class ConfigurationReader {
         )
     }
 
-    private fun getClassToUpdate(
+    /**
+     * Ensure inner classes get initialized and attached properly to their enclosing classes.
+     */
+    private fun processInnerClasses(innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>) {
+        for ((innerTypeSpec, innerTypeBuilder) in innerClasses.toList().asReversed()) {
+            val enclosingClassName = innerTypeSpec.enclosingClassName
+            innerTypeSpec.enclosingClass.addProperty(
+                PropertySpec.builder(innerTypeSpec.fieldName, enclosingClassName.nestedClass(innerTypeSpec.className))
+                    .initializer("%T()", enclosingClassName.nestedClass(innerTypeSpec.className))
+                    .build()
+            )
+            innerTypeSpec.enclosingClass.addType(innerTypeBuilder.build())
+        }
+    }
+
+    private fun addCompanionObject(
+        configClass: TypeSpec.Builder, className: ClassName
+    ) {
+        configClass.addType(
+            TypeSpec.companionObjectBuilder("Factory")
+                .addFunction(
+                    FunSpec.builder("default")
+                        .returns(className)
+                        .addCode(
+                            "return %T(%T.%N)", className, ClassName(RUNTIME_PACKAGE, "TypedConfig"), "defaultSource"
+                        )
+                        .build()
+                )
+                .build()
+        )
+    }
+
+    private fun getOrCreateClassToUpdate(
         key: String,
         innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>,
         enclosingClass: TypeSpec.Builder,
@@ -182,7 +187,7 @@ class ConfigurationReader {
                         FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
                     )
             }
-        getClassToUpdate(
+        getOrCreateClassToUpdate(
             key.substringAfter('.'),
             innerClasses,
             newEnclosingClass,
