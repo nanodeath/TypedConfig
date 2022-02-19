@@ -6,14 +6,17 @@ import com.squareup.kotlinpoet.ClassName
 internal object IntConfigDefGenerator : ConfigDefGenerator<IntConfigDef> {
     override val key = "int"
 
-    override fun mapConstraint(constraint: String): ClassName =
-        when (constraint) {
-            "nonnegative" -> ClassName("$basePkg.constraints", "NonNegativeIntConstraint")
-            else -> super.mapConstraint(constraint)
-        }
+    override fun mapConstraint(constraint: String): ClassName = when (constraint) {
+        "nonnegative" -> ClassName("$basePkg.constraints", "NonNegativeIntConstraint")
+        else -> super.mapConstraint(constraint)
+    }
 
-    override fun generate(key: String, defaultValue: String?, constraints: List<ClassName>): IntConfigDef {
+    override fun generate(
+        key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata
+    ): IntConfigDef {
         // TODO better default value parsing here. Fail if not empty but also not an int.
-        return IntConfigDef(key, defaultValue?.toIntOrNull(), constraints)
+        return IntConfigDef(
+            key, defaultValue?.toIntOrNull(), constraints, required = metadata.required
+        )
     }
 }

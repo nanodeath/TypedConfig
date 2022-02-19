@@ -6,8 +6,9 @@ import com.squareup.kotlinpoet.ClassName
 internal data class IntConfigDef(
     override val key: String,
     override val defaultValue: Int?,
-    override val constraints: List<ClassName>
+    override val constraints: List<ClassName>,
+    val required: Boolean
 ) : ConfigDef<Int> {
     override val type = Int::class
-    override val keyClass = ClassName("$basePkg.key", "IntKey")
+    override val keyClass = ClassName("$basePkg.key", "${if (!required) "Nullable" else ""}IntKey")
 }

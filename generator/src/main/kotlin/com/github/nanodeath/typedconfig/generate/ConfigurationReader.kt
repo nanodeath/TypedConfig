@@ -64,8 +64,9 @@ class ConfigurationReader {
 
             val constraints = configDef.constraints
             val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+            val type = configDef.type.asTypeName().copy(nullable = !metadata.required)
             classToUpdate.addProperty(
-                PropertySpec.builder(configDef.key.substringAfterLast('.'), configDef.type)
+                PropertySpec.builder(configDef.key.substringAfterLast('.'), type)
                     .delegate(
                         "%T(%S, %N, %L, listOf($constraintsInterpolation))",
                         configDef.keyClass,
@@ -155,10 +156,15 @@ class ConfigurationReader {
                 val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
                     ?.map(JsonNode::textValue)
                     ?.map(configDefReader::mapConstraint)
+                val metadata = ConfigDefMetadata(
+                    description = value.get("description")?.textValue(),
+                    required = value.get("required")?.booleanValue() ?: true
+                )
                 sequenceOf(
                     ConfigSpec(
-                        configDefReader.generate(fullKey, value.get("default")?.asText(), constraints.orEmpty()),
-                        ConfigDefMetadata(value.get("description")?.textValue())
+                        configDefReader.generate(
+                            fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
+                        ), metadata
                     )
                 )
             } else if (value.isObject) {

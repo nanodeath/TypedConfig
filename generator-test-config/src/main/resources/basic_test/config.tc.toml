@@ -18,3 +18,15 @@ default = 0.0
 
 [requiredConfig]
 type = "str"
+
+[optionalInt]
+type = "int"
+required = false
+
+[optionalDouble]
+type = "double"
+required = false
+
+[optionalStr]
+type = "str"
+required = false

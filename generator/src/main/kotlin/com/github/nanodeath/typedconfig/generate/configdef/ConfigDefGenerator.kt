@@ -10,5 +10,5 @@ interface ConfigDefGenerator<T : ConfigDef<*>> {
         throw IllegalArgumentException("Unsupported constraint: $constraint")
     }
 
-    fun generate(key: String, defaultValue: String?, constraints: List<ClassName>): T
+    fun generate(key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata): T
 }

@@ -3,6 +3,7 @@ package com.github.nanodeath.typedconfig.test
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
@@ -76,4 +77,23 @@ class BasicTest {
     private fun readGeneratedConfigSource() =
         File("../generator-test-config/build/generated-sources-test/com/github/nanodeath/typedconfig/test/GeneratedConfig.kt")
             .readText()
+
+    @Test
+    fun optionalTypesWork() {
+        val source = mockk<Source>()
+        every { source.getInt(any()) } returns null
+        every { source.getDouble(any()) } returns null
+        every { source.getString(any()) } returns null
+
+        val config = GeneratedConfig(source)
+        config.optionalInt should beNull()
+        config.optionalDouble should beNull()
+        config.optionalStr should beNull()
+
+        verifyAll {
+            source.getInt("optionalInt")
+            source.getDouble("optionalDouble")
+            source.getString("optionalStr")
+        }
+    }
 }
