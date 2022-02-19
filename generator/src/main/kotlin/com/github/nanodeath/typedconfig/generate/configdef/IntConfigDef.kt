@@ -7,8 +7,8 @@ internal data class IntConfigDef(
     override val key: String,
     override val defaultValue: Int?,
     override val constraints: List<ClassName>,
-    val required: Boolean
+    override val metadata: ConfigDefMetadata
 ) : ConfigDef<Int> {
     override val type = Int::class
-    override val keyClass = ClassName("$basePkg.key", "${if (!required) "Nullable" else ""}IntKey")
+    override val keyClass = ClassName("$basePkg.key", "${if (!metadata.required) "Nullable" else ""}IntKey")
 }

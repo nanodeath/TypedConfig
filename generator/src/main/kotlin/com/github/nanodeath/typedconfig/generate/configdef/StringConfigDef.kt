@@ -7,8 +7,8 @@ internal data class StringConfigDef(
     override val key: String,
     override val defaultValue: String?,
     override val constraints: List<ClassName>,
-    val required: Boolean
+    override val metadata: ConfigDefMetadata
 ) : ConfigDef<String> {
     override val type = String::class
-    override val keyClass = ClassName("$basePkg.key", "${if (!required) "Nullable" else ""}StringKey")
+    override val keyClass = ClassName("$basePkg.key", "${if (!metadata.required) "Nullable" else ""}StringKey")
 }

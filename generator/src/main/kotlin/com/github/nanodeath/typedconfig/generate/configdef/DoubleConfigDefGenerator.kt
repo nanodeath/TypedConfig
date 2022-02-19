@@ -8,6 +8,6 @@ internal object DoubleConfigDefGenerator : ConfigDefGenerator<DoubleConfigDef> {
     override fun generate(
         key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata
     ) = DoubleConfigDef(
-        key, defaultValue?.toDoubleOrNull(), constraints, required = metadata.required
+        key, defaultValue?.toDoubleOrNull(), constraints, metadata
     )
 }
