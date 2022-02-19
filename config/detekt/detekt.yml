@@ -1,0 +1,7 @@
+style:
+  WildcardImport:
+    active: false
+
+performance:
+  SpreadOperator:
+    active: false
