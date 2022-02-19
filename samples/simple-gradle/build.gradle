@@ -1,0 +1,41 @@
+//import org.gradle.api.tasks.compile.AbstractCompile
+
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.6.10"
+    id "idea"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation files("../../runtime/build/libs/runtime-1.0-SNAPSHOT-all.jar")
+}
+
+task generateConfig(type: JavaExec) {
+    inputs.file("config.tc.toml")
+    outputs.dir("$buildDir/generated-sources")
+    classpath = files("../../generator/build/libs/generator-1.0-SNAPSHOT-all.jar")
+    args("config.tc.toml", "$buildDir/generated-sources")
+}
+
+tasks.withType(AbstractCompile) {
+    it.dependsOn("generateConfig")
+}
+
+//val generatedSourcesTest = project(":generator-test-config").buildDir.resolve("generated-sources-test")
+sourceSets {
+    main {
+        java {
+            srcDir("$buildDir/generated-sources")
+        }
+    }
+}
+//
+idea {
+    module {
+        generatedSourceDirs += file("$buildDir/generated-sources")
+    }
+}
