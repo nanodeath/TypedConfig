@@ -10,5 +10,5 @@ internal data class DoubleConfigDef(
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Double> {
     override val type = Double::class
-    override val keyClass = ClassName("$basePkg.key", "${if (!metadata.required) "Nullable" else ""}DoubleKey")
+    override val keyClass = ClassName("$basePkg.key", if (metadata.required) "DoubleKey" else "NullableDoubleKey")
 }
