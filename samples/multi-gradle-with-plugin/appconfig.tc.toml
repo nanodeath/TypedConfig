@@ -1,0 +1,7 @@
+package = "com.example"
+class = "AppConfig"
+
+[port]
+type = "int"
+description = "Port for the application to start on."
+default = 8080

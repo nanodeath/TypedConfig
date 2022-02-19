@@ -1,0 +1,7 @@
+package = "com.example"
+class = "DbConfig"
+
+[port]
+type = "int"
+description = "Port to listen for the database on."
+default = 5432
