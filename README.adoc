@@ -14,6 +14,11 @@ This tool is still *very early in development*. Breaking changes are made all th
 
 = TypedConfig
 
+image:https://circleci.com/gh/nanodeath/TypedConfig/tree/main.svg?style=svg&circle-token=01a83f9b8c3ae012c706f60bcfc861825a2f9770["CircleCI", link="https://circleci.com/gh/nanodeath/TypedConfig/tree/main"]
+image:https://codecov.io/gh/nanodeath/TypedConfig/branch/main/graph/badge.svg?token=A8OGZZOEYI["Codecov", "https://app.codecov.io/gh/nanodeath/TypedConfig/] image:https://wakatime.com/badge/github/nanodeath/TypedConfig.svg["wakatime", link="https://wakatime.com/badge/github/nanodeath/TypedConfig"]
+
+image:https://img.shields.io/badge/Development%20Phase-Early Alpha-important["Development Phase: Early Alpha"]
+
 **TypedConfig** is a JVM tool and library written in Kotlin to get you _actual typesafety_ when adding configuration to your application or library.
 
 What this means is that, for example, when reading the port number for your application to start up on, you don't need to parse it from a string, or call some kind of `getInt("port")`-type method (which does all kinds of parsing and casts for you), but rather you can just call `MyConfig.port`. This still does some parsing for you -- it has to -- but as a consumer of that configuration you get things like autocomplete and config documentation (if provided) for free.
