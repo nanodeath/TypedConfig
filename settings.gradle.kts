@@ -4,6 +4,8 @@ rootProject.name = "TypedConfig"
 include("generator", "runtime", "runtime-interfaces")
 // Other sources
 include("runtime-source-json")
+// Plugins
+include("gradle-plugin")
 
 // Test projects
 include("generator-test-config", "tests")
