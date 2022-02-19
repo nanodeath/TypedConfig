@@ -1,0 +1,12 @@
+package = "com.github.nanodeath.typedconfig.test"
+class = "NamespacedConfig"
+namespace = "app"
+
+[port]
+type = "int"
+
+[databasePort]
+type = "int"
+
+[nested.key]
+type = "int"

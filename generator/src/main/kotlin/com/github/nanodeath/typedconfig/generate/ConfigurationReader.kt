@@ -27,7 +27,9 @@ class ConfigurationReader {
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
         val description = node.path("description").textValue()
-        val configDefs: List<ConfigDef<*>> = parseConfigDefs(node, file)
+        val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
+        val configDefs: List<ConfigDef<*>> =
+            parseConfigDefs(node, file, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
 
         val configClass = TypeSpec.classBuilder(className)
         configClass.primaryConstructor(
