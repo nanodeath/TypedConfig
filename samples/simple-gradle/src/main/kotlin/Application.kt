@@ -5,4 +5,6 @@ fun main() {
     val greeting = config.greeting
     println(greeting)
     println("Configuration was compiled and loaded successfully!")
+    println("If you run this application with the GREETING environment variable set,")
+    println("that will be printed instead.")
 }

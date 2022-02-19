@@ -1,3 +1,4 @@
+@file:JvmName("Generator")
 package com.github.nanodeath.typedconfig.generate
 
 import java.io.File
