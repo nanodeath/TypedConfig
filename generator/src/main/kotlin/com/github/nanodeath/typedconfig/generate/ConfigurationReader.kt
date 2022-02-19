@@ -4,9 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.github.nanodeath.typedconfig.generate.configdef.*
-import com.github.nanodeath.typedconfig.generate.configdef.DoubleConfigDefGenerator
-import com.github.nanodeath.typedconfig.generate.configdef.IntConfigDefGenerator
-import com.github.nanodeath.typedconfig.generate.configdef.StringConfigDefGenerator
 import com.squareup.kotlinpoet.*
 import java.io.File
 import java.time.Instant
@@ -43,6 +40,77 @@ class ConfigurationReader {
                 .addModifiers(KModifier.PRIVATE)
                 .build()
         )
+
+        if (!description.isNullOrBlank()) {
+            configClass.addKdoc(description)
+        }
+
+        addGeneratedAnnotation(configClass, file)
+
+        val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
+
+        val configProperties: Map<TypeSpec.Builder, List<PropertySpec>> =
+            mapOf(configClass to emptyList<PropertySpec>()) +
+                    configDefs.groupBy(
+                        keySelector = { configDef ->
+                            getClassToUpdate(
+                                configDef.key,
+                                innerClasses,
+                                configClass,
+                                className
+                            )
+                        },
+                        valueTransform = { configDef ->
+                            val metadata = configDef.metadata
+
+                            val constraints = configDef.constraints
+                            val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
+                            val type = configDef.type.asTypeName().copy(nullable = !metadata.required)
+                            PropertySpec.builder(configDef.key.substringAfterLast('.'), type)
+                                .delegate(
+                                    "%T(%S, %N, %L, listOf($constraintsInterpolation))",
+                                    configDef.keyClass,
+                                    configDef.key,
+                                    "source",
+                                    configDef.defaultValue,
+                                    *constraints.toTypedArray()
+                                )
+                                .also { if (!metadata.description.isNullOrBlank()) it.addKdoc(metadata.description) }
+                                .build()
+                        })
+
+        configProperties.forEach { (typeSpec, propertySpecs) -> typeSpec.addProperties(propertySpecs) }
+
+        for ((typeSpec, propertySpecs) in configProperties) {
+            val myInnerTypes = innerClasses.keys.filter { it.enclosingClass === typeSpec }
+            typeSpec.addFunction(FunSpec.builder("validate").apply {
+                addKdoc(
+                    """
+                    |Checks that all required keys have been provided values.
+                    |@throws com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+                """.trimMargin()
+                )
+                beginControlFlow("return apply {")
+                propertySpecs.forEach { addStatement("%N", it.name) }
+                myInnerTypes.forEach { addStatement("%N.validate()", it.fieldName) }
+                if (typeSpec !== configClass) {
+                    addModifiers(KModifier.INTERNAL)
+                }
+                endControlFlow()
+            }
+                .build())
+        }
+
+        for ((innerTypeSpec, innerTypeBuilder) in innerClasses.toList().asReversed()) {
+            val enclosingClassName = innerTypeSpec.enclosingClassName
+            innerTypeSpec.enclosingClass.addProperty(
+                PropertySpec.builder(innerTypeSpec.fieldName, enclosingClassName.nestedClass(innerTypeSpec.className))
+                    .initializer("%T()", enclosingClassName.nestedClass(innerTypeSpec.className))
+                    .build()
+            )
+            innerTypeSpec.enclosingClass.addType(innerTypeBuilder.build())
+        }
+
         configClass.addType(
             TypeSpec.companionObjectBuilder("Factory")
                 .addFunction(
@@ -53,43 +121,6 @@ class ConfigurationReader {
                 .build()
         )
 
-        if (!description.isNullOrBlank()) {
-            configClass.addKdoc(description)
-        }
-
-        addGeneratedAnnotation(configClass, file)
-
-        val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
-        for (configDef in configDefs) {
-            val metadata = configDef.metadata
-            val classToUpdate = getClassToUpdate(configDef.key, innerClasses, configClass, className)
-
-            val constraints = configDef.constraints
-            val constraintsInterpolation = constraints.joinToString(", ") { "%T" }
-            val type = configDef.type.asTypeName().copy(nullable = !metadata.required)
-            classToUpdate.addProperty(
-                PropertySpec.builder(configDef.key.substringAfterLast('.'), type)
-                    .delegate(
-                        "%T(%S, %N, %L, listOf($constraintsInterpolation))",
-                        configDef.keyClass,
-                        configDef.key,
-                        "source",
-                        configDef.defaultValue,
-                        *constraints.toTypedArray()
-                    )
-                    .also { if (!metadata.description.isNullOrBlank()) it.addKdoc(metadata.description) }
-                    .build()
-            )
-        }
-        for ((innerTypeSpec, innerTypeBuilder) in innerClasses.toList().asReversed()) {
-            val enclosingClassName = innerTypeSpec.enclosingClassName
-            innerTypeSpec.enclosingClass.addProperty(
-                PropertySpec.builder(innerTypeSpec.fieldName, enclosingClassName.nestedClass(innerTypeSpec.className))
-                    .initializer("%T()", enclosingClassName.nestedClass(innerTypeSpec.className))
-                    .build()
-            )
-            innerTypeSpec.enclosingClass.addType(innerTypeBuilder.build())
-        }
         return FileSpec.builder(packageName, className.simpleName)
             .addType(configClass.build())
             .build()
