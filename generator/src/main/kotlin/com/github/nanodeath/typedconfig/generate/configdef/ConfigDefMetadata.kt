@@ -1,3 +1,3 @@
 package com.github.nanodeath.typedconfig.generate.configdef
 
-internal class ConfigDefMetadata(val description: String?)
+class ConfigDefMetadata(val description: String?, val required: Boolean)
