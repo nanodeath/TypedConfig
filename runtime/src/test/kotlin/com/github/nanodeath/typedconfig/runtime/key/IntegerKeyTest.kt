@@ -1,5 +1,6 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
+import com.github.nanodeath.typedconfig.runtime.ParseException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -16,14 +17,14 @@ internal class IntegerKeyTest {
 
     @Test
     fun decimalString() {
-        shouldThrow<NumberFormatException> {
+        shouldThrow<ParseException> {
             IntegerKey.parse("1.0")
         }
     }
 
     @Test
     fun emptyString() {
-        shouldThrow<NumberFormatException> {
+        shouldThrow<ParseException> {
             IntegerKey.parse("")
         }
     }

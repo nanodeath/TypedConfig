@@ -1,6 +1,9 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
+import com.github.nanodeath.typedconfig.runtime.ParseException
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -17,6 +20,13 @@ internal class BooleanKeyTest {
         BooleanKey.parse(value) shouldBe false
     }
 
+    @Test
+    fun emptyIsNotFalse() {
+        shouldThrow<ParseException> {
+            BooleanKey.parse("")
+        }
+    }
+
     companion object {
         @JvmStatic
         fun trueValues() = listOf(
@@ -29,8 +39,7 @@ internal class BooleanKeyTest {
         fun falseValues() = listOf(
             "false",
             "FALSE",
-            "False",
-            ""
+            "False"
         )
     }
 }

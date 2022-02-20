@@ -37,7 +37,7 @@ internal class ListKeyTest {
             listKey.resolve()
         } should { e ->
             e.shouldHaveMessage("Failed to parse `listKey[1]`: failed to parse '2.0'")
-            e.shouldHaveCauseInstanceOf<NumberFormatException>()
+            e.shouldHaveCauseInstanceOf<ParseException>()
         }
     }
 }

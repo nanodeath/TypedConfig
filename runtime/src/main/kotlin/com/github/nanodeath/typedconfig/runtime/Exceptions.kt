@@ -12,6 +12,7 @@ class MissingConfigurationException(key: String) :
 
 class ParseException : TypedConfigException {
     constructor() : super()
+    constructor(msg: String) : super(msg)
     constructor(key: String, msg: String) : super("Failed to parse `$key`: $msg")
     constructor(key: String, msg: String, e: Exception) : super("Failed to parse `$key`: $msg", e)
 }

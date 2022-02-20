@@ -21,7 +21,7 @@ class DurationKey(
             try {
                 parse(it)
             } catch (e: ParseException) {
-                throw ParseException(name, "invalid duration: '$it'")
+                throw ParseException(name, e.message.orEmpty())
             }
         }
             ?: parsedDefault
@@ -38,7 +38,7 @@ class DurationKey(
                 match.groups["count"]!!.value.toLong() to match.groups["unit"]!!.value
             } ?: shortRegex.matchEntire(value)?.let { match ->
                 match.groups["count"]!!.value.toLong() to match.groups["unit"]!!.value
-            }) ?: throw ParseException()
+            }) ?: throw ParseException("Not a valid duration: '$value'")
             when (unit) {
                 "ms", "millisecond", "milliseconds" -> Duration.ofMillis(count)
                 "m", "minute", "minutes" -> Duration.ofMinutes(count)

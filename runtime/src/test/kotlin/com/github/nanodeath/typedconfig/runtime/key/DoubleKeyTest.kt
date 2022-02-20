@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.EPSILON
+import com.github.nanodeath.typedconfig.runtime.ParseException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.shouldBe
@@ -17,7 +18,7 @@ internal class DoubleKeyTest {
 
     @Test
     fun emptyString() {
-        shouldThrow<NumberFormatException> {
+        shouldThrow<ParseException> {
             DoubleKey.parse("")
         }
     }
