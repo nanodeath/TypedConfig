@@ -1,22 +1,22 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.missingConfigurationExceptionName
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.TypeName
 
-interface ConfigDef<T> {
+interface Key<T> {
     val key: String
     val defaultValue: Any?
     val checks: List<ClassName>
     val type: TypeName
     val keyClass: ClassName
-    val metadata: ConfigDefMetadata
+    val metadata: KeyMetadata
     val templateString: String
     val templateArgs: Array<Any?>
 }
 
-val ConfigDef<*>.kdoc: CodeBlock
+val Key<*>.kdoc: CodeBlock
     get() = CodeBlock.builder().apply {
         // Add description if provided.
         val description = metadata.description

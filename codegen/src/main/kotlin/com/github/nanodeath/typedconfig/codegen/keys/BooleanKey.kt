@@ -1,15 +1,15 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
 
-internal data class BooleanConfigDef(
+internal data class BooleanKey(
     override val key: String,
     override val defaultValue: Boolean?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata
-) : ConfigDef<Boolean> {
+    override val metadata: KeyMetadata
+) : Key<Boolean> {
     override val type = Boolean::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "BooleanKey" else "NullableBooleanKey")
@@ -19,12 +19,12 @@ internal data class BooleanConfigDef(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 
-    internal object Generator : ConfigDefGenerator<BooleanConfigDef> {
+    internal object Generator : KeyGenerator<BooleanKey> {
         override val type = "bool"
 
         override fun generate(
-            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
-        ) = BooleanConfigDef(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
+        ) = BooleanKey(
             key, defaultValue?.toBoolean(), checks, metadata
         )
     }

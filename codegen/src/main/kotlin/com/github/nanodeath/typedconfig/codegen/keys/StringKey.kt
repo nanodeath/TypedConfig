@@ -1,15 +1,15 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
 
-internal data class StringConfigDef(
+internal data class StringKey(
     override val key: String,
     override val defaultValue: String?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata
-) : ConfigDef<String> {
+    override val metadata: KeyMetadata
+) : Key<String> {
     override val type = String::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "StringKey" else "NullableStringKey")
@@ -20,7 +20,7 @@ internal data class StringConfigDef(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 
-    internal object Generator : ConfigDefGenerator<StringConfigDef> {
+    internal object Generator : KeyGenerator<StringKey> {
         override val type = "str"
 
         override fun mapChecks(checkName: String): ClassName = when (checkName) {
@@ -29,8 +29,8 @@ internal data class StringConfigDef(
         }
 
         override fun generate(
-            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
-        ) = StringConfigDef(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
+        ) = StringKey(
             key, defaultValue, checks, metadata
         )
     }

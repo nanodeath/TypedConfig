@@ -1,15 +1,15 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
 
-internal data class IntConfigDef(
+internal data class IntKey(
     override val key: String,
     override val defaultValue: Int?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata
-) : ConfigDef<Int> {
+    override val metadata: KeyMetadata
+) : Key<Int> {
     override val type = Int::class.asTypeName()
     override val keyClass = ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "IntKey" else "NullableIntKey")
 
@@ -19,7 +19,7 @@ internal data class IntConfigDef(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 
-    internal object Generator : ConfigDefGenerator<IntConfigDef> {
+    internal object Generator : KeyGenerator<IntKey> {
         override val type = "int"
 
         override fun mapChecks(checkName: String): ClassName = when (checkName) {
@@ -28,10 +28,10 @@ internal data class IntConfigDef(
         }
 
         override fun generate(
-            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
-        ): IntConfigDef {
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
+        ): IntKey {
             // TODO better default value parsing here. Fail if not empty but also not an int.
-            return IntConfigDef(
+            return IntKey(
                 key, defaultValue?.toIntOrNull(), checks, metadata
             )
         }

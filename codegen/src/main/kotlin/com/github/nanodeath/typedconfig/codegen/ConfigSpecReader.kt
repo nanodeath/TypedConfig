@@ -3,7 +3,7 @@ package com.github.nanodeath.typedconfig.codegen
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
-import com.github.nanodeath.typedconfig.codegen.configdef.*
+import com.github.nanodeath.typedconfig.codegen.keys.*
 import com.squareup.kotlinpoet.*
 import java.io.File
 import java.time.Instant
@@ -16,19 +16,19 @@ class ConfigSpecReader {
 
     // FIXME associateBy is problematic -- it ignores duplicate keys. We should throw.
     // TODO this obviously shouldn't be a hardcoded list, should be scanned.
-    private val configDefReaders =
+    private val keyTypeGenerators =
         listOf(
-            IntConfigDef.Generator,
-            StringConfigDef.Generator,
-            DoubleConfigDef.Generator,
-            BooleanConfigDef.Generator,
-            DurationConfigDef.Generator
+            IntKey.Generator,
+            StringKey.Generator,
+            DoubleKey.Generator,
+            BooleanKey.Generator,
+            DurationKey.Generator
         ).associateBy { it.type }
 
-    private val collectionDefReaders =
+    private val collectionKeyTypeGenerators =
         listOf(
-            ListDef.Generator
-        ).associateBy { it.key }
+            ListKey.Generator
+        ).associateBy { it.type }
 
     fun translateIntoCode(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
@@ -36,8 +36,8 @@ class ConfigSpecReader {
         val className = ClassName(packageName, node.get("class").textValue())
         val description: String? = node.path("description").textValue()
         val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
-        val configDefs: List<ConfigDef<*>> =
-            parseConfigDefs(node, file, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
+        val keys: List<Key<*>> =
+            parseKeyTypes(node, file, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
 
         val configClass = initializeMainConfigClass(className)
 
@@ -47,7 +47,7 @@ class ConfigSpecReader {
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
 
         val configProperties: Map<TypeSpec.Builder, List<PropertySpec>> =
-            associateEnclosingClassToProperties(configClass, className, configDefs, innerClasses)
+            associateEnclosingClassToProperties(configClass, className, keys, innerClasses)
 
         configProperties.forEach { (typeSpec, propertySpecs) -> typeSpec.addProperties(propertySpecs) }
 
@@ -84,23 +84,23 @@ class ConfigSpecReader {
     private fun associateEnclosingClassToProperties(
         mainConfigClass: TypeSpec.Builder,
         mainClassName: ClassName,
-        configDefs: List<ConfigDef<*>>,
+        keys: List<Key<*>>,
         innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>
     ): Map<TypeSpec.Builder, List<PropertySpec>> {
-        val propertiesByClass: Map<TypeSpec.Builder, List<PropertySpec>> = configDefs.groupBy(
-            keySelector = { configDef ->
-                getOrCreateClassToUpdate(configDef.key, innerClasses, mainConfigClass, mainClassName)
+        val propertiesByClass: Map<TypeSpec.Builder, List<PropertySpec>> = keys.groupBy(
+            keySelector = { keyType ->
+                getOrCreateClassToUpdate(keyType.key, innerClasses, mainConfigClass, mainClassName)
             },
-            valueTransform = { configDef ->
+            valueTransform = { keyType ->
                 PropertySpec.builder(
-                    configDef.key.substringAfterLast('.'),
-                    configDef.type.copy(nullable = !configDef.metadata.required)
+                    keyType.key.substringAfterLast('.'),
+                    keyType.type.copy(nullable = !keyType.metadata.required)
                 )
                     .delegate(
-                        configDef.templateString,
-                        *configDef.templateArgs
+                        keyType.templateString,
+                        *keyType.templateArgs
                     )
-                    .addKdoc(configDef.kdoc)
+                    .addKdoc(keyType.kdoc)
                     .build()
             })
         // In certain cases (e.g. namespaces), the main config class won't have any direct properties, just inner
@@ -206,11 +206,11 @@ class ConfigSpecReader {
         val enclosingClassName: ClassName
     )
 
-    private fun parseConfigDefs(
+    private fun parseKeyTypes(
         node: JsonNode,
         file: File,
         precedingKey: List<String> = emptyList()
-    ): List<ConfigDef<*>> = node.fields().asSequence()
+    ): List<Key<*>> = node.fields().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
@@ -220,18 +220,18 @@ class ConfigSpecReader {
             val type = value.path("type").textValue()
 
             if (type != null) {
-                if (type in configDefReaders) {
-                    val configDefReader = configDefReaders[type]!!
+                if (type in keyTypeGenerators) {
+                    val keyTypeGenerator = keyTypeGenerators[type]!!
 
                     val checks: List<ClassName>? = (value.get("checks") as ArrayNode?)
                         ?.map(JsonNode::textValue)
-                        ?.map(configDefReader::mapChecks)
-                    val metadata = ConfigDefMetadata(
+                        ?.map(keyTypeGenerator::mapChecks)
+                    val metadata = KeyMetadata(
                         description = value.get("description")?.textValue(),
                         required = value.get("required")?.booleanValue() ?: true
                     )
                     sequenceOf(
-                        configDefReader.generate(
+                        keyTypeGenerator.generate(
                             fullKey, value.get("default")?.asText(), checks.orEmpty(), metadata
                         )
                     )
@@ -240,22 +240,22 @@ class ConfigSpecReader {
                     val match = collectionPattern.matchEntire(type)
                     if (match != null) {
                         val (collectionType, valueType) = match.destructured
-                        val collectionReader = collectionDefReaders[collectionType]
-                        val valueTypeReader = configDefReaders[valueType]
+                        val collectionReader = collectionKeyTypeGenerators[collectionType]
+                        val valueTypeReader = keyTypeGenerators[valueType]
                         if (collectionReader != null && valueTypeReader != null) {
-                            val metadata = ConfigDefMetadata(
+                            val metadata = KeyMetadata(
                                 description = value.get("description")?.textValue(),
                                 required = value.get("required")?.booleanValue() ?: true
                             )
                             val default = value.get("default")?.elements()?.asSequence()?.map { it.asText() }?.toList()
-                            val genericConfigDef = valueTypeReader
-                                .generate("", null, emptyList(), ConfigDefMetadata(null, true))
+                            val genericKeyType = valueTypeReader
+                                .generate("", null, emptyList(), KeyMetadata(null, true))
                             return@flatMap sequenceOf(
                                 collectionReader.generate(
                                     fullKey,
                                     default,
                                     metadata,
-                                    genericConfigDef
+                                    genericKeyType
                                 )
                             )
                         }
@@ -264,7 +264,7 @@ class ConfigSpecReader {
                     throw IllegalArgumentException("Unsupported type: `${type}` in $file")
                 }
             } else if (value.isObject) {
-                parseConfigDefs(value, file, precedingKey + listOf(key)).asSequence()
+                parseKeyTypes(value, file, precedingKey + listOf(key)).asSequence()
             } else {
                 // FIXME this is an error
                 emptySequence()

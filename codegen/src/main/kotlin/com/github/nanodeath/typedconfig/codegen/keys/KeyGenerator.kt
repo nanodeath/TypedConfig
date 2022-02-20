@@ -1,8 +1,8 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.squareup.kotlinpoet.ClassName
 
-interface ConfigDefGenerator<T : ConfigDef<*>> {
+interface KeyGenerator<T : Key<*>> {
     val type: String
 
     fun mapChecks(checkName: String): ClassName {
@@ -10,5 +10,5 @@ interface ConfigDefGenerator<T : ConfigDef<*>> {
         throw IllegalArgumentException("Unsupported check: $checkName")
     }
 
-    fun generate(key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata): T
+    fun generate(key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata): T
 }
