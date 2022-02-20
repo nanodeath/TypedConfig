@@ -22,9 +22,9 @@ internal data class IntConfigDef(
     internal object Generator : ConfigDefGenerator<IntConfigDef> {
         override val type = "int"
 
-        override fun mapChecks(check: String): ClassName = when (check) {
+        override fun mapChecks(checkName: String): ClassName = when (checkName) {
             "nonnegative" -> ClassName("$RUNTIME_PACKAGE.checks", "NonNegativeIntCheck")
-            else -> super.mapChecks(check)
+            else -> super.mapChecks(checkName)
         }
 
         override fun generate(
