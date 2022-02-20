@@ -11,8 +11,8 @@ fun main(args: Array<String>) {
     require(inputFile.canRead()) { "Input does not exist or is not readable: $inputFile" }
     Files.createDirectories(outputDirectory.toPath())
 
-    ConfigurationReader()
-        .readFile(inputFile)
+    ConfigSpecReader()
+        .translateIntoCode(inputFile)
         .writeTo(outputDirectory)
 
     System.err.println("Wrote config out to $outputDirectory")

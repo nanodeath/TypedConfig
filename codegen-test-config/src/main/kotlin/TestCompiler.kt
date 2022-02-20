@@ -1,4 +1,4 @@
-import com.github.nanodeath.typedconfig.codegen.ConfigurationReader
+import com.github.nanodeath.typedconfig.codegen.ConfigSpecReader
 import java.io.File
 
 fun main(args: Array<String>) {
@@ -9,7 +9,7 @@ fun main(args: Array<String>) {
         .filterNot { "invalid" in it.toString() }
         .toList()
     for (config in configs) {
-        ConfigurationReader().readFile(config)
+        ConfigSpecReader().translateIntoCode(config)
             .writeTo(outputDirectory)
 
     }

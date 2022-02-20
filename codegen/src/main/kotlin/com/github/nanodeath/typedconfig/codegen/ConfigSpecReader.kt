@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit
 
 private val sourceClassName = ClassName("$RUNTIME_PACKAGE.source", "Source")
 
-class ConfigurationReader {
+class ConfigSpecReader {
     private val tomlMapper = TomlMapper()
 
     // FIXME associateBy is problematic -- it ignores duplicate keys. We should throw.
@@ -30,7 +30,7 @@ class ConfigurationReader {
             ListDefGenerator
         ).associateBy { it.key }
 
-    fun readFile(file: File): FileSpec {
+    fun translateIntoCode(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
         val packageName = node.get("package").textValue()
         val className = ClassName(packageName, node.get("class").textValue())
@@ -135,7 +135,7 @@ class ConfigurationReader {
     private fun addGeneratedAnnotation(configClass: TypeSpec.Builder, file: File) {
         configClass.addAnnotation(
             AnnotationSpec.builder(ClassName("javax.annotation", "Generated"))
-                .addMember("%S", ConfigurationReader::class.qualifiedName!!)
+                .addMember("%S", ConfigSpecReader::class.qualifiedName!!)
                 .addMember("date = %S", Instant.now().truncatedTo(ChronoUnit.SECONDS))
                 .addMember("comments = %S", "Generated from $file")
                 .build()
