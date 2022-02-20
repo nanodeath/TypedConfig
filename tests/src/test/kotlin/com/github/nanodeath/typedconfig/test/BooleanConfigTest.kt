@@ -7,14 +7,19 @@ import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.verifyAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
 class BooleanConfigTest {
+    @MockK
+    lateinit var source: Source
+
     @Test
     fun requiredBooleanWithValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns true
 
         BooleanConfig(source).requiredBoolean shouldBe true
@@ -24,7 +29,6 @@ class BooleanConfigTest {
 
     @Test
     fun requiredBooleanWithoutValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns null
 
         shouldThrow<MissingConfigurationException> {
@@ -36,7 +40,6 @@ class BooleanConfigTest {
 
     @Test
     fun optionalBooleanWithValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns true
 
         BooleanConfig(source).optionalBoolean shouldBe true
@@ -46,7 +49,6 @@ class BooleanConfigTest {
 
     @Test
     fun optionalBooleanWithoutValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns null
 
         BooleanConfig(source).optionalBoolean should beNull()
@@ -56,7 +58,6 @@ class BooleanConfigTest {
 
     @Test
     fun defaultTrueWithValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns false
 
         BooleanConfig(source).defaultTrue shouldBe false
@@ -66,7 +67,6 @@ class BooleanConfigTest {
 
     @Test
     fun defaultTrueWithoutValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns null
 
         BooleanConfig(source).defaultTrue shouldBe true
@@ -76,7 +76,6 @@ class BooleanConfigTest {
 
     @Test
     fun defaultFalseWithValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns true
 
         BooleanConfig(source).defaultFalse shouldBe true
@@ -86,7 +85,6 @@ class BooleanConfigTest {
 
     @Test
     fun defaultFalseWithoutValue() {
-        val source = mockk<Source>()
         every { source.getBoolean(any()) } returns null
 
         BooleanConfig(source).defaultFalse shouldBe false

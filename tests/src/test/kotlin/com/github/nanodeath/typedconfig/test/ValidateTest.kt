@@ -6,14 +6,19 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.should
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.verifyAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
 class ValidateTest {
+    @MockK
+    lateinit var source: Source
+
     @Test
     fun checksEachKey() {
-        val source = mockk<Source>()
         every { source.getInt(any()) } returns 80
 
         RequiredKeyConfig(source).validate()
@@ -26,7 +31,6 @@ class ValidateTest {
 
     @Test
     fun failsIfRequiredTopLevelKeyAbsent() {
-        val source = mockk<Source>()
         every { source.getInt(any()) } returns 80
         every { source.getInt("port") } returns null
 
@@ -39,7 +43,6 @@ class ValidateTest {
 
     @Test
     fun failsIfRequiredNestedKeyAbsent() {
-        val source = mockk<Source>()
         every { source.getInt(any()) } returns 80
         every { source.getInt("database.port") } returns null
 

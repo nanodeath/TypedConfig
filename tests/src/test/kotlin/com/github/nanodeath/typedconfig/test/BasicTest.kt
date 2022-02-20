@@ -8,15 +8,20 @@ import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldContain
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.verifyAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import java.io.File
 
+@ExtendWith(MockKExtension::class)
 class BasicTest {
+    @MockK
+    lateinit var source: Source
+
     @Test
     fun sanity() {
-        val source = mockk<Source>()
         every { source.getInt(any()) } returns 5
 
         val loginTries = GeneratedConfig(source).maxLoginTries
@@ -27,7 +32,6 @@ class BasicTest {
 
     @Test
     fun stringKeyTest() {
-        val source = mockk<Source>()
         every { source.getString(any()) } returns "hello"
 
         val nameOfTestUser = GeneratedConfig(source).nameOfTestUser
@@ -38,7 +42,6 @@ class BasicTest {
 
     @Test
     fun missingRequiredConfigTest() {
-        val source = mockk<Source>()
         every { source.getString(any()) } returns null
 
         shouldThrow<MissingConfigurationException> {
@@ -83,7 +86,6 @@ class BasicTest {
 
     @Test
     fun optionalTypesWork() {
-        val source = mockk<Source>()
         every { source.getInt(any()) } returns null
         every { source.getDouble(any()) } returns null
         every { source.getString(any()) } returns null
