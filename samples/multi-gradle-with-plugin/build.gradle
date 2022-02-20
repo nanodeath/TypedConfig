@@ -1,0 +1,35 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.6.10"
+    id "idea"
+    id "application"
+    id "com.github.nanodeath.typedconfig" version "1.0-SNAPSHOT"
+}
+
+repositories {
+    mavenLocal() // This is temporary until TypedConfig is published somewhere
+    mavenCentral()
+}
+
+application {
+    mainClass = "ApplicationKt"
+}
+
+dependencies {
+    // None required!
+}
+
+// In this sample, we're defining two of our own config files.
+typedConfig {
+    configs {
+        // This creates a task called generateAppconfigTypedConfig
+        create("appconfig") {
+            file = file("appconfig.tc.toml")
+        }
+        // This creates a task called generateDbconfigTypedConfig
+        create("dbconfig") {
+            file = file("dbconfig.tc.toml")
+        }
+        // In general, the generated task is `generate${titleCase(name))TypedConfig`.
+        // You can also invoke all of them using the generateTypedConfigs task.
+    }
+}
