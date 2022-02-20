@@ -7,11 +7,15 @@ import com.github.nanodeath.typedconfig.runtime.source.Source
 class BooleanKey(
     private val name: String,
     private val source: Source,
-    private val default: Boolean?,
+    default: String?,
     @Suppress("unused") private val checks: List<Unit>
 ) : Key<Boolean> {
+    private val parsedDefault: Boolean? by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        default?.let { parse(it) }
+    }
+
     override fun resolve(): Boolean =
-        source.getBoolean(name) ?: default ?: throw MissingConfigurationException(name)
+        source.getBoolean(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
 
     companion object : KeyObject<Boolean> {
         override fun parse(value: String): Boolean =

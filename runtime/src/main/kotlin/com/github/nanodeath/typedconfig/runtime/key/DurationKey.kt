@@ -10,7 +10,7 @@ import java.time.format.DateTimeParseException
 class DurationKey(
     private val name: String,
     private val source: Source,
-    private val default: String?,
+    default: String?,
     @Suppress("unused") private val checks: List<Unit>
 ) : Key<Duration> {
     private val parsedDefault: Duration? by lazy(LazyThreadSafetyMode.PUBLICATION) {

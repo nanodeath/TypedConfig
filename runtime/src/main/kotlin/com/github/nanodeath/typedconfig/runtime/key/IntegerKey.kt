@@ -8,11 +8,15 @@ import com.github.nanodeath.typedconfig.runtime.source.Source
 class IntegerKey(
     private val name: String,
     private val source: Source,
-    private val default: Int?,
+    default: String?,
     private val checks: List<IntegerCheck>
 ) : Key<Int> {
+    private val parsedDefault: Int? by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        default?.let { parse(it) }
+    }
+
     override fun resolve(): Int {
-        val value = source.getInt(name) ?: default ?: throw MissingConfigurationException(name)
+        val value = source.getInt(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)

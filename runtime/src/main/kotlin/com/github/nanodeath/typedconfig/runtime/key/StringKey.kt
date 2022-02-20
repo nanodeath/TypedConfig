@@ -10,8 +10,13 @@ class StringKey(
     private val default: String?,
     private val checks: List<StringCheck>
 ) : Key<String> {
+    private val parsedDefault: String? by lazy(LazyThreadSafetyMode.PUBLICATION) {
+        // this obviously doesn't do much; it's just for consistency with the other Keys.
+        default?.let { parse(it) }
+    }
+
     override fun resolve(): String {
-        val value = source.getString(name) ?: default ?: throw MissingConfigurationException(name)
+        val value = source.getString(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)
