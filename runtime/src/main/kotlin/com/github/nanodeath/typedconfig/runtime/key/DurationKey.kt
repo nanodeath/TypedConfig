@@ -13,11 +13,17 @@ class DurationKey(
     @Suppress("unused") private val constraints: List<Unit>
 ) : Key<Duration> {
     private val parsedDefault: Duration? by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        default?.let { parseDuration(it, name) }
+        default?.let { parse(it) }
     }
 
     override fun resolve(): Duration =
-        source.getString(name)?.let { parseDuration(it, name) }
+        source.getString(name)?.let {
+            try {
+                parse(it)
+            } catch (e: ParseException) {
+                throw ParseException(name, "invalid duration: '$it'")
+            }
+        }
             ?: parsedDefault
             ?: throw MissingConfigurationException(name)
 
@@ -25,16 +31,14 @@ class DurationKey(
         private val longRegex = Regex("(?<count>\\d+) (?<unit>milliseconds?|minutes?|hours?|days?)")
         private val shortRegex = Regex("(?<count>\\d+)(?<unit>ms|m|h|d)")
 
-        override fun parse(value: String): Duration = parseDuration(value, "")
-
-        internal fun parseDuration(str: String, key: String): Duration = try {
-            Duration.parse(str)
+        override fun parse(value: String): Duration = try {
+            Duration.parse(value)
         } catch (e: DateTimeParseException) {
-            val (count, unit) = (longRegex.matchEntire(str)?.let { match ->
+            val (count, unit) = (longRegex.matchEntire(value)?.let { match ->
                 match.groups["count"]!!.value.toLong() to match.groups["unit"]!!.value
-            } ?: shortRegex.matchEntire(str)?.let { match ->
+            } ?: shortRegex.matchEntire(value)?.let { match ->
                 match.groups["count"]!!.value.toLong() to match.groups["unit"]!!.value
-            }) ?: throw ParseException(key, "invalid duration: '$str'")
+            }) ?: throw ParseException()
             when (unit) {
                 "ms", "millisecond", "milliseconds" -> Duration.ofMillis(count)
                 "m", "minute", "minutes" -> Duration.ofMinutes(count)

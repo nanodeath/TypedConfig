@@ -20,7 +20,7 @@ class IntKey(
         return value
     }
 
-    companion object: KeyObject<Int> {
+    companion object : KeyObject<Int> {
         override fun parse(value: String): Int = value.toInt()
     }
 }
