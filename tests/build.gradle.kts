@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("reflect"))
-    testImplementation(project(":generator-test-config"))
+    testImplementation(project(":codegen-test-config"))
     testImplementation(project(":runtime"))
 
     testImplementation(libs.bundles.tests)
@@ -23,10 +23,10 @@ tasks.named<Test>("test") {
 }
 
 tasks.named("compileTestKotlin").configure {
-    dependsOn(":generator-test-config:generateConfigs")
+    dependsOn(":codegen-test-config:generateConfigs")
 }
 
-val generatedSourcesTest = project(":generator-test-config").buildDir.resolve("generated-sources-test")
+val generatedSourcesTest = project(":codegen-test-config").buildDir.resolve("generated-sources-test")
 sourceSets {
     test {
         java {

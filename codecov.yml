@@ -1,2 +1,2 @@
 ignore:
-  - "generator/**/*" # we mostly test generator indirectly via tests/. Might revert this later.
+  - "codegen/**/*" # we mostly test codegen indirectly via tests/. Might revert this later.

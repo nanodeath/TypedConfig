@@ -1,14 +1,14 @@
 rootProject.name = "TypedConfig"
 
 // Production projects
-include("generator", "runtime", "runtime-interfaces")
+include("codegen", "runtime", "runtime-interfaces")
 // Other sources
 include("runtime-source-json")
 // Plugins
 include("gradle-plugin")
 
 // Test projects
-include("generator-test-config", "tests")
+include("codegen-test-config", "tests")
 
 dependencyResolutionManagement {
     versionCatalogs {

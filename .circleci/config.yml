@@ -65,7 +65,7 @@ jobs:
       - codecov/upload
       - snyk/scan:
           project: TypedConfig
-          target-file: generator/build.gradle.kts
+          target-file: codegen/build.gradle.kts
           severity-threshold: high
           fail-on-issues: false
       - snyk/scan:

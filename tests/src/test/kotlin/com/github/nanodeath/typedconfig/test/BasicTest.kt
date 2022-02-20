@@ -79,7 +79,7 @@ class BasicTest {
 
     private fun readGeneratedConfigSource() =
         File(
-            "../generator-test-config/build/generated-sources-test/" +
+            "../codegen-test-config/build/generated-sources-test/" +
                     "com/github/nanodeath/typedconfig/test/GeneratedConfig.kt"
         )
             .readText()
