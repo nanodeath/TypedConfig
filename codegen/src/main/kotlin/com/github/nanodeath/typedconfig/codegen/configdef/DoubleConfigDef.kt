@@ -21,7 +21,7 @@ internal data class DoubleConfigDef(
         )
 
     internal object Generator : ConfigDefGenerator<DoubleConfigDef> {
-        override val key = "double"
+        override val type = "double"
 
         override fun generate(
             key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata

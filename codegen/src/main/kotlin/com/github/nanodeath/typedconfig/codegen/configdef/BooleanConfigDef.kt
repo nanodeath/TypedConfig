@@ -20,7 +20,7 @@ internal data class BooleanConfigDef(
         )
 
     internal object Generator : ConfigDefGenerator<BooleanConfigDef> {
-        override val key = "bool"
+        override val type = "bool"
 
         override fun generate(
             key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
