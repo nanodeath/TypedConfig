@@ -16,7 +16,7 @@ This tool is still *very early in development*. Breaking changes are made all th
 ====
 
 image:https://circleci.com/gh/nanodeath/TypedConfig/tree/main.svg?style=svg&circle-token=01a83f9b8c3ae012c706f60bcfc861825a2f9770["CircleCI", link="https://circleci.com/gh/nanodeath/TypedConfig/tree/main"]
-image:https://codecov.io/gh/nanodeath/TypedConfig/branch/main/graph/badge.svg?token=A8OGZZOEYI["Codecov", "https://app.codecov.io/gh/nanodeath/TypedConfig/] image:https://wakatime.com/badge/github/nanodeath/TypedConfig.svg["wakatime", link="https://wakatime.com/badge/github/nanodeath/TypedConfig"]
+image:https://codecov.io/gh/nanodeath/TypedConfig/branch/main/graph/badge.svg?token=A8OGZZOEYI["Codecov", "https://app.codecov.io/gh/nanodeath/TypedConfig/] image:https://img.shields.io/sonar/quality_gate/nanodeath_TypedConfig?server=https%3A%2F%2Fsonarcloud.io[Sonar Quality Gate] image:https://wakatime.com/badge/github/nanodeath/TypedConfig.svg["wakatime", link="https://wakatime.com/badge/github/nanodeath/TypedConfig"]
 
 image:https://img.shields.io/badge/Development%20Phase-Early Alpha-important["Development Phase: Early Alpha"]
 
