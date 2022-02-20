@@ -1,13 +1,13 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
-import com.github.nanodeath.typedconfig.runtime.checks.IntCheck
+import com.github.nanodeath.typedconfig.runtime.checks.IntegerCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
-class NullableIntKey(
+class NullableIntegerKey(
     private val name: String,
     private val source: Source,
     @Suppress("unused") private val default: Unit?,
-    private val checks: List<IntCheck>
+    private val checks: List<IntegerCheck>
 ) : Key<Int?> {
     override fun resolve(): Int? {
         val value = source.getInt(name)

@@ -6,25 +6,25 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
-internal class IntKeyTest {
+internal class IntegerKeyTest {
     @ParameterizedTest
     @MethodSource("parseExpectations")
     fun parseInteger(value: String, expected: Int) {
-        IntKey.parse(value) shouldBe expected
+        IntegerKey.parse(value) shouldBe expected
     }
 
 
     @Test
     fun decimalString() {
         shouldThrow<NumberFormatException> {
-            IntKey.parse("1.0")
+            IntegerKey.parse("1.0")
         }
     }
 
     @Test
     fun emptyString() {
         shouldThrow<NumberFormatException> {
-            IntKey.parse("")
+            IntegerKey.parse("")
         }
     }
 

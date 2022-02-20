@@ -22,7 +22,7 @@ internal class ListKeyTest {
     fun canParseListOfInts() {
         every { source.getList(any()) } returns listOf("1", "2", "3")
 
-        val listKey = ListKey("listKey", source, null, emptyList()) { IntKey.parse(it) }
+        val listKey = ListKey("listKey", source, null, emptyList()) { IntegerKey.parse(it) }
 
         listKey.resolve() shouldBe listOf(1, 2, 3)
     }
@@ -31,7 +31,7 @@ internal class ListKeyTest {
     fun failsIfCantParse() {
         every { source.getList(any()) } returns listOf("1", "2.0")
 
-        val listKey = ListKey("listKey", source, null, emptyList()) { IntKey.parse(it) }
+        val listKey = ListKey("listKey", source, null, emptyList()) { IntegerKey.parse(it) }
 
         shouldThrow<ParseException> {
             listKey.resolve()
