@@ -2,6 +2,7 @@ package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
 import com.github.nanodeath.typedconfig.runtime.ParseException
+import com.github.nanodeath.typedconfig.runtime.appendKey
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import java.time.Duration
 import java.time.format.DateTimeParseException
@@ -21,7 +22,7 @@ class DurationKey(
             try {
                 parse(it)
             } catch (e: ParseException) {
-                throw ParseException(name, e.message.orEmpty())
+                throw e.appendKey(name)
             }
         }
             ?: parsedDefault
