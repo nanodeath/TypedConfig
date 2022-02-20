@@ -92,13 +92,15 @@ class ConfigurationReader {
                 getOrCreateClassToUpdate(configDef.key, innerClasses, mainConfigClass, mainClassName)
             },
             valueTransform = { configDef ->
-                val configDefProperty = ConfigDefProperty(configDef)
-                PropertySpec.builder(configDef.key.substringAfterLast('.'), configDefProperty.type)
+                PropertySpec.builder(
+                    configDef.key.substringAfterLast('.'),
+                    configDef.type.copy(nullable = !configDef.metadata.required)
+                )
                     .delegate(
                         configDef.templateString,
                         *configDef.templateArgs
                     )
-                    .addKdoc(configDefProperty.kdoc)
+                    .addKdoc(configDef.kdoc)
                     .build()
             })
         // In certain cases (e.g. namespaces), the main config class won't have any direct properties, just inner
