@@ -5,7 +5,7 @@ import kotlin.reflect.KClass
 
 interface ConfigDef<T> {
     val key: String
-    val defaultValue: T?
+    val defaultValue: Any?
     val constraints: List<ClassName>
     val type: KClass<*>
     val keyClass: ClassName

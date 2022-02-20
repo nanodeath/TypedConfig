@@ -34,3 +34,14 @@ required = false
 [defaultString]
 type = "str"
 default = "localhost"
+
+[requiredDuration]
+type = "duration"
+
+[defaultDuration]
+type = "duration"
+default = "100 milliseconds"
+
+[optionalDuration]
+type = "duration"
+required = false

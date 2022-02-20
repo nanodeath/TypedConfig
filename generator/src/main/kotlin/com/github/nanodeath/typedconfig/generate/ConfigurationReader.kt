@@ -21,7 +21,8 @@ class ConfigurationReader {
             IntConfigDefGenerator,
             StringConfigDefGenerator,
             DoubleConfigDefGenerator,
-            BooleanConfigDefGenerator
+            BooleanConfigDefGenerator,
+            DurationConfigDefGenerator
         ).associateBy { it.key }
 
     fun readFile(file: File): FileSpec {
