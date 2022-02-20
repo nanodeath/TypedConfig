@@ -4,7 +4,9 @@ import com.github.nanodeath.typedconfig.runtime.EPSILON
 import com.github.nanodeath.typedconfig.runtime.ParseException
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.plusOrMinus
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -42,7 +44,7 @@ internal class EnvSourceTest {
 
     @ParameterizedTest
     @MethodSource("parseFailureValues")
-    fun parseFailures(type: String, inputKey: String, outputKey: String, envValue: String?) {
+    fun parseFailures(type: String, inputKey: String, outputKey: String, envValue: String?, msgTail: String) {
         every { env.get(any()) } returns envValue
 
         shouldThrow<ParseException> {
@@ -54,6 +56,8 @@ internal class EnvSourceTest {
                 "list" -> subject.getList(inputKey)
                 else -> throw UnsupportedOperationException(type)
             }
+        } should {
+            it.shouldHaveMessage("Parse failure on key `$inputKey`: $msgTail")
         }
 
         verifyAll { env.get(outputKey) }
@@ -81,9 +85,9 @@ internal class EnvSourceTest {
 
         @JvmStatic
         fun parseFailureValues(): Array<Array<Any?>> = arrayOf(
-            arrayOf("int", "foo", "FOO", "bar"),
-            arrayOf("double", "foo", "FOO", "bar"),
-            arrayOf("bool", "foo", "FOO", "bar")
+            arrayOf("int", "foo", "FOO", "bar", "Not an integer: 'bar'"),
+            arrayOf("double", "foo", "FOO", "bar", "Not a double: 'bar'"),
+            arrayOf("bool", "foo", "FOO", "bar", "Not a boolean: 'bar'")
         )
     }
 }

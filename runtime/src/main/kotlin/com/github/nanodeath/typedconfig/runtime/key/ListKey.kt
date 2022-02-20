@@ -19,7 +19,8 @@ class ListKey<T>(
                 parse(s)
             } catch (e: Exception) {
                 // TODO we could add some better information here if we knew the name of the inner type
-                throw ParseException("$name[$index]", "failed to parse '$s'", e)
+                throw ParseException("$name[$index]", "Failed to parse `$name[$index]`: " +
+                        "failed to parse '$s'", e)
             }
         }
     }

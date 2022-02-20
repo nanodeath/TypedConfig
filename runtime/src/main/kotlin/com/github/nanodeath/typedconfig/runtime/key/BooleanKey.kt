@@ -20,7 +20,7 @@ class BooleanKey(
             } else if (value.equals("false", ignoreCase = true)) {
                 false
             } else {
-                throw ParseException("Not a boolean: $value")
+                throw ParseException("Not a boolean: '$value'")
             }
     }
 }
