@@ -18,7 +18,7 @@ class ConfigSpecReader {
     // TODO this obviously shouldn't be a hardcoded list, should be scanned.
     private val keyTypeGenerators =
         listOf(
-            IntKey.Generator,
+            IntegerKey.Generator,
             StringKey.Generator,
             DoubleKey.Generator,
             BooleanKey.Generator,

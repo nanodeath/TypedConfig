@@ -1,14 +1,14 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
-import com.github.nanodeath.typedconfig.runtime.checks.IntCheck
+import com.github.nanodeath.typedconfig.runtime.checks.IntegerCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
-class IntKey(
+class IntegerKey(
     private val name: String,
     private val source: Source,
     private val default: Int?,
-    private val checks: List<IntCheck>
+    private val checks: List<IntegerCheck>
 ) : Key<Int> {
     override fun resolve(): Int {
         val value = source.getInt(name) ?: default ?: throw MissingConfigurationException(name)
