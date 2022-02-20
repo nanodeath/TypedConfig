@@ -14,6 +14,8 @@ class JsonSource internal constructor(private val document: Map<String, Any>) : 
 
     override fun getBoolean(key: String): Boolean? = lookup(key) as Boolean?
 
+    override fun getList(key: String): List<String>? = (lookup(key) as List<*>?)?.map { it.toString() }
+
     private fun lookup(key: String) = key
         .splitToSequence('.')
         .fold<String, Any?>(document) { current, subkey ->

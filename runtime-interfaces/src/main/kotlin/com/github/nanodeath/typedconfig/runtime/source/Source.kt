@@ -5,4 +5,5 @@ interface Source {
     fun getString(key: String): String?
     fun getDouble(key: String): Double?
     fun getBoolean(key: String): Boolean?
+    fun getList(key: String): List<String>?
 }

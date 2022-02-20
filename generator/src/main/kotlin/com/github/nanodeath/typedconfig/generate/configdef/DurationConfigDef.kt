@@ -2,6 +2,7 @@ package com.github.nanodeath.typedconfig.generate.configdef
 
 import com.github.nanodeath.typedconfig.generate.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.asTypeName
 import java.time.Duration
 
 internal data class DurationConfigDef(
@@ -10,9 +11,13 @@ internal data class DurationConfigDef(
     override val constraints: List<ClassName>,
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<Duration> {
-    override val type = Duration::class
+    override val type = Duration::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "DurationKey" else "NullableDurationKey")
 
-    override val literalPlaceholder = "%S"
+    override val templateString get() = "%T(%S, %N, %S, listOf(${constraints.joinToString(", ") { "%T" }}))"
+    override val templateArgs: Array<Any?>
+        get() = arrayOf(
+            keyClass, key, "source", defaultValue, *constraints.toTypedArray()
+        )
 }

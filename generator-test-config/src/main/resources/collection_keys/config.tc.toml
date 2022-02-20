@@ -1,0 +1,19 @@
+package = "com.github.nanodeath.typedconfig.test"
+class = "CollectionsConfig"
+description = "Here we support collections of things, e.g. lists."
+
+[adminUsers]
+type = "list<str>"
+description = "Admin users"
+
+[allowedPorts]
+type = "list<int>"
+description = "Open ports"
+
+[portsWithDefaults]
+type = "list<int>"
+default = [ 8080, 8443 ]
+
+[optionalDurationList]
+type = "list<duration>"
+required = false

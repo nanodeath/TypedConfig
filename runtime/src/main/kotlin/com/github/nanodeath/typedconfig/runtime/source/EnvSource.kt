@@ -8,6 +8,8 @@ class EnvSource internal constructor(private val env: Env) : Source {
     override fun getString(key: String): String? = env.get(key.camelToUpperSnake())
     override fun getDouble(key: String): Double? = env.get(key.camelToUpperSnake())?.toDoubleOrNull()
     override fun getBoolean(key: String): Boolean? = env.get(key.camelToUpperSnake())?.toBoolean()
+    override fun getList(key: String): List<String>? =
+        env.get(key.camelToUpperSnake())?.splitToSequence(',')?.map { it.trim() }?.toList()
 }
 
 internal class Env {

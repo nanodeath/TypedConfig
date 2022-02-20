@@ -41,6 +41,14 @@ class MapSource(private val map: Map<String, Any>, private val keyCase: KeyCase 
         }
     }
 
+    override fun getList(key: String): List<String>? {
+        return when (val value = map[convertKey(key)]) {
+            is List<*> -> value.map(Any?::toString)
+            null -> null
+            else -> throw IllegalArgumentException("Unexpected type in map: ${value.javaClass}")
+        }
+    }
+
     private fun convertKey(key: String): String {
         val realKey = when (keyCase) {
             LOWER_CAMEL_CASE -> key

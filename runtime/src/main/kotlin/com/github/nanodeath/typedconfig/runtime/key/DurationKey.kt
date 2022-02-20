@@ -21,11 +21,13 @@ class DurationKey(
             ?: parsedDefault
             ?: throw MissingConfigurationException(name)
 
-    internal companion object {
+    companion object : KeyObject<Duration> {
         private val longRegex = Regex("(?<count>\\d+) (?<unit>milliseconds?|minutes?|hours?|days?)")
         private val shortRegex = Regex("(?<count>\\d+)(?<unit>ms|m|h|d)")
 
-        fun parseDuration(str: String, key: String): Duration = try {
+        override fun parse(value: String): Duration = parseDuration(value, "")
+
+        internal fun parseDuration(str: String, key: String): Duration = try {
             Duration.parse(str)
         } catch (e: DateTimeParseException) {
             val (count, unit) = (longRegex.matchEntire(str)?.let { match ->

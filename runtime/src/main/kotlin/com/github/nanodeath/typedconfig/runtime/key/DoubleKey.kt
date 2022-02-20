@@ -19,4 +19,8 @@ class DoubleKey(
         }
         return value
     }
+
+    companion object : KeyObject<Double> {
+        override fun parse(value: String): Double = value.toDouble()
+    }
 }

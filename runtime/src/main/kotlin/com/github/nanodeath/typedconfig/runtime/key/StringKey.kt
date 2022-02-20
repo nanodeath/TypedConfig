@@ -19,4 +19,8 @@ class StringKey(
         }
         return value
     }
+
+    companion object: KeyObject<String> {
+        override fun parse(value: String): String = value
+    }
 }
