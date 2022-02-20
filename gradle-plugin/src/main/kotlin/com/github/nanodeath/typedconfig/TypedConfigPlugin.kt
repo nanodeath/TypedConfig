@@ -9,6 +9,7 @@ import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.plugins.ide.idea.IdeaPlugin
 import org.gradle.plugins.ide.idea.model.IdeaModel
 
@@ -60,9 +61,13 @@ class TypedConfigPlugin : Plugin<Project> {
                     t.args(inputFile, generatedSourcesDir)
                 }
             }
-            project.tasks.register("generateTypedConfigs") {
-                it.group = "typed config"
-                it.dependsOn(tasks)
+            val generateTypedConfigsTask = project.tasks.register("generateTypedConfigs") { t ->
+                t.group = "typed config"
+                t.dependsOn(tasks)
+            }
+
+            project.tasks.withType(AbstractCompile::class.java) { t ->
+                t.dependsOn(generateTypedConfigsTask)
             }
         }
     }
