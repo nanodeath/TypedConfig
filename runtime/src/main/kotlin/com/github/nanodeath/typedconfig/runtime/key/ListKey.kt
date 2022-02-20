@@ -23,4 +23,12 @@ class ListKey<T>(
             }
         }
     }
+
+    companion object : KeyObject<List<String>> {
+        override fun parse(value: String): List<String> {
+            val list = value.splitToSequence(',').map { it.trim() }.toList()
+            // If the value contains an empty string, we want emptyList(), not listOf("")
+            return if (list.singleOrNull()?.isBlank() == true) emptyList() else list
+        }
+    }
 }

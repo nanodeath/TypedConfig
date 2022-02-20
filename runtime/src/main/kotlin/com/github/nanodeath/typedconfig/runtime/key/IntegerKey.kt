@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+import com.github.nanodeath.typedconfig.runtime.ParseException
 import com.github.nanodeath.typedconfig.runtime.checks.IntegerCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
@@ -21,6 +22,11 @@ class IntegerKey(
     }
 
     companion object : KeyObject<Int> {
-        override fun parse(value: String): Int = value.toInt()
+        override fun parse(value: String): Int =
+            try {
+                value.toInt()
+            } catch (e: NumberFormatException) {
+                throw ParseException("Not an integer: '$value'")
+            }
     }
 }

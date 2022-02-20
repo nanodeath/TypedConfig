@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+import com.github.nanodeath.typedconfig.runtime.ParseException
 import com.github.nanodeath.typedconfig.runtime.checks.DoubleCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
@@ -21,6 +22,11 @@ class DoubleKey(
     }
 
     companion object : KeyObject<Double> {
-        override fun parse(value: String): Double = value.toDouble()
+        override fun parse(value: String): Double =
+            try {
+                value.toDouble()
+            } catch (e: NumberFormatException) {
+                throw ParseException("Not a double: '$value'")
+            }
     }
 }
