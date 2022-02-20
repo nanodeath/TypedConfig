@@ -6,11 +6,11 @@ description = "This is the basic configuration file."
 type = "int"
 description = "Maximum number of login tries before locking account."
 default = 0
-constraints = ["nonnegative"]
+checks = ["nonnegative"]
 
 [nameOfTestUser]
 type = "str"
-constraints = ["notblank"]
+checks = ["notblank"]
 
 [timeBetweenFailedLogins]
 type = "double"

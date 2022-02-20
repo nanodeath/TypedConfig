@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.TypeName
 interface ConfigDef<T> {
     val key: String
     val defaultValue: Any?
-    val constraints: List<ClassName>
+    val checks: List<ClassName>
     val type: TypeName
     val keyClass: ClassName
     val metadata: ConfigDefMetadata

@@ -30,7 +30,7 @@ You accomplish this by writing out a spec in a `config.tc.toml` file which might
 [port] # <1>
 type = "int" # <2>
 default = 8080 # <3>
-constraints = ["validport"] # <4>
+checks = ["validport"] # <4>
 ----
 
 This fragment does four things:
@@ -38,14 +38,14 @@ This fragment does four things:
 <1> Defines a new key called `port`, which corresponds to a new property in the generated Config class. Keys are expected in lower camelcase, e.g. `applicationPort`.
 <2> It's of type `int` (integer). Required.
 <3> It has a default value that will be used if a value isn't found in any configuration sources. Optional.
-<4> It has one constraint -- it must be a valid port. Optional.
+<4> It has one check -- it must be a valid port. Optional.
 
 This causes the following source code to be generated (edited for clarity):
 
 [source,kotlin]
 ----
 class GeneratedConfig(source: Source) {
-    val port: Int by IntKey("port", source, 8080, listOf(ValidPortConstraint))
+    val port: Int by IntKey("port", source, 8080, listOf(ValidPortCheck))
     companion object Factory {
         fun default() = GeneratedConfig(TypedConfig.defaultSource)
     }
@@ -64,7 +64,7 @@ val port = config.port
 
 Provide typesafe access to configuration:: When accessing configuration values, you know definitively what type it is, what the default value is, whether it's required, and what other related configuration is available. Also, hand-written documentation may also be available (if provided, obviously).
 Provide configuration from multiple sources:: Look up your configuration from environment variables, static files, network services, or any combination. Specify your configuration in a file but override it using an environment variable. Specify your configuration in _multiple files_ (say, one for each deployment stage and one for defaults), and override your defaults using deployment stage-specific config.
-Fail fast as early as possible:: If configuration is missing or incorrect, how quickly can we detect it and fail? TypedConfig provides constraints and validation (pending https://github.com/nanodeath/TypedConfig/issues/36[#36]) for this.
+Fail fast as early as possible:: If configuration is missing or incorrect, how quickly can we detect it and fail? TypedConfig provides checks and validation (pending https://github.com/nanodeath/TypedConfig/issues/36[#36]) for this.
 Good for both applications and libraries:: Making TypedConfig accessible to applications is easy: they control the config spec, config values, and runtime. Things are a little trickier for libraries because they have a runtime component, but don't necessarily want to telegraph the internals of their configuration library!
 
 == Usage

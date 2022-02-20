@@ -10,7 +10,7 @@ class DurationKey(
     private val name: String,
     private val source: Source,
     private val default: String?,
-    @Suppress("unused") private val constraints: List<Unit>
+    @Suppress("unused") private val checks: List<Unit>
 ) : Key<Duration> {
     private val parsedDefault: Duration? by lazy(LazyThreadSafetyMode.PUBLICATION) {
         default?.let { parse(it) }

@@ -6,8 +6,8 @@ internal object DurationConfigDefGenerator : ConfigDefGenerator<DurationConfigDe
     override val key = "duration"
 
     override fun generate(
-        key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata
+        key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
     ) = DurationConfigDef(
-        key, defaultValue, constraints, metadata
+        key, defaultValue, checks, metadata
     )
 }

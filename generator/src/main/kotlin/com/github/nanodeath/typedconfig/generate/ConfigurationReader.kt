@@ -223,16 +223,16 @@ class ConfigurationReader {
                 if (type in configDefReaders) {
                     val configDefReader = configDefReaders[type]!!
 
-                    val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
+                    val checks: List<ClassName>? = (value.get("checks") as ArrayNode?)
                         ?.map(JsonNode::textValue)
-                        ?.map(configDefReader::mapConstraint)
+                        ?.map(configDefReader::mapChecks)
                     val metadata = ConfigDefMetadata(
                         description = value.get("description")?.textValue(),
                         required = value.get("required")?.booleanValue() ?: true
                     )
                     sequenceOf(
                         configDefReader.generate(
-                            fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
+                            fullKey, value.get("default")?.asText(), checks.orEmpty(), metadata
                         )
                     )
                 } else {

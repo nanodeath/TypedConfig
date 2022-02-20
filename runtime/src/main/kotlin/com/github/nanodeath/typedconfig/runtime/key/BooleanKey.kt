@@ -7,7 +7,7 @@ class BooleanKey(
     private val name: String,
     private val source: Source,
     private val default: Boolean?,
-    @Suppress("unused") private val constraints: List<Unit>
+    @Suppress("unused") private val checks: List<Unit>
 ) : Key<Boolean> {
     override fun resolve(): Boolean =
         source.getBoolean(name) ?: default ?: throw MissingConfigurationException(name)
