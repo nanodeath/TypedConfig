@@ -25,6 +25,11 @@ class ConfigurationReader {
             DurationConfigDefGenerator
         ).associateBy { it.key }
 
+    private val collectionDefReaders =
+        listOf(
+            ListDefGenerator
+        ).associateBy { it.key }
+
     fun readFile(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
         val packageName = node.get("package").textValue()
@@ -87,18 +92,15 @@ class ConfigurationReader {
                 getOrCreateClassToUpdate(configDef.key, innerClasses, mainConfigClass, mainClassName)
             },
             valueTransform = { configDef ->
-                val configDefProperty = ConfigDefProperty(configDef)
-                PropertySpec.builder(configDef.key.substringAfterLast('.'), configDefProperty.type)
+                PropertySpec.builder(
+                    configDef.key.substringAfterLast('.'),
+                    configDef.type.copy(nullable = !configDef.metadata.required)
+                )
                     .delegate(
-                        "%T(%S, %N, ${configDef.literalPlaceholder}, " +
-                                "listOf(${configDefProperty.constraintsInterpolation}))",
-                        configDef.keyClass,
-                        configDef.key,
-                        "source",
-                        configDef.defaultValue,
-                        *configDefProperty.constraints.toTypedArray()
+                        configDef.templateString,
+                        *configDef.templateArgs
                     )
-                    .addKdoc(configDefProperty.kdoc)
+                    .addKdoc(configDef.kdoc)
                     .build()
             })
         // In certain cases (e.g. namespaces), the main config class won't have any direct properties, just inner
@@ -218,22 +220,49 @@ class ConfigurationReader {
             val type = value.path("type").textValue()
 
             if (type != null) {
-                // TODO more specific exception
-                val configDefReader =
-                    configDefReaders[type] ?: throw IllegalArgumentException("Unsupported type: `${type}` in $file")
+                if (type in configDefReaders) {
+                    val configDefReader = configDefReaders[type]!!
 
-                val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
-                    ?.map(JsonNode::textValue)
-                    ?.map(configDefReader::mapConstraint)
-                val metadata = ConfigDefMetadata(
-                    description = value.get("description")?.textValue(),
-                    required = value.get("required")?.booleanValue() ?: true
-                )
-                sequenceOf(
-                    configDefReader.generate(
-                        fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
+                    val constraints: List<ClassName>? = (value.get("constraints") as ArrayNode?)
+                        ?.map(JsonNode::textValue)
+                        ?.map(configDefReader::mapConstraint)
+                    val metadata = ConfigDefMetadata(
+                        description = value.get("description")?.textValue(),
+                        required = value.get("required")?.booleanValue() ?: true
                     )
-                )
+                    sequenceOf(
+                        configDefReader.generate(
+                            fullKey, value.get("default")?.asText(), constraints.orEmpty(), metadata
+                        )
+                    )
+                } else {
+                    val collectionPattern = Regex("(\\w+)<(\\w*)>")
+                    val match = collectionPattern.matchEntire(type)
+                    if (match != null) {
+                        val (collectionType, valueType) = match.destructured
+                        val collectionReader = collectionDefReaders[collectionType]
+                        val valueTypeReader = configDefReaders[valueType]
+                        if (collectionReader != null && valueTypeReader != null) {
+                            val metadata = ConfigDefMetadata(
+                                description = value.get("description")?.textValue(),
+                                required = value.get("required")?.booleanValue() ?: true
+                            )
+                            val default = value.get("default")?.elements()?.asSequence()?.map { it.asText() }?.toList()
+                            val genericConfigDef = valueTypeReader
+                                .generate("", null, emptyList(), ConfigDefMetadata(null, true))
+                            return@flatMap sequenceOf(
+                                collectionReader.generate(
+                                    fullKey,
+                                    default,
+                                    metadata,
+                                    genericConfigDef
+                                )
+                            )
+                        }
+                    }
+                    // TODO more specific exception
+                    throw IllegalArgumentException("Unsupported type: `${type}` in $file")
+                }
             } else if (value.isObject) {
                 parseConfigDefs(value, file, precedingKey + listOf(key)).asSequence()
             } else {

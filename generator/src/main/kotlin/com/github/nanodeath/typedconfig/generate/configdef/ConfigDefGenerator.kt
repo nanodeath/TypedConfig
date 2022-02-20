@@ -12,3 +12,9 @@ interface ConfigDefGenerator<T : ConfigDef<*>> {
 
     fun generate(key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata): T
 }
+
+interface CollectionDefGenerator<T : ConfigDef<*>> {
+    val key: String
+
+    fun generate(key: String, defaultValue: List<String>?, metadata: ConfigDefMetadata, genericType: ConfigDef<*>): T
+}

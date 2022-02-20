@@ -11,4 +11,8 @@ class BooleanKey(
 ) : Key<Boolean> {
     override fun resolve(): Boolean =
         source.getBoolean(name) ?: default ?: throw MissingConfigurationException(name)
+
+    companion object : KeyObject<Boolean> {
+        override fun parse(value: String): Boolean = value.toBoolean()
+    }
 }

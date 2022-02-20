@@ -31,6 +31,14 @@ class CachedSource(private val delegate: Source) : Source {
         }
         return cache[key] as Boolean?
     }
+
+    override fun getList(key: String): List<String>? {
+        if (!cache.containsKey(key)) {
+            cache.putIfAbsent(key, delegate.getList(key))
+        }
+        @Suppress("UNCHECKED_CAST")
+        return cache[key] as List<String>?
+    }
 }
 
 fun Source.cached(): Source = if (this is CachedSource) this else CachedSource(this)
