@@ -19,4 +19,14 @@ internal data class DoubleConfigDef(
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
+
+    internal object Generator : ConfigDefGenerator<DoubleConfigDef> {
+        override val key = "double"
+
+        override fun generate(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
+        ) = DoubleConfigDef(
+            key, defaultValue?.toDoubleOrNull(), checks, metadata
+        )
+    }
 }

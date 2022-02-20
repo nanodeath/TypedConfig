@@ -20,4 +20,14 @@ internal data class DurationConfigDef(
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
+
+    internal object Generator : ConfigDefGenerator<DurationConfigDef> {
+        override val key = "duration"
+
+        override fun generate(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
+        ) = DurationConfigDef(
+            key, defaultValue, checks, metadata
+        )
+    }
 }
