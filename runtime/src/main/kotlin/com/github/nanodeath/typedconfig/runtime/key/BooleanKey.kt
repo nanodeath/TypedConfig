@@ -10,9 +10,7 @@ class BooleanKey(
     default: String?,
     @Suppress("unused") private val checks: List<Unit>
 ) : Key<Boolean> {
-    private val parsedDefault: Boolean? by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        default?.let { parse(it) }
-    }
+    private val parsedDefault: Boolean? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): Boolean =
         source.getBoolean(name) ?: parsedDefault ?: throw MissingConfigurationException(name)

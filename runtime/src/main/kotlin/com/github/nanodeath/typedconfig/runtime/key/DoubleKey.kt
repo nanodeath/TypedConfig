@@ -11,9 +11,7 @@ class DoubleKey(
     default: String?,
     private val checks: List<DoubleCheck>
 ) : Key<Double> {
-    private val parsedDefault: Double? by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        default?.let { parse(it) }
-    }
+    private val parsedDefault: Double? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): Double {
         val value = source.getDouble(name) ?: parsedDefault ?: throw MissingConfigurationException(name)

@@ -11,9 +11,7 @@ class IntegerKey(
     default: String?,
     private val checks: List<IntegerCheck>
 ) : Key<Int> {
-    private val parsedDefault: Int? by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        default?.let { parse(it) }
-    }
+    private val parsedDefault: Int? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): Int {
         val value = source.getInt(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
