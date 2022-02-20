@@ -6,17 +6,24 @@ import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrowUnit
 import io.kotest.matchers.shouldBe
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verifyAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
+@ExtendWith(MockKExtension::class)
 class DefaultConfigTest {
+    @MockK
+    lateinit var source: Source
+
     companion object {
         private lateinit var writeOnceDelegate: Any
         private lateinit var typedConfigInitialized: KMutableProperty<Boolean>
@@ -53,7 +60,6 @@ class DefaultConfigTest {
 
     @Test
     fun works() {
-        val source = mockk<Source>()
         every { source.getString(any()) } returns "hello"
         TypedConfig.defaultSource = source
 
@@ -65,9 +71,9 @@ class DefaultConfigTest {
 
     @Test
     fun canOnlySetOnce() {
-        val source = mockk<Source>("Source1")
+        val source1 = mockk<Source>("Source1")
         val source2 = mockk<Source>("Source2")
-        TypedConfig.defaultSource = source
+        TypedConfig.defaultSource = source1
         shouldThrowUnit<IllegalStateException> {
             TypedConfig.defaultSource = source2
         }

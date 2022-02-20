@@ -8,13 +8,18 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveCauseInstanceOf
 import io.kotest.matchers.throwable.shouldHaveMessage
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MockKExtension::class)
 internal class ListKeyTest {
+    @MockK
+    lateinit var source: Source
+
     @Test
     fun canParseListOfInts() {
-        val source = mockk<Source>()
         every { source.getList(any()) } returns listOf("1", "2", "3")
 
         val listKey = ListKey("listKey", source, null, emptyList()) { IntKey.parse(it) }
@@ -24,7 +29,6 @@ internal class ListKeyTest {
 
     @Test
     fun failsIfCantParse() {
-        val source = mockk<Source>()
         every { source.getList(any()) } returns listOf("1", "2.0")
 
         val listKey = ListKey("listKey", source, null, emptyList()) { IntKey.parse(it) }
