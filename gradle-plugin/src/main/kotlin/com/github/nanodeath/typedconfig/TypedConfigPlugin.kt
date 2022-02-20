@@ -28,8 +28,8 @@ class TypedConfigPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("typedConfig", TypedConfigExtension::class.java)
 
-        val configuration = project.configurations.create("typedConfigGenerator")
-        project.dependencies.add(configuration.name, "com.github.nanodeath.typedconfig:generator:1.0-SNAPSHOT")
+        val configuration = project.configurations.create("typedConfigCodegen")
+        project.dependencies.add(configuration.name, "com.github.nanodeath.typedconfig:codegen:1.0-SNAPSHOT")
         project.plugins.withType(JavaPlugin::class.java) {
             project.dependencies.add(
                 JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT"
@@ -57,7 +57,7 @@ class TypedConfigPlugin : Plugin<Project> {
                     t.inputs.file(inputFile)
                     t.outputs.dir(generatedSourcesDir)
                     t.classpath = configuration
-                    t.mainClass.set("com.github.nanodeath.typedconfig.generate.Generator")
+                    t.mainClass.set("com.github.nanodeath.typedconfig.codegen.Generator")
                     t.args(inputFile, generatedSourcesDir)
                 }
             }
