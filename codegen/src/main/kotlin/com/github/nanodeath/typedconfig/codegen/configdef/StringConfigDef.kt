@@ -21,7 +21,7 @@ internal data class StringConfigDef(
         )
 
     internal object Generator : ConfigDefGenerator<StringConfigDef> {
-        override val key = "str"
+        override val type = "str"
 
         override fun mapChecks(check: String): ClassName = when (check) {
             "notblank" -> ClassName("$RUNTIME_PACKAGE.checks", "NotBlankStringCheck")

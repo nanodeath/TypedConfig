@@ -23,7 +23,7 @@ class ConfigSpecReader {
             DoubleConfigDef.Generator,
             BooleanConfigDef.Generator,
             DurationConfigDef.Generator
-        ).associateBy { it.key }
+        ).associateBy { it.type }
 
     private val collectionDefReaders =
         listOf(

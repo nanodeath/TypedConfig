@@ -3,7 +3,7 @@ package com.github.nanodeath.typedconfig.codegen.configdef
 import com.squareup.kotlinpoet.ClassName
 
 interface ConfigDefGenerator<T : ConfigDef<*>> {
-    val key: String
+    val type: String
 
     fun mapChecks(check: String): ClassName {
         // TODO replace "Unsupported check" with more specific exception
