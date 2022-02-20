@@ -8,17 +8,17 @@ import com.squareup.kotlinpoet.asTypeName
 internal data class ListDef(
     override val key: String,
     override val defaultValue: List<String>?,
-    override val constraints: List<ClassName>,
+    override val checks: List<ClassName>,
     override val metadata: ConfigDefMetadata,
     val genericType: ConfigDef<*>
 ) : ConfigDef<String> {
     override val type = List::class.asTypeName().parameterizedBy(genericType.type)
     override val keyClass = ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "ListKey" else "NullableListKey")
     override val templateString
-        get() = "%T(%S, %N, $defaultTemplate, listOf(${constraints.joinToString(", ") { "%T" }})) { %T.parse(it) }"
+        get() = "%T(%S, %N, $defaultTemplate, listOf(${checks.joinToString(", ") { "%T" }})) { %T.parse(it) }"
     override val templateArgs: Array<Any?>
         get() = arrayOf(
-            keyClass, key, "source", *defaultValueForTemplate, *constraints.toTypedArray(), genericType.keyClass
+            keyClass, key, "source", *defaultValueForTemplate, *checks.toTypedArray(), genericType.keyClass
         )
 
     private val defaultTemplate: String

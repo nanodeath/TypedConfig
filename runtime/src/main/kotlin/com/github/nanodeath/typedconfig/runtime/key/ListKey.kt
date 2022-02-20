@@ -8,7 +8,7 @@ class ListKey<T>(
     private val name: String,
     private val source: Source,
     private val default: List<String>?,
-    @Suppress("unused") private val constraints: List<Unit>,
+    @Suppress("unused") private val checks: List<Unit>,
     private val parse: (String) -> T
 ) : Key<List<T>> {
     @Suppress("TooGenericExceptionCaught")

@@ -6,8 +6,8 @@ internal object BooleanConfigDefGenerator : ConfigDefGenerator<BooleanConfigDef>
     override val key = "bool"
 
     override fun generate(
-        key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata
+        key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
     ) = BooleanConfigDef(
-        key, defaultValue?.toBoolean(), constraints, metadata
+        key, defaultValue?.toBoolean(), checks, metadata
     )
 }

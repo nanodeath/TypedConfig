@@ -5,12 +5,12 @@ import com.squareup.kotlinpoet.ClassName
 interface ConfigDefGenerator<T : ConfigDef<*>> {
     val key: String
 
-    fun mapConstraint(constraint: String): ClassName {
-        // TODO replace "Unsupported constraint" with more specific exception
-        throw IllegalArgumentException("Unsupported constraint: $constraint")
+    fun mapChecks(check: String): ClassName {
+        // TODO replace "Unsupported check" with more specific exception
+        throw IllegalArgumentException("Unsupported check: $check")
     }
 
-    fun generate(key: String, defaultValue: String?, constraints: List<ClassName>, metadata: ConfigDefMetadata): T
+    fun generate(key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata): T
 }
 
 interface CollectionDefGenerator<T : ConfigDef<*>> {

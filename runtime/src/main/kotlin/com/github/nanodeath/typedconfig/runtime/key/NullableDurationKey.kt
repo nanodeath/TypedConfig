@@ -7,7 +7,7 @@ class NullableDurationKey(
     private val name: String,
     private val source: Source,
     @Suppress("unused") private val default: Unit?,
-    @Suppress("unused") private val constraints: List<Unit>
+    @Suppress("unused") private val checks: List<Unit>
 ) : Key<Duration?> {
     override fun resolve(): Duration? = source.getString(name)?.let { DurationKey.parse(it) }
 }

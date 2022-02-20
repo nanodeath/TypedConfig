@@ -7,16 +7,16 @@ import com.squareup.kotlinpoet.asTypeName
 internal data class StringConfigDef(
     override val key: String,
     override val defaultValue: String?,
-    override val constraints: List<ClassName>,
+    override val checks: List<ClassName>,
     override val metadata: ConfigDefMetadata
 ) : ConfigDef<String> {
     override val type = String::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "StringKey" else "NullableStringKey")
 
-    override val templateString get() = "%T(%S, %N, %S, listOf(${constraints.joinToString(", ") { "%T" }}))"
+    override val templateString get() = "%T(%S, %N, %S, listOf(${checks.joinToString(", ") { "%T" }}))"
     override val templateArgs: Array<Any?>
         get() = arrayOf(
-            keyClass, key, "source", defaultValue, *constraints.toTypedArray()
+            keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 }

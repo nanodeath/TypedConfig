@@ -1,6 +1,6 @@
-package com.github.nanodeath.typedconfig.runtime.constraints
+package com.github.nanodeath.typedconfig.runtime.checks
 
-object NonNegativeIntConstraint : IntConstraint {
+object NonNegativeIntCheck : IntCheck {
     override fun invoke(value: Int, name: String) {
         require(value >= 0) { "$name cannot be negative" }
     }
