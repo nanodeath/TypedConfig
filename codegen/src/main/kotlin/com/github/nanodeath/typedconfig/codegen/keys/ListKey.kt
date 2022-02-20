@@ -1,17 +1,17 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.asTypeName
 
-internal data class ListDef(
+internal data class ListKey(
     override val key: String,
     override val defaultValue: List<String>?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata,
-    val genericType: ConfigDef<*>
-) : ConfigDef<String> {
+    override val metadata: KeyMetadata,
+    val genericType: Key<*>
+) : Key<String> {
     override val type = List::class.asTypeName().parameterizedBy(genericType.type)
     override val keyClass = ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "ListKey" else "NullableListKey")
     override val templateString
@@ -29,14 +29,14 @@ internal data class ListDef(
     private val defaultValueForTemplate: Array<String?>
         get() = defaultValue?.toTypedArray() ?: arrayOf(null)
 
-    internal object Generator : CollectionDefGenerator<ListDef> {
-        override val key = "list"
+    internal object Generator : CollectionKeyGenerator<ListKey> {
+        override val type = "list"
 
         override fun generate(
             key: String,
             defaultValue: List<String>?,
-            metadata: ConfigDefMetadata,
-            genericType: ConfigDef<*>
-        ) = ListDef(key, defaultValue, emptyList(), metadata, genericType)
+            metadata: KeyMetadata,
+            genericKeyType: Key<*>
+        ) = ListKey(key, defaultValue, emptyList(), metadata, genericKeyType)
     }
 }

@@ -1,15 +1,15 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
 
-internal data class DoubleConfigDef(
+internal data class DoubleKey(
     override val key: String,
     override val defaultValue: Double?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata
-) : ConfigDef<Double> {
+    override val metadata: KeyMetadata
+) : Key<Double> {
     override val type = Double::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "DoubleKey" else "NullableDoubleKey")
@@ -20,12 +20,12 @@ internal data class DoubleConfigDef(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 
-    internal object Generator : ConfigDefGenerator<DoubleConfigDef> {
+    internal object Generator : KeyGenerator<DoubleKey> {
         override val type = "double"
 
         override fun generate(
-            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
-        ) = DoubleConfigDef(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
+        ) = DoubleKey(
             key, defaultValue?.toDoubleOrNull(), checks, metadata
         )
     }

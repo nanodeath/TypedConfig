@@ -1,16 +1,16 @@
-package com.github.nanodeath.typedconfig.codegen.configdef
+package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.asTypeName
 import java.time.Duration
 
-internal data class DurationConfigDef(
+internal data class DurationKey(
     override val key: String,
     override val defaultValue: String?,
     override val checks: List<ClassName>,
-    override val metadata: ConfigDefMetadata
-) : ConfigDef<Duration> {
+    override val metadata: KeyMetadata
+) : Key<Duration> {
     override val type = Duration::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "DurationKey" else "NullableDurationKey")
@@ -21,12 +21,12 @@ internal data class DurationConfigDef(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
 
-    internal object Generator : ConfigDefGenerator<DurationConfigDef> {
+    internal object Generator : KeyGenerator<DurationKey> {
         override val type = "duration"
 
         override fun generate(
-            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
-        ) = DurationConfigDef(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
+        ) = DurationKey(
             key, defaultValue, checks, metadata
         )
     }
