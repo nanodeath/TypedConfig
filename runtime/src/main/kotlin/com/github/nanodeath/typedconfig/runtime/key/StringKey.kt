@@ -7,11 +7,14 @@ import com.github.nanodeath.typedconfig.runtime.source.Source
 class StringKey(
     private val name: String,
     private val source: Source,
-    private val default: String?,
+    default: String?,
     private val checks: List<StringCheck>
 ) : Key<String> {
+    // this obviously doesn't do much; it's just for consistency with the other Keys.
+    private val parsedDefault: String? = default?.let { parseWithName(it, name) }
+
     override fun resolve(): String {
-        val value = source.getString(name) ?: default ?: throw MissingConfigurationException(name)
+        val value = source.getString(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)

@@ -6,14 +6,14 @@ import com.squareup.kotlinpoet.asTypeName
 
 internal data class BooleanKey(
     override val key: String,
-    override val defaultValue: Boolean?,
+    override val defaultValue: String?,
     override val checks: List<ClassName>,
     override val metadata: KeyMetadata
 ) : Key<Boolean> {
     override val type = Boolean::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "BooleanKey" else "NullableBooleanKey")
-    override val templateString get() = "%T(%S, %N, %L, listOf(${checks.joinToString(", ") { "%T" }}))"
+    override val templateString get() = "%T(%S, %N, %S, listOf(${checks.joinToString(", ") { "%T" }}))"
     override val templateArgs: Array<Any?>
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
@@ -25,7 +25,7 @@ internal data class BooleanKey(
         override fun generate(
             key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
         ) = BooleanKey(
-            key, defaultValue?.toBoolean(), checks, metadata
+            key, defaultValue, checks, metadata
         )
     }
 }

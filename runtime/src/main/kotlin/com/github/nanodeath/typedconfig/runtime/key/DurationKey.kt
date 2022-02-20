@@ -2,7 +2,6 @@ package com.github.nanodeath.typedconfig.runtime.key
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
 import com.github.nanodeath.typedconfig.runtime.ParseException
-import com.github.nanodeath.typedconfig.runtime.appendKey
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import java.time.Duration
 import java.time.format.DateTimeParseException
@@ -10,21 +9,13 @@ import java.time.format.DateTimeParseException
 class DurationKey(
     private val name: String,
     private val source: Source,
-    private val default: String?,
+    default: String?,
     @Suppress("unused") private val checks: List<Unit>
 ) : Key<Duration> {
-    private val parsedDefault: Duration? by lazy(LazyThreadSafetyMode.PUBLICATION) {
-        default?.let { parse(it) }
-    }
+    private val parsedDefault: Duration? = default?.let { parse(it) }
 
     override fun resolve(): Duration =
-        source.getString(name)?.let {
-            try {
-                parse(it)
-            } catch (e: ParseException) {
-                throw e.appendKey(name)
-            }
-        }
+        source.getString(name)?.let { parseWithName(it, name) }
             ?: parsedDefault
             ?: throw MissingConfigurationException(name)
 

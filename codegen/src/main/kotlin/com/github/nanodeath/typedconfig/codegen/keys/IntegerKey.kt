@@ -6,7 +6,7 @@ import com.squareup.kotlinpoet.asTypeName
 
 internal data class IntegerKey(
     override val key: String,
-    override val defaultValue: Int?,
+    override val defaultValue: String?,
     override val checks: List<ClassName>,
     override val metadata: KeyMetadata
 ) : Key<Int> {
@@ -16,7 +16,7 @@ internal data class IntegerKey(
         if (metadata.required) "IntegerKey" else "NullableIntegerKey"
     )
 
-    override val templateString get() = "%T(%S, %N, %L, listOf(${checks.joinToString(", ") { "%T" }}))"
+    override val templateString get() = "%T(%S, %N, %S, listOf(${checks.joinToString(", ") { "%T" }}))"
     override val templateArgs: Array<Any?>
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
@@ -32,11 +32,8 @@ internal data class IntegerKey(
 
         override fun generate(
             key: String, defaultValue: String?, checks: List<ClassName>, metadata: KeyMetadata
-        ): IntegerKey {
-            // TODO better default value parsing here. Fail if not empty but also not an int.
-            return IntegerKey(
-                key, defaultValue?.toIntOrNull(), checks, metadata
-            )
-        }
+        ) = IntegerKey(
+            key, defaultValue, checks, metadata
+        )
     }
 }
