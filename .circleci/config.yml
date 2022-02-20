@@ -59,6 +59,9 @@ jobs:
           name: "Test sample simple-gradle-with-plugin"
           command: ( cd samples/simple-gradle-with-plugin && gradle run )
       - run:
+          name: "Test sample simple-gradle-with-plugin-kts"
+          command: ( cd samples/simple-gradle-with-plugin-kts && gradle run )
+      - run:
           name: "Test sample multi-gradle-with-plugin"
           command: ( cd samples/multi-gradle-with-plugin && gradle run )
       - run: apt-get update && apt-get install -y gpg sudo
