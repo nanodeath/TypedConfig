@@ -18,4 +18,14 @@ internal data class BooleanConfigDef(
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
+
+    internal object Generator : ConfigDefGenerator<BooleanConfigDef> {
+        override val key = "bool"
+
+        override fun generate(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
+        ) = BooleanConfigDef(
+            key, defaultValue?.toBoolean(), checks, metadata
+        )
+    }
 }

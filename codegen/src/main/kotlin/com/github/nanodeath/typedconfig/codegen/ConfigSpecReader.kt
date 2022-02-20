@@ -18,16 +18,16 @@ class ConfigSpecReader {
     // TODO this obviously shouldn't be a hardcoded list, should be scanned.
     private val configDefReaders =
         listOf(
-            IntConfigDefGenerator,
-            StringConfigDefGenerator,
-            DoubleConfigDefGenerator,
-            BooleanConfigDefGenerator,
-            DurationConfigDefGenerator
+            IntConfigDef.Generator,
+            StringConfigDef.Generator,
+            DoubleConfigDef.Generator,
+            BooleanConfigDef.Generator,
+            DurationConfigDef.Generator
         ).associateBy { it.key }
 
     private val collectionDefReaders =
         listOf(
-            ListDefGenerator
+            ListDef.Generator
         ).associateBy { it.key }
 
     fun translateIntoCode(file: File): FileSpec {

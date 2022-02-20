@@ -28,4 +28,15 @@ internal data class ListDef(
 
     private val defaultValueForTemplate: Array<String?>
         get() = defaultValue?.toTypedArray() ?: arrayOf(null)
+
+    internal object Generator : CollectionDefGenerator<ListDef> {
+        override val key = "list"
+
+        override fun generate(
+            key: String,
+            defaultValue: List<String>?,
+            metadata: ConfigDefMetadata,
+            genericType: ConfigDef<*>
+        ) = ListDef(key, defaultValue, emptyList(), metadata, genericType)
+    }
 }

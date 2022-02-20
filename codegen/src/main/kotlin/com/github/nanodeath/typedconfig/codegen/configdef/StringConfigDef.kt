@@ -19,4 +19,19 @@ internal data class StringConfigDef(
         get() = arrayOf(
             keyClass, key, "source", defaultValue, *checks.toTypedArray()
         )
+
+    internal object Generator : ConfigDefGenerator<StringConfigDef> {
+        override val key = "str"
+
+        override fun mapChecks(check: String): ClassName = when (check) {
+            "notblank" -> ClassName("$RUNTIME_PACKAGE.checks", "NotBlankStringCheck")
+            else -> super.mapChecks(check)
+        }
+
+        override fun generate(
+            key: String, defaultValue: String?, checks: List<ClassName>, metadata: ConfigDefMetadata
+        ) = StringConfigDef(
+            key, defaultValue, checks, metadata
+        )
+    }
 }
