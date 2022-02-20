@@ -3,5 +3,5 @@ class = "GeneratedConfig"
 
 [greeting]
 type = "str"
-description = "How we should greet the user of this application."
+description = "A friendly greeting."
 default = "Hello!"

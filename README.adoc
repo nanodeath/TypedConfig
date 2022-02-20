@@ -1,3 +1,6 @@
+= TypedConfig
+:source-language: kotlin
+
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -12,8 +15,6 @@ endif::[]
 This tool is still *very early in development*. Breaking changes are made all the time, documentation is sparse, insufficient code coverage, hard to use, poor distribution options, no license, etc. _Do not use yet._
 ====
 
-= TypedConfig
-
 image:https://circleci.com/gh/nanodeath/TypedConfig/tree/main.svg?style=svg&circle-token=01a83f9b8c3ae012c706f60bcfc861825a2f9770["CircleCI", link="https://circleci.com/gh/nanodeath/TypedConfig/tree/main"]
 image:https://codecov.io/gh/nanodeath/TypedConfig/branch/main/graph/badge.svg?token=A8OGZZOEYI["Codecov", "https://app.codecov.io/gh/nanodeath/TypedConfig/] image:https://wakatime.com/badge/github/nanodeath/TypedConfig.svg["wakatime", link="https://wakatime.com/badge/github/nanodeath/TypedConfig"]
 
@@ -21,7 +22,7 @@ image:https://img.shields.io/badge/Development%20Phase-Early Alpha-important["De
 
 **TypedConfig** is a JVM tool and library written in Kotlin to get you _actual typesafety_ when adding configuration to your application or library.
 
-What this means is that, for example, when reading the port number for your application to start up on, you don't need to parse it from a string, or call some kind of `getInt("port")`-type method (which does all kinds of parsing and casts for you), but rather you can just call `MyConfig.port`. This still does some parsing for you -- it has to -- but as a consumer of that configuration you get things like autocomplete and config documentation (if provided) for free.
+What this means is that, for example, when reading the port number for your web application to listen on, you don't need to parse it from a string, or call some kind of `getInt("port")`-type method (which does all kinds of parsing and casts for you), but rather you can just call `MyConfig.port`. This still does some parsing for you -- it has to -- but as a consumer of that configuration you get things like autocomplete and config documentation (if provided) for free.
 
 You accomplish this by writing out a spec in a `config.tc.toml` file which might look something like this:
 
@@ -33,16 +34,21 @@ default = 8080 # <3>
 checks = ["validport"] # <4>
 ----
 
+[NOTE]
+====
+If the TOML syntax is unfamiliar to you, you can learn more about it at https://toml.io/[toml.io,window=_blank].
+====
+
 This fragment does four things:
 
-<1> Defines a new key called `port`, which corresponds to a new property in the generated Config class. Keys are expected in lower camelcase, e.g. `applicationPort`.
-<2> It's of type `int` (integer). Required.
-<3> It has a default value that will be used if a value isn't found in any configuration sources. Optional.
-<4> It has one check -- it must be a valid port. Optional.
+<1> Defines a new key called `port`, which corresponds to a new property in the generated class. Keys are expected in lower camelcase, e.g. `applicationPort`.
+<2> It's of type `int` (integer). Required field.
+<3> It has a default value that will be used if a value isn't found in any configuration sources. Optional field; if unset, configuration load will fail if it can't be resolved.
+<4> It has one check -- it must be a valid port. Optional; if unset, no checks are performed (other than typechecks).
 
 This causes the following source code to be generated (edited for clarity):
 
-[source,kotlin]
+[source]
 ----
 class GeneratedConfig(source: Source) {
     val port: Int by IntKey("port", source, 8080, listOf(ValidPortCheck))
@@ -54,26 +60,57 @@ class GeneratedConfig(source: Source) {
 
 Which you can then access in your own code:
 
-[source,kotlin]
+[source]
 ----
-val config = GeneratedConfig.default()
-val port = config.port
+val config = GeneratedConfig.default() // Initialize using default sources, i.e. EnvSource
+val port: Int = config.port // ultimately reads System.getenv("PORT") in this case
 ----
 
 == Goals
 
-Provide typesafe access to configuration:: When accessing configuration values, you know definitively what type it is, what the default value is, whether it's required, and what other related configuration is available. Also, hand-written documentation may also be available (if provided, obviously).
-Provide configuration from multiple sources:: Look up your configuration from environment variables, static files, network services, or any combination. Specify your configuration in a file but override it using an environment variable. Specify your configuration in _multiple files_ (say, one for each deployment stage and one for defaults), and override your defaults using deployment stage-specific config.
-Fail fast as early as possible:: If configuration is missing or incorrect, how quickly can we detect it and fail? TypedConfig provides checks and validation (pending https://github.com/nanodeath/TypedConfig/issues/36[#36]) for this.
-Good for both applications and libraries:: Making TypedConfig accessible to applications is easy: they control the config spec, config values, and runtime. Things are a little trickier for libraries because they have a runtime component, but don't necessarily want to telegraph the internals of their configuration library!
+Provide typesafe access to configuration:: When accessing configuration values, you know definitively what type it is, what the default value is, whether it's required, and what other related configuration is available. Also, hand-written documentation may also be available (if provided by the author).
+Provide configuration from multiple sources:: Look up your configuration from environment variables, static files, network services, or any combination thereof. Specify your configuration in a file but override it using an environment variable. Or specify your configuration in _multiple files_ (say, one for each deployment stage and one for defaults), and override your defaults using deployment stage-specific config.
+Fail fast as early as possible:: If configuration is missing or incorrect, how quickly can we detect it and fail? TypedConfig provides checks and validation for this.
+Good for both applications and libraries:: Making TypedConfig accessible to applications is easy: they control the config spec, config values, and runtime. Things are a little trickier for libraries because while they have a runtime component, they don't want to telegraph the internals of their configuration library to their consumers.
 
 == Usage
+
+WARNING: At time of writing, TypedConfig still isn't published anywhere yet, which makes actual consumption of the tool impractical; eventually it'll be published to MavenCentral.
 
 Firstly, to set your expectations correctly: what this tool does a little bit tricky, and some of that trickiness leaks into the usage. It takes your configuration, turns it into source code, and then _your_ code can compile against it. That is, your code won't be able to rely on the generated source code until after it's generated! Obviously. Probably one reason why this isn't commonplace.
 
 === Automatically, using a Gradle plugin
 
-TODO, no plugin yet, pending link:https://github.com/nanodeath/TypedConfig/issues/21[#21].
+==== Groovy syntax
+
+Add the following to your build logic:
+
+.build.gradle
+[source,groovy]
+----
+plugins {
+    // ...
+    id "com.github.nanodeath.typedconfig" version "1.0-SNAPSHOT"
+}
+----
+
+And create the following file in your project root:
+
+.config.tc.toml
+[source,toml]
+----
+package = "com.example"
+class = "GeneratedConfig"
+
+[greeting]
+type = "str"
+description = "A friendly greeting."
+default = "Hello!"
+----
+
+Now when you run `./gradlew generateTypedConfigs` (or any `compile`-related task), a `GeneratedConfig` file will be generated for you in `build/generated-config`, which is automatically added to your main Gradle source sets.
+
+See link:samples/simple-gradle-with-plugin/build.gradle[here] for a sample.
 
 === Manually
 
@@ -86,13 +123,11 @@ For Gradle, the one-time setup is this:
 
 * Create a custom source set for the TypedConfig generator and add the generator to it.
 * Add the TypeConfig runtime to application's `implementation` dependencies.
-* Register a https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec]-type task that executes it, and provide a path to your config and your output directory.
+* Register a https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec,window=_blank]-type task that executes it, and provide a path to your config and your output directory.
 * Add that directory to your Gradle Java source set (even if you write Kotlin).
 * Optionally, tell IntelliJ that it's a _generated_ sources directory with help from the https://docs.gradle.org/current/userguide/idea_plugin.html[idea] plugin.
 
-Gradle plugin would simplify this substantially, no doubt.
-
-A sample setup will be provided once https://github.com/nanodeath/TypedConfig/issues/35[#35] is completed.
+See link:samples/simple-gradle/build.gradle[here] for a sample.
 
 == In your code
 
@@ -100,7 +135,7 @@ Once the configuration class has been generated and it's in your source set, you
 
 If your generated config is called `GeneratedConfig`, this looks like this:
 
-[source,kotlin]
+[source]
 ----
 val config = GeneratedConfig.default()
 val port = config.port
@@ -108,7 +143,7 @@ val port = config.port
 
 Or if you want to specify a custom source for your configuration, like this:
 
-[source,kotlin]
+[source]
 ----
 val config = GeneratedConfig.default(EnvSource())
 val port = config.port
@@ -116,7 +151,7 @@ val port = config.port
 
 If you're using libraries that are using TypedConfig, and you want to change their configuration sources, you can write this:
 
-[source,kotlin]
+[source]
 ----
 TypedConfig.defaultSource = EnvSource()
 ----
@@ -163,14 +198,14 @@ MultiSource is a higher-order source that takes a list of other sources as an in
 
 If one constructs a MultiSource like this:
 
-[source,kotlin]
+[source]
 ----
 val source = MultiSource(source1, source2)
 val config = GeneratedConfig(source)
 val port = config.port
 ----
 
-Then MultiSource will query `source1` for the configuration, and if none is found, query `source2`, and so on, if there are more sources.
+Then MultiSource will query `source1` for the configuration, and if none is found, query `source2`, and so on.
 
 If this behavior isn't to your needs, you can also implement your own link:runtime-interfaces/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/Source.kt[Source].
 
@@ -182,7 +217,7 @@ It also defines a `.cached()` extension method on Sources for convenience.
 
 Usage is like this:
 
-[source,kotlin]
+[source]
 ----
 val source: Source = MySlowSource().cached()
 ----
