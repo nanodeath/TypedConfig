@@ -26,5 +26,13 @@ subprojects {
         tasks.test {
             shouldRunAfter("detekt")
         }
+
+        // Attach Apache-2.0 license to everything that publishes.
+        plugins.withType<MavenPublishPlugin> {
+            val ext = extensions.getByType<PublishingExtension>()
+            ext.publications.filterIsInstance<MavenPublication>().forEach { publication ->
+                publication.attachApacheLicense()
+            }
+        }
     }
 }

@@ -40,7 +40,7 @@ val generateResourcesTask = tasks.register("generateResources") {
     doLast {
         val path = generatedResourcesDirectory.resolve("com/github/nanodeath/typedconfig/plugin.properties")
         path.parentFile.mkdirs()
-        path.writeText(properties.entries.joinToString("\n") { (k, v) -> "$k=$v"} )
+        path.writeText(properties.entries.joinToString("\n") { (k, v) -> "$k=$v" })
     }
 }
 
