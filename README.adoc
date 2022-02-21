@@ -99,8 +99,7 @@ And create the following file in your project root:
 .config.tc.toml
 [source,toml]
 ----
-package = "com.example"
-class = "GeneratedConfig"
+class = "com.example.GeneratedConfig"
 
 [greeting]
 type = "str"

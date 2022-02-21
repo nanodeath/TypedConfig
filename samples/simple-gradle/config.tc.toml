@@ -1,5 +1,4 @@
-package = "com.example"
-class = "GeneratedConfig"
+class = "com.example.GeneratedConfig"
 
 [greeting]
 type = "str"

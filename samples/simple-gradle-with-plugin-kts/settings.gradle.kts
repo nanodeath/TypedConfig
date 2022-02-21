@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "simple-gradle-with-plugin"
+rootProject.name = "simple-gradle-with-plugin-kts"

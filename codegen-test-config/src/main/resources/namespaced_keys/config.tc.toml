@@ -1,5 +1,4 @@
-package = "com.github.nanodeath.typedconfig.test"
-class = "NamespacedConfig"
+class = "com.github.nanodeath.typedconfig.test.NamespacedConfig"
 namespace = "app"
 
 [port]
