@@ -1,7 +1,8 @@
 plugins {
     kotlin("jvm") version "1.6.10"
-    `maven-publish`
-    `java-gradle-plugin`
+    id("java-gradle-plugin")
+    id("maven-publish")
+    id("com.gradle.plugin-publish") version "0.18.0"
     signing
 }
 
@@ -21,6 +22,9 @@ gradlePlugin {
     plugins {
         create("TypedConfigPlugin") {
             id = "com.github.nanodeath.typedconfig"
+            displayName = "TypedConfig Gradle Plugin"
+            description = "Automatically configure generator and runtime for TypedConfig (a strongly-typed " +
+                    "configuration library)"
             implementationClass = "com.github.nanodeath.typedconfig.TypedConfigPlugin"
         }
     }
@@ -63,7 +67,17 @@ listOf("processResources", "sourcesJar").forEach { taskName ->
 addSonatypeRepository()
 
 afterEvaluate {
-    signing {
-        sign(publishing.publications["pluginMaven"])
+    val pluginMaven = publishing.publications["pluginMaven"] as MavenPublication
+    pluginMaven.apply {
+        this.artifactId = "typedconfig-${project.name}"
     }
+    signing {
+        sign(pluginMaven)
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/nanodeath/TypedConfig"
+    vcsUrl = "https://github.com/nanodeath/TypedConfig"
+    tags = listOf("config", "kotlin")
 }
