@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     `maven-publish`
+    signing
 }
 
 dependencies {
@@ -13,6 +14,7 @@ tasks.named<Test>("test") {
 
 java {
     withSourcesJar()
+    withJavadocJar()
 }
 
 publishing {
@@ -21,4 +23,10 @@ publishing {
             from(components["java"])
         }
     }
+}
+
+addSonatypeRepository()
+
+signing {
+    sign(publishing.publications["maven"])
 }

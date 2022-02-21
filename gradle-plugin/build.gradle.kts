@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     `maven-publish`
     `java-gradle-plugin`
+    signing
 }
 
 repositories {
@@ -27,6 +28,7 @@ gradlePlugin {
 
 java {
     withSourcesJar()
+    withJavadocJar()
 }
 
 val generatedResourcesDirectory = buildDir.resolve("generated-resources")
@@ -56,4 +58,12 @@ sourceSets {
 
 listOf("processResources", "sourcesJar").forEach { taskName ->
     tasks.getByName(taskName).dependsOn(generateResourcesTask)
+}
+
+addSonatypeRepository()
+
+afterEvaluate {
+    signing {
+        sign(publishing.publications["pluginMaven"])
+    }
 }

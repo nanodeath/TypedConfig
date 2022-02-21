@@ -3,6 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     application
     `maven-publish`
+    signing
 }
 
 dependencies {
@@ -22,6 +23,7 @@ application {
 
 java {
     withSourcesJar()
+    withJavadocJar()
 }
 
 publishing {
@@ -30,4 +32,10 @@ publishing {
             from(components["java"])
         }
     }
+}
+
+addSonatypeRepository()
+
+signing {
+    sign(publishing.publications["maven"])
 }
