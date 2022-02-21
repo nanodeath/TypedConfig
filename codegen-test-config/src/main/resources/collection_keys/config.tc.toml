@@ -1,5 +1,4 @@
-package = "com.github.nanodeath.typedconfig.test"
-class = "CollectionsConfig"
+class = "com.github.nanodeath.typedconfig.test.CollectionsConfig"
 description = "Here we support collections of things, e.g. lists."
 
 [adminUsers]

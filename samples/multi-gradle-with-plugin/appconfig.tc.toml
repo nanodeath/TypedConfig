@@ -1,5 +1,4 @@
-package = "com.example"
-class = "AppConfig"
+class = "com.example.AppConfig"
 
 [port]
 type = "int"

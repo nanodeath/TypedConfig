@@ -32,8 +32,9 @@ class ConfigSpecReader {
 
     fun translateIntoCode(file: File): FileSpec {
         val node = tomlMapper.readTree(file)
-        val packageName = node.get("package").textValue()
-        val className = ClassName(packageName, node.get("class").textValue())
+        val className = node.get("class").textValue().let { classString ->
+            ClassName.bestGuess(classString)
+        }
         val description: String? = node.path("description").textValue()
         val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
         val keys: List<Key<*>> =
@@ -76,7 +77,7 @@ class ConfigSpecReader {
 
         addCompanionObject(configClass, className)
 
-        return FileSpec.builder(packageName, className.simpleName)
+        return FileSpec.builder(className.packageName, className.simpleName)
             .addType(configClass.build())
             .build()
     }
