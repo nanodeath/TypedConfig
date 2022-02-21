@@ -4,7 +4,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
-group = "com.github.nanodeath.typedconfig"
+group = "com.github.nanodeath"
 version = "1.0-SNAPSHOT"
 
 allprojects {
@@ -31,6 +31,7 @@ subprojects {
         plugins.withType<MavenPublishPlugin> {
             val ext = extensions.getByType<PublishingExtension>()
             ext.publications.filterIsInstance<MavenPublication>().forEach { publication ->
+                publication.artifactId = "typedconfig-$name"
                 publication.attachApacheLicense()
             }
         }
