@@ -1,5 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     kotlin("jvm") version "1.6.10"
     `maven-publish`
