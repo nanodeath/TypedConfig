@@ -2,7 +2,7 @@ package com.github.nanodeath.typedconfig
 
 import java.util.Properties
 
-class PluginProperties(map: Map<Any, Any>) {
+internal class PluginProperties(map: Map<Any, Any>) {
     val version: String by map
 
     companion object {

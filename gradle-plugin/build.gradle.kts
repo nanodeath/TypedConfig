@@ -10,6 +10,14 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    testImplementation(libs.bundles.tests)
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+}
+
 gradlePlugin {
     plugins {
         create("TypedConfigPlugin") {
