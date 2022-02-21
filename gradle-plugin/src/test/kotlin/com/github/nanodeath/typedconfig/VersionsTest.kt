@@ -11,7 +11,7 @@ class VersionsTest {
     fun codegenTest() {
         val versions = Versions(PluginProperties(mapOf("version" to "FOO")))
         versions.codegenDependency should {
-            it shouldContain ":codegen:"
+            it shouldContain ":typedconfig-codegen:"
             it shouldEndWith "FOO"
         }
     }
@@ -20,7 +20,7 @@ class VersionsTest {
     fun runtimeTest() {
         val versions = Versions(PluginProperties(mapOf("version" to "FOO")))
         versions.runtimeDependency should {
-            it shouldContain ":runtime:"
+            it shouldContain ":typedconfig-runtime:"
             it shouldEndWith "FOO"
         }
     }
