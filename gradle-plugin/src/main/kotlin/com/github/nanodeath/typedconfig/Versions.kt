@@ -1,7 +1,6 @@
 package com.github.nanodeath.typedconfig
 
-internal object Versions {
-    private const val typedConfigVersion = "@VERSION@"
-    val codegenDependency = "com.github.nanodeath.typedconfig:codegen:$typedConfigVersion"
-    val runtimeDependency = "com.github.nanodeath.typedconfig:runtime:$typedConfigVersion"
+internal class Versions(pluginProperties: PluginProperties) {
+    val codegenDependency = "com.github.nanodeath.typedconfig:codegen:${pluginProperties.version}"
+    val runtimeDependency = "com.github.nanodeath.typedconfig:runtime:${pluginProperties.version}"
 }

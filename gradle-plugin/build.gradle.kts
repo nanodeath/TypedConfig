@@ -3,7 +3,6 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     kotlin("jvm") version "1.6.10"
     `maven-publish`
-//    `kotlin-dsl`
     `java-gradle-plugin`
 }
 
@@ -24,47 +23,30 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
-    }
-}
-
-val generateSourcesTask = tasks.register<Sync>("generateSources") {
-    val tokens = mapOf(
-        "VERSION" to rootProject.version
+val generatedResourcesDirectory = buildDir.resolve("generated-resources")
+val generateResourcesTask = tasks.register("generateResources") {
+    val properties = mapOf(
+        "version" to rootProject.version
     )
-    inputs.properties(tokens)
-    from("src/main/kotlin")
-    into(buildDir.resolve("generated-src"))
-    filter<ReplaceTokens>(mapOf("tokens" to tokens))
+    inputs.properties(properties)
+    outputs.dir(generatedResourcesDirectory)
+    doLast {
+        val path = generatedResourcesDirectory.resolve("com/github/nanodeath/typedconfig/plugin.properties")
+        path.parentFile.mkdirs()
+        path.writeText(properties.entries.joinToString("\n") { (k, v) -> "$k=$v"} )
+    }
 }
 
-lateinit var releaseSourceSet: SourceSet
 sourceSets {
-    releaseSourceSet = create("release") {
-        java {
-            compiledBy(generateSourcesTask) { t ->
-                objects.directoryProperty().also { it.set(t.destinationDir) }
-            }
-            srcDir(generateSourcesTask.map { it.destinationDir })
-            compileClasspath = sourceSets.main.get().compileClasspath
-            runtimeClasspath = sourceSets.main.get().runtimeClasspath
+    main {
+        resources {
+            // unfortunately compiledBy doesn't seem to work here
+//            compiledBy(generateResourcesTask)
+            srcDir(generatedResourcesDirectory)
         }
     }
 }
 
-tasks.register<Jar>("releaseJar") {
-    group = "build"
-    archiveBaseName.set("${project.name}-release")
-    from(releaseSourceSet.output)
-}
-
-tasks.register<Jar>("releaseSourcesJar") {
-    group = "build"
-    archiveClassifier.set("sources")
-    archiveBaseName.set("${project.name}-release")
-    from(releaseSourceSet.java.sourceDirectories)
+listOf("processResources", "sourcesJar").forEach { taskName ->
+    tasks.getByName(taskName).dependsOn(generateResourcesTask)
 }
