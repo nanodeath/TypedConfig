@@ -26,13 +26,16 @@ const val DEFAULT_CONFIG_FILENAME = "config.tc.toml"
 
 class TypedConfigPlugin : Plugin<Project> {
     override fun apply(project: Project) {
+        val pluginProperties = PluginProperties.fromPropertiesFile()
+        val versions = Versions(pluginProperties)
+
         val extension = project.extensions.create("typedConfig", TypedConfigExtension::class.java)
 
         val configuration = project.configurations.create("typedConfigCodegen")
-        project.dependencies.add(configuration.name, "com.github.nanodeath.typedconfig:codegen:1.0-SNAPSHOT")
+        project.dependencies.add(configuration.name, versions.codegenDependency)
         project.plugins.withType(JavaPlugin::class.java) {
             project.dependencies.add(
-                JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT"
+                JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, versions.runtimeDependency
             )
         }
         val generatedSourcesDir = project.buildDir.resolve("generated-config")
