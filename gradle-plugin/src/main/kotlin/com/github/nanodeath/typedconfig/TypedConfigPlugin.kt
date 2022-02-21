@@ -29,10 +29,10 @@ class TypedConfigPlugin : Plugin<Project> {
         val extension = project.extensions.create("typedConfig", TypedConfigExtension::class.java)
 
         val configuration = project.configurations.create("typedConfigCodegen")
-        project.dependencies.add(configuration.name, "com.github.nanodeath.typedconfig:codegen:1.0-SNAPSHOT")
+        project.dependencies.add(configuration.name, Versions.codegenDependency)
         project.plugins.withType(JavaPlugin::class.java) {
             project.dependencies.add(
-                JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, "com.github.nanodeath.typedconfig:runtime:1.0-SNAPSHOT"
+                JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, Versions.runtimeDependency
             )
         }
         val generatedSourcesDir = project.buildDir.resolve("generated-config")
