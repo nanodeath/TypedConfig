@@ -89,19 +89,25 @@ class ConfigSpecReader {
         innerClasses: MutableMap<InnerTypeSpec, TypeSpec.Builder>
     ): Map<TypeSpec.Builder, List<PropertySpec>> {
         val propertiesByClass: Map<TypeSpec.Builder, List<PropertySpec>> = keys.groupBy(
-            keySelector = { keyType ->
-                getOrCreateClassToUpdate(keyType.key, innerClasses, mainConfigClass, mainClassName)
+            keySelector = { key ->
+                getOrCreateClassToUpdate(key.key, innerClasses, mainConfigClass, mainClassName)
             },
-            valueTransform = { keyType ->
+            valueTransform = { key ->
                 PropertySpec.builder(
-                    keyType.key.substringAfterLast('.'),
-                    keyType.type.copy(nullable = !keyType.metadata.required)
+                    key.key.substringAfterLast('.'),
+                    key.type.copy(nullable = !key.metadata.required)
                 )
-                    .delegate(
-                        keyType.templateString,
-                        *keyType.templateArgs
+                    .addAnnotation(AnnotationSpec
+                        .builder(ClassName(RUNTIME_PACKAGE, "Key"))
+                        .addMember("name = %S", key.key)
+                        .useSiteTarget(AnnotationSpec.UseSiteTarget.PROPERTY)
+                        .build()
                     )
-                    .addKdoc(keyType.kdoc)
+                    .delegate(
+                        key.templateString,
+                        *key.templateArgs
+                    )
+                    .addKdoc(key.kdoc)
                     .build()
             })
         // In certain cases (e.g. namespaces), the main config class won't have any direct properties, just inner
