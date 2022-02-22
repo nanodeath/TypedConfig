@@ -1,34 +1,41 @@
-# Java Gradle CircleCI 2.0 configuration file
-# See: https://circleci.com/docs/2.0/language-java/
 version: 2.1
 
 orbs:
   codecov: codecov/codecov@3.2.2
   snyk: snyk/snyk@1.1.2
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
-jobs:
-  build:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+_shared:
+  gradle_job: &gradle_job
     docker:
-      # specify the version you desire here
       - image: gradle:7.4-jdk11
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
-
     environment:
-      # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx2g
       TERM: dumb
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+
+
+jobs:
+  run_samples:
+    <<: *gradle_job
+    steps:
+      - checkout
+      - run:
+          name: "Publish to mavenLocal for samples"
+          command: gradle publishToMavenLocal
+      - run:
+          name: "Test sample simple-gradle"
+          command: ( cd samples/simple-gradle && gradle run )
+      - run:
+          name: "Test sample simple-gradle-with-plugin"
+          command: ( cd samples/simple-gradle-with-plugin && gradle run )
+      - run:
+          name: "Test sample simple-gradle-with-plugin-kts"
+          command: ( cd samples/simple-gradle-with-plugin-kts && gradle run )
+      - run:
+          name: "Test sample multi-gradle-with-plugin"
+          command: ( cd samples/multi-gradle-with-plugin && gradle run )
+  build:
+    <<: *gradle_job
     steps:
       - checkout
 
@@ -46,33 +53,6 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle.kts" }}
 
-      # run tests!
-      - run: gradle test
-      - run: gradle koverMergedXmlReport
-      - run:
-          name: "Publish to mavenLocal for samples"
-          command: gradle publishToMavenLocal
-      - run:
-          name: "Test sample simple-gradle"
-          command: ( cd samples/simple-gradle && gradle run )
-      - run:
-          name: "Test sample simple-gradle-with-plugin"
-          command: ( cd samples/simple-gradle-with-plugin && gradle run )
-      - run:
-          name: "Test sample simple-gradle-with-plugin-kts"
-          command: ( cd samples/simple-gradle-with-plugin-kts && gradle run )
-      - run:
-          name: "Test sample multi-gradle-with-plugin"
-          command: ( cd samples/multi-gradle-with-plugin && gradle run )
-      - run: apt-get update && apt-get install -y gpg sudo
+      - run: gradle check
+      - run: apt-get update && apt-get install -y gpg
       - codecov/upload
-      - snyk/scan:
-          project: TypedConfig
-          target-file: codegen/build.gradle.kts
-          severity-threshold: high
-          fail-on-issues: false
-      - snyk/scan:
-          project: TypedConfig
-          target-file: runtime/build.gradle.kts
-          severity-threshold: high
-          fail-on-issues: false
