@@ -25,3 +25,5 @@ fun Project.addSonatypeRepository() {
         }
     }
 }
+
+val IsCI get() = "true".equals(System.getenv("CI"), ignoreCase = true)

@@ -69,10 +69,12 @@ addSonatypeRepository()
 afterEvaluate {
     val pluginMaven = publishing.publications["pluginMaven"] as MavenPublication
     pluginMaven.apply {
-        this.artifactId = "typedconfig-${project.name}"
+        artifactId = "typedconfig-${project.name}"
     }
-    signing {
-        sign(pluginMaven)
+    if (!IsCI) {
+        signing {
+            sign(pluginMaven)
+        }
     }
 }
 

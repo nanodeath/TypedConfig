@@ -37,5 +37,7 @@ publishing {
 addSonatypeRepository()
 
 signing {
-    sign(publishing.publications["maven"])
+    if (!IsCI) {
+        sign(publishing.publications["maven"])
+    }
 }
