@@ -6,6 +6,8 @@ plugins {
     signing
 }
 
+group = "io.github.nanodeath"
+
 repositories {
     mavenCentral()
 }
@@ -21,7 +23,7 @@ tasks.named<Test>("test") {
 gradlePlugin {
     plugins {
         create("TypedConfigPlugin") {
-            id = "com.github.nanodeath.typedconfig"
+            id = "io.github.nanodeath.typedconfig"
             displayName = "TypedConfig Gradle Plugin"
             description = "Automatically configure generator and runtime for TypedConfig (a strongly-typed " +
                     "configuration library)"
