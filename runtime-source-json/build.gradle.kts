@@ -23,6 +23,10 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            pom {
+                name.set("TypedConfig Runtime Source JSON")
+                description.set("A Source for TypedConfig that parses JSON files")
+            }
         }
     }
 }

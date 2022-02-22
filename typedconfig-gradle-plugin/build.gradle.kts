@@ -73,6 +73,9 @@ listOf("processResources", "sourcesJar").forEach { taskName ->
 addSonatypeRepository()
 
 afterEvaluate {
+    publishing.publications.asSequence()
+        .filterIsInstance<MavenPublication>()
+        .forEach(MavenPublication::attachCommonPomMetadata)
     if (!IsCI) {
         signing {
             sign(publishing.publications["pluginMaven"])

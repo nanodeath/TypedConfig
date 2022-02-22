@@ -3,7 +3,20 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.getByType
 
-fun MavenPublication.attachApacheLicense() {
+fun MavenPublication.attachCommonPomMetadata() {
+    pom.url.set("https://github.com/nanodeath/TypedConfig")
+    pom.developers {
+        developer {
+            id.set("nanodeath")
+            name.set("Max Aller")
+            email.set("max@maxaller.name")
+        }
+    }
+    pom.scm {
+        connection.set("scm:git:git://github.com/nanodeath/TypedConfig.git")
+        developerConnection.set("scm:git:ssh://git@github.com/nanodeath/TypedConfig.git")
+        url.set(pom.url)
+    }
     pom.licenses {
         license {
             name.set("Apache-2.0")
