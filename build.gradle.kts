@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.nanodeath"
-version = "0.1-SNAPSHOT"
+version = "0.1"
 
 allprojects {
     group = rootProject.group
@@ -33,7 +33,7 @@ subprojects {
             val ext = extensions.getByType<PublishingExtension>()
             ext.publications.filterIsInstance<MavenPublication>().forEach { publication ->
                 publication.artifactId = "typedconfig-$name"
-                publication.attachApacheLicense()
+                publication.attachCommonPomMetadata()
             }
         }
     }

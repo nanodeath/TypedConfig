@@ -30,6 +30,11 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+
+            pom {
+                name.set("TypedConfig Codegen")
+                description.set("Standalone Java application that translates a TypedConfig spec into Kotlin")
+            }
         }
     }
 }

@@ -23,6 +23,11 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+
+            pom {
+                name.set("TypedConfig Runtime")
+                description.set("Runtime required to compile and deploy TypedConfig-generated configuration")
+            }
         }
     }
 }
