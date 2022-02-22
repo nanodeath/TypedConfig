@@ -6,7 +6,11 @@ plugins {
     signing
 }
 
-group = "io.github.nanodeath"
+if ("publishPlugins" in gradle.startParameter.taskNames) {
+    // why yes, I did feel bad writing this
+    // but Gradle Plugin Portal won't let me publish using com.github
+    group = "io.github.nanodeath"
+}
 
 repositories {
     mavenCentral()
@@ -23,7 +27,7 @@ tasks.named<Test>("test") {
 gradlePlugin {
     plugins {
         create("TypedConfigPlugin") {
-            id = "io.github.nanodeath.typedconfig"
+            id = "$group.typedconfig"
             displayName = "TypedConfig Gradle Plugin"
             description = "Automatically configure generator and runtime for TypedConfig (a strongly-typed " +
                     "configuration library)"
