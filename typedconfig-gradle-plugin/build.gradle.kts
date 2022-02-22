@@ -67,13 +67,9 @@ listOf("processResources", "sourcesJar").forEach { taskName ->
 addSonatypeRepository()
 
 afterEvaluate {
-    val pluginMaven = publishing.publications["pluginMaven"] as MavenPublication
-    pluginMaven.apply {
-        artifactId = "typedconfig-${project.name}"
-    }
     if (!IsCI) {
         signing {
-            sign(pluginMaven)
+            sign(publishing.publications["pluginMaven"])
         }
     }
 }
