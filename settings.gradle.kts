@@ -5,7 +5,7 @@ include("codegen", "runtime", "runtime-interfaces")
 // Other sources
 include("runtime-source-json")
 // Plugins
-include("gradle-plugin")
+include("typedconfig-gradle-plugin")
 
 // Test projects
 include("codegen-test-config", "tests")

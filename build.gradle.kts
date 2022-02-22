@@ -2,10 +2,11 @@ plugins {
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlinx.kover") version "0.5.0"
     id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    signing
 }
 
 group = "com.github.nanodeath"
-version = "1.0-SNAPSHOT"
+version = "0.1-SNAPSHOT"
 
 allprojects {
     group = rootProject.group

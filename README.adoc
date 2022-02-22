@@ -90,7 +90,7 @@ Add the following to your build logic:
 ----
 plugins {
     // ...
-    id "com.github.nanodeath.typedconfig" version "1.0-SNAPSHOT"
+    id "com.github.nanodeath.typedconfig" version "0.1-SNAPSHOT"
 }
 ----
 
