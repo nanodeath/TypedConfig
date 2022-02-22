@@ -29,8 +29,8 @@ gradlePlugin {
         create("TypedConfigPlugin") {
             id = "$group.typedconfig"
             displayName = "TypedConfig Gradle Plugin"
-            description = "Automatically configure generator and runtime for TypedConfig (a strongly-typed " +
-                    "configuration library)"
+            description = "Automatically configure generator and runtime for TypedConfig, a strongly-typed " +
+                    "configuration library"
             implementationClass = "com.github.nanodeath.typedconfig.TypedConfigPlugin"
         }
     }
@@ -75,10 +75,27 @@ addSonatypeRepository()
 afterEvaluate {
     publishing.publications.asSequence()
         .filterIsInstance<MavenPublication>()
+        .onEach { publication ->
+            if (!IsCI) {
+                signing {
+                    sign(publication)
+                }
+            }
+        }
         .forEach(MavenPublication::attachCommonPomMetadata)
-    if (!IsCI) {
-        signing {
-            sign(publishing.publications["pluginMaven"])
+    (publishing.publications["TypedConfigPluginPluginMarkerMaven"] as MavenPublication).apply {
+        pom {
+            name.set("TypedConfig Gradle Plugin Marker")
+            description.set("Plugin marker for TypedConfig Gradle Plugin")
+        }
+    }
+    (publishing.publications["pluginMaven"] as MavenPublication).apply {
+        pom {
+            name.set("TypedConfig Gradle Plugin")
+            description.set(
+                "Automatically configure generator and runtime for TypedConfig, a strongly-typed " +
+                        "configuration library"
+            )
         }
     }
 }
