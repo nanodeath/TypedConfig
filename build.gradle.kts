@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.nanodeath"
-version = "0.1-SNAPSHOT"
+version = "0.1"
 
 allprojects {
     group = rootProject.group
