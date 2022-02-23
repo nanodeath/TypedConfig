@@ -5,12 +5,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.dataformat.toml.TomlMapper
 import com.github.nanodeath.typedconfig.codegen.keys.*
 import com.squareup.kotlinpoet.*
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import java.io.File
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 private val sourceClassName = ClassName("$RUNTIME_PACKAGE.source", "Source")
+private val keyClassName = ClassName(RUNTIME_PACKAGE, "Key")
+private val generatedConfigClassName = ClassName(RUNTIME_PACKAGE, "GeneratedConfig")
+private val typedConfigClassName = ClassName(RUNTIME_PACKAGE, "TypedConfig")
 
+@Suppress("TooManyFunctions")
 class ConfigSpecReader {
     private val tomlMapper = TomlMapper()
 
@@ -44,6 +49,7 @@ class ConfigSpecReader {
 
         addDescription(configClass, description)
         addGeneratedAnnotation(configClass, file)
+        addSupertypes(configClass)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
 
@@ -52,14 +58,31 @@ class ConfigSpecReader {
 
         configProperties.forEach { (typeSpec, propertySpecs) -> typeSpec.addProperties(propertySpecs) }
 
+        generateValidateMethod(configClass, configProperties, innerClasses)
+        generateGetAllKeysMethod(configProperties, innerClasses)
+
+        processInnerClasses(innerClasses)
+
+        addCompanionObject(configClass, className)
+
+        return FileSpec.builder(className.packageName, className.simpleName)
+            .addType(configClass.build())
+            .build()
+    }
+
+    private fun generateValidateMethod(
+        configClass: TypeSpec.Builder,
+        configProperties: Map<TypeSpec.Builder, List<PropertySpec>>,
+        innerClasses: Map<InnerTypeSpec, TypeSpec.Builder>
+    ) {
         for ((typeSpec, propertySpecs) in configProperties) {
             val myInnerTypes = innerClasses.keys.filter { it.enclosingClass === typeSpec }
             typeSpec.addFunction(FunSpec.builder("validate").apply {
                 addKdoc(
                     """
-                    |Checks that all required keys have been provided values.
-                    |@throws %T
-                """.trimMargin(),
+                        |Checks that all required keys have been provided values.
+                        |@throws %T
+                    """.trimMargin(),
                     missingConfigurationExceptionName
                 )
                 beginControlFlow("return apply {")
@@ -72,14 +95,43 @@ class ConfigSpecReader {
             }
                 .build())
         }
+    }
 
-        processInnerClasses(innerClasses)
-
-        addCompanionObject(configClass, className)
-
-        return FileSpec.builder(className.packageName, className.simpleName)
-            .addType(configClass.build())
-            .build()
+    private fun generateGetAllKeysMethod(
+        configProperties: Map<TypeSpec.Builder, List<PropertySpec>>,
+        innerClasses: Map<InnerTypeSpec, TypeSpec.Builder>
+    ) {
+        for ((typeSpec, propertySpecs) in configProperties) {
+            val myInnerTypes = innerClasses.keys.filter { it.enclosingClass === typeSpec }
+            typeSpec.addFunction(FunSpec.builder("getAllKeys").apply {
+                returns(
+                    ClassName("kotlin.sequences", "Sequence")
+                        .parameterizedBy(
+                            ClassName("kotlin.reflect", "KProperty0").parameterizedBy(starType)
+                        )
+                )
+                addModifiers(KModifier.OVERRIDE)
+                addKdoc(
+                    """
+                        |Returns a sequence of all key properties.
+                    """.trimMargin()
+                )
+                addCode(CodeBlock.builder()
+                    .add("return sequenceOf<KProperty0<*>>(")
+                    .also { block ->
+                        propertySpecs.forEachIndexed { index, prop ->
+                            val suffix = if (index == propertySpecs.lastIndex) "" else ", "
+                            block.add("::%N$suffix", prop.name)
+                        }
+                    }
+                    .add(")")
+                    .also { block ->
+                        myInnerTypes.forEach { block.add(" + %N.getAllKeys()", it.fieldName) }
+                    }
+                    .build())
+            }
+                .build())
+        }
     }
 
     private fun associateEnclosingClassToProperties(
@@ -98,7 +150,7 @@ class ConfigSpecReader {
                     key.type.copy(nullable = !key.metadata.required)
                 )
                     .addAnnotation(AnnotationSpec
-                        .builder(ClassName(RUNTIME_PACKAGE, "Key"))
+                        .builder(keyClassName)
                         .addMember("name = %S", key.key)
                         .useSiteTarget(AnnotationSpec.UseSiteTarget.PROPERTY)
                         .build()
@@ -149,6 +201,10 @@ class ConfigSpecReader {
         )
     }
 
+    private fun addSupertypes(configClass: TypeSpec.Builder) {
+        configClass.addSuperinterface(generatedConfigClassName)
+    }
+
     /**
      * Ensure inner classes get initialized and attached properly to their enclosing classes.
      */
@@ -173,7 +229,7 @@ class ConfigSpecReader {
                     FunSpec.builder("default")
                         .returns(className)
                         .addCode(
-                            "return %T(%T.%N)", className, ClassName(RUNTIME_PACKAGE, "TypedConfig"), "defaultSource"
+                            "return %T(%T.%N)", className, typedConfigClassName, "defaultSource"
                         )
                         .build()
                 )
@@ -194,6 +250,7 @@ class ConfigSpecReader {
             innerClasses.getOrPut(InnerTypeSpec(field, innerName, enclosingClass, enclosingClassName)) {
                 TypeSpec.classBuilder(innerName)
                     .addModifiers(KModifier.INNER)
+                    .also(::addSupertypes)
                     .primaryConstructor(
                         FunSpec.constructorBuilder().addModifiers(KModifier.INTERNAL).build()
                     )
