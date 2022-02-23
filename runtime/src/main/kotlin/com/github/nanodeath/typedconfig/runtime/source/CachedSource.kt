@@ -18,7 +18,7 @@ class CachedSource(private val delegate: Source) : Source {
 
     override fun getString(key: String): String? {
         if (!cache.containsKey(key)) {
-            val value = delegate.getInt(key)
+            val value = delegate.getString(key)
             logger.trace("Caching {} -> {}", key, value)
             cache.putIfAbsent(key, value)
         }
@@ -27,7 +27,7 @@ class CachedSource(private val delegate: Source) : Source {
 
     override fun getDouble(key: String): Double? {
         if (!cache.containsKey(key)) {
-            val value = delegate.getInt(key)
+            val value = delegate.getDouble(key)
             logger.trace("Caching {} -> {}", key, value)
             cache.putIfAbsent(key, value)
         }
