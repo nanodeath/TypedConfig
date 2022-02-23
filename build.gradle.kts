@@ -33,7 +33,6 @@ subprojects {
             val ext = extensions.getByType<PublishingExtension>()
             ext.publications.filterIsInstance<MavenPublication>().forEach { publication ->
                 publication.artifactId = "typedconfig-$name"
-                publication.attachCommonPomMetadata()
             }
         }
     }

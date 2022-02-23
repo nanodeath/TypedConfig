@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    signing
+    id("typedconfig.published-conventions")
 }
 
 dependencies {
@@ -14,11 +13,6 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -28,13 +22,5 @@ publishing {
                 description.set("A Source for TypedConfig that parses JSON files")
             }
         }
-    }
-}
-
-addSonatypeRepository()
-
-signing {
-    if (!IsCI) {
-        sign(publishing.publications["maven"])
     }
 }

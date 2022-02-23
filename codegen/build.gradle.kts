@@ -2,8 +2,7 @@ plugins {
     kotlin("jvm")
     id("com.github.johnrengelman.shadow") version "7.1.2"
     application
-    `maven-publish`
-    signing
+    id("typedconfig.published-conventions")
 }
 
 dependencies {
@@ -21,11 +20,6 @@ application {
     mainClass.set("com.github.nanodeath.typedconfig.generate.GeneratorKt")
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -36,13 +30,5 @@ publishing {
                 description.set("Standalone Java application that translates a TypedConfig spec into Kotlin")
             }
         }
-    }
-}
-
-addSonatypeRepository()
-
-signing {
-    if (!IsCI) {
-        sign(publishing.publications["maven"])
     }
 }
