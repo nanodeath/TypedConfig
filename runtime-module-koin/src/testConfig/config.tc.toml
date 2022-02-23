@@ -1,0 +1,15 @@
+class = "com.github.nanodeath.typedconfig.test.KoinConfig"
+
+[integer]
+type = "int"
+
+[nested.foo]
+type = "str"
+
+[optionalKey]
+type = "int"
+required = false
+
+[optionalKey2]
+type = "int"
+required = false

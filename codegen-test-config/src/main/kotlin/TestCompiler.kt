@@ -11,7 +11,6 @@ fun main(args: Array<String>) {
     for (config in configs) {
         ConfigSpecReader().translateIntoCode(config)
             .writeTo(outputDirectory)
-
     }
     println("configs: $configs")
 }
