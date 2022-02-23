@@ -1,8 +1,7 @@
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    signing
     idea
+    id("typedconfig.published-conventions")
 }
 
 val koinVersion: String by project
@@ -25,11 +24,6 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -40,14 +34,6 @@ publishing {
                 description.set("Koin dependency injection integration for TypedConfig")
             }
         }
-    }
-}
-
-addSonatypeRepository()
-
-signing {
-    if (!IsCI) {
-        sign(publishing.publications["maven"])
     }
 }
 

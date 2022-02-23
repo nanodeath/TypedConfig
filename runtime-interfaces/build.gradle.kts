@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    signing
+    id("typedconfig.published-conventions")
 }
 
 dependencies {
@@ -10,11 +9,6 @@ dependencies {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
 }
 
 publishing {
@@ -26,13 +20,5 @@ publishing {
                 description.set("Simple interfaces used by TypedConfig plugins")
             }
         }
-    }
-}
-
-addSonatypeRepository()
-
-signing {
-    if (!IsCI) {
-        sign(publishing.publications["maven"])
     }
 }

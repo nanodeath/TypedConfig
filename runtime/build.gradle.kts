@@ -1,7 +1,6 @@
 plugins {
     kotlin("jvm")
-    `maven-publish`
-    signing
+    id("typedconfig.published-conventions")
 }
 
 dependencies {
@@ -19,11 +18,6 @@ tasks.named<Test>("test") {
     systemProperty("org.slf4j.simpleLogger.showShortLogName", "true")
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -34,13 +28,5 @@ publishing {
                 description.set("Runtime required to compile and deploy TypedConfig-generated configuration")
             }
         }
-    }
-}
-
-addSonatypeRepository()
-
-signing {
-    if (!IsCI) {
-        sign(publishing.publications["maven"])
     }
 }

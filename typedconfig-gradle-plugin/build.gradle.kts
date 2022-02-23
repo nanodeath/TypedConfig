@@ -1,19 +1,14 @@
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("java-gradle-plugin")
-    id("maven-publish")
+    `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "0.18.0"
-    signing
+    id("typedconfig.published-conventions")
 }
 
 if ("publishPlugins" in gradle.startParameter.taskNames) {
     // why yes, I did feel bad writing this
     // but Gradle Plugin Portal won't let me publish using com.github
     group = "io.github.nanodeath"
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencies {
@@ -34,11 +29,6 @@ gradlePlugin {
             implementationClass = "com.github.nanodeath.typedconfig.TypedConfigPlugin"
         }
     }
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
 }
 
 val generatedResourcesDirectory = buildDir.resolve("generated-resources")
@@ -70,19 +60,7 @@ listOf("processResources", "sourcesJar").forEach { taskName ->
     tasks.getByName(taskName).dependsOn(generateResourcesTask)
 }
 
-addSonatypeRepository()
-
 afterEvaluate {
-    publishing.publications.asSequence()
-        .filterIsInstance<MavenPublication>()
-        .onEach { publication ->
-            if (!IsCI) {
-                signing {
-                    sign(publication)
-                }
-            }
-        }
-        .forEach(MavenPublication::attachCommonPomMetadata)
     (publishing.publications["TypedConfigPluginPluginMarkerMaven"] as MavenPublication).apply {
         pom {
             name.set("TypedConfig Gradle Plugin Marker")
