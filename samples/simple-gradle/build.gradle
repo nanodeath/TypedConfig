@@ -40,7 +40,7 @@ task generateConfig(type: JavaExec) {
     classpath = configurations.typedConfigGenerator
 
     // Class we're executing
-    mainClass.set("com.github.nanodeath.typedconfig.codegen.Generator")
+    mainClass.set("com.github.nanodeath.typedconfig.codegen.TypedConfigCliKt")
 
     // The Codegen CLI accepts an input file and an output directory.
     args(inputFile, generatedSourcesDirectory)
