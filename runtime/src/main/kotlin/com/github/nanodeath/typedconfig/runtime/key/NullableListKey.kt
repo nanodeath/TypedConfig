@@ -11,3 +11,7 @@ class NullableListKey<T>(
 ) : Key<List<T>?> {
     override fun resolve(): List<T>? = source.getList(name)?.map(parse)
 }
+
+fun <T> NullableListKey<T>.asSet(): Key<Set<T>?> = object : Key<Set<T>?> {
+    override fun resolve(): Set<T>? = this@asSet.resolve()?.toSet()
+}

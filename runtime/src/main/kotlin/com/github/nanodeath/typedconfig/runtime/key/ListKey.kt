@@ -33,3 +33,8 @@ class ListKey<T>(
         }
     }
 }
+
+// It'd be more efficient to dump it into a Set to begin with, but this is vastly simpler.
+fun <T> ListKey<T>.asSet(): Key<Set<T>> = object : Key<Set<T>> {
+    override fun resolve(): Set<T> = this@asSet.resolve().toSet()
+}

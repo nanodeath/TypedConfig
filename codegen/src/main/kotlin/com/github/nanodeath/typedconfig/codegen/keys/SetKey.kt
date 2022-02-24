@@ -2,6 +2,7 @@ package com.github.nanodeath.typedconfig.codegen.keys
 
 import com.github.nanodeath.typedconfig.codegen.RUNTIME_PACKAGE
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.asTypeName
 
@@ -12,22 +13,14 @@ internal data class SetKey(
     override val metadata: KeyMetadata,
     val genericType: Key<*>
 ) : Key<String> {
+    private val listKey = ListKey(key, defaultValue, checks, metadata, genericType)
+
     override val type = Set::class.asTypeName().parameterizedBy(genericType.type)
-    override val keyClass = ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "SetKey" else "NullableSetKey")
+    override val keyClass = listKey.keyClass
     override val templateString
-        get() = "%T(%S, %N, $defaultTemplate, listOf(${checks.joinToString(", ") { "%T" }})) { %T.parse(it) }"
-    override val templateArgs: Array<Any?>
-        get() = arrayOf(
-            keyClass, key, "source", *defaultValueForTemplate, *checks.toTypedArray(), genericType.keyClass
-        )
-
-    private val defaultTemplate: String
-        get() =
-            if (defaultValue == null) "%L"
-            else "setOf(${defaultValue.joinToString(",") { "%S" }})"
-
-    private val defaultValueForTemplate: Array<String?>
-        get() = defaultValue?.toTypedArray() ?: arrayOf(null)
+        get() = listKey.templateString + ".%M()"
+    override val templateArgs
+        get() = listKey.templateArgs + MemberName("$RUNTIME_PACKAGE.key", "asSet")
 
     internal object Generator : CollectionKeyGenerator<SetKey> {
         override val type = "set"
