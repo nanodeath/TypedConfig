@@ -9,6 +9,7 @@ dependencies {
     implementation(platform("com.fasterxml.jackson:jackson-bom:${libs.versions.jackson.get()}"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml")
+    implementation("com.github.ajalt.clikt:clikt:3.4.0")
     api("com.squareup:kotlinpoet:1.10.2")
 }
 
@@ -17,7 +18,7 @@ tasks.named<Test>("test") {
 }
 
 application {
-    mainClass.set("com.github.nanodeath.typedconfig.generate.GeneratorKt")
+    mainClass.set("com.github.nanodeath.typedconfig.codegen.TypedConfigCliKt")
 }
 
 publishing {
