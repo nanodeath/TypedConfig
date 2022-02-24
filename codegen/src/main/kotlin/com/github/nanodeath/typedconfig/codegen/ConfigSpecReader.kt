@@ -34,7 +34,8 @@ class ConfigSpecReader {
 
     private val collectionKeyTypeGenerators =
         listOf(
-            ListKey.Generator
+            ListKey.Generator,
+            SetKey.Generator
         ).associateBy { it.type }
 
     fun translateIntoCode(file: File): FileSpec = translateIntoCode(tomlMapper.readTree(file), file.path)

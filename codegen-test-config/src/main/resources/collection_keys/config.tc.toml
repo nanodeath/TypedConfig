@@ -16,3 +16,14 @@ default = [ 8080, 8443 ]
 [optionalDurationList]
 type = "list<duration>"
 required = false
+
+[uniqueIds]
+type = "set<int>"
+
+[uniqueIdsWithDefaults]
+type = "set<int>"
+default = [ 1, 2, 3 ]
+
+[optionalUniqueIds]
+type = "set<int>"
+required = false
