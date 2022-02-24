@@ -1,19 +1,39 @@
-@file:JvmName("Generator")
 package com.github.nanodeath.typedconfig.codegen
 
-import java.io.File
-import java.nio.file.Files
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.path
+import com.squareup.kotlinpoet.FileSpec
+import java.nio.file.Path
+
+object TypedConfigCli : CliktCommand() {
+    private val inputs: List<Path> by argument(help = "One or more *.tc.toml files").path(
+        mustExist = true,
+        mustBeReadable = true
+    )
+        .multiple()
+
+    private val outputDirectory: Path by argument(help = "Directory to generate config .kt files").path(
+        canBeFile = false,
+        canBeDir = true
+    )
+
+    private val quiet: Boolean by option(help = "Suppress non-essential text output").flag("-q")
+
+    override fun run() {
+        for (path in inputs) {
+            val fileSpec: FileSpec = ConfigSpecReader().translateIntoCode(path.toFile())
+            fileSpec.writeTo(outputDirectory)
+            if (!quiet) {
+                echo("Generated ${fileSpec.packageName}.${fileSpec.name} in $outputDirectory", err = true)
+            }
+        }
+    }
+}
 
 fun main(args: Array<String>) {
-    val inputFile = File(requireNotNull(args.getOrNull(0)) { "Input file must be provided" })
-    val outputDirectory = File(requireNotNull(args.getOrNull(1)) { "Output directory must be provided" })
-
-    require(inputFile.canRead()) { "Input does not exist or is not readable: $inputFile" }
-    Files.createDirectories(outputDirectory.toPath())
-
-    ConfigSpecReader()
-        .translateIntoCode(inputFile)
-        .writeTo(outputDirectory)
-
-    System.err.println("Wrote config out to $outputDirectory")
+    TypedConfigCli.main(args)
 }

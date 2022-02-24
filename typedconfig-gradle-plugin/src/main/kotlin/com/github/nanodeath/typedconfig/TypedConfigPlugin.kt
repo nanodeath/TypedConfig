@@ -60,7 +60,7 @@ class TypedConfigPlugin : Plugin<Project> {
                     t.inputs.file(inputFile)
                     t.outputs.dir(generatedSourcesDir)
                     t.classpath = configuration
-                    t.mainClass.set("com.github.nanodeath.typedconfig.codegen.Generator")
+                    t.mainClass.set("com.github.nanodeath.typedconfig.codegen.TypedConfigCliKt")
                     t.args(inputFile, generatedSourcesDir)
                 }
             }
