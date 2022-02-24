@@ -7,6 +7,8 @@ import com.github.nanodeath.typedconfig.codegen.keys.*
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import java.io.File
+import java.io.InputStream
+import java.io.Reader
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -35,20 +37,27 @@ class ConfigSpecReader {
             ListKey.Generator
         ).associateBy { it.type }
 
-    fun translateIntoCode(file: File): FileSpec {
-        val node = tomlMapper.readTree(file)
+    fun translateIntoCode(file: File): FileSpec = translateIntoCode(tomlMapper.readTree(file), file.path)
+    fun translateIntoCode(inputStream: InputStream, name: String = "<inputStream>"): FileSpec =
+        translateIntoCode(tomlMapper.readTree(inputStream), name)
+
+    fun translateIntoCode(reader: Reader, name: String = "<reader>"): FileSpec =
+        translateIntoCode(tomlMapper.readTree(reader), name)
+
+    private fun translateIntoCode(jsonNode: JsonNode, inputName: String): FileSpec {
+        val node: JsonNode = jsonNode
         val className = node.get("class").textValue().let { classString ->
             ClassName.bestGuess(classString)
         }
         val description: String? = node.path("description").textValue()
         val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
         val keys: List<Key<*>> =
-            parseKeyTypes(node, file, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
+            parseKeyTypes(node, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
 
         val configClass = initializeMainConfigClass(className)
 
         addDescription(configClass, description)
-        addGeneratedAnnotation(configClass, file)
+        addGeneratedAnnotation(configClass, inputName)
         addSupertypes(configClass)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
@@ -149,11 +158,12 @@ class ConfigSpecReader {
                     key.key.substringAfterLast('.'),
                     key.type.copy(nullable = !key.metadata.required)
                 )
-                    .addAnnotation(AnnotationSpec
-                        .builder(keyClassName)
-                        .addMember("name = %S", key.key)
-                        .useSiteTarget(AnnotationSpec.UseSiteTarget.PROPERTY)
-                        .build()
+                    .addAnnotation(
+                        AnnotationSpec
+                            .builder(keyClassName)
+                            .addMember("name = %S", key.key)
+                            .useSiteTarget(AnnotationSpec.UseSiteTarget.PROPERTY)
+                            .build()
                     )
                     .delegate(
                         key.templateString,
@@ -191,12 +201,12 @@ class ConfigSpecReader {
         }
     }
 
-    private fun addGeneratedAnnotation(configClass: TypeSpec.Builder, file: File) {
+    private fun addGeneratedAnnotation(configClass: TypeSpec.Builder, name: String) {
         configClass.addAnnotation(
             AnnotationSpec.builder(ClassName("javax.annotation", "Generated"))
                 .addMember("%S", ConfigSpecReader::class.qualifiedName!!)
                 .addMember("date = %S", Instant.now().truncatedTo(ChronoUnit.SECONDS))
-                .addMember("comments = %S", "Generated from $file")
+                .addMember("comments = %S", "Generated from $name")
                 .build()
         )
     }
@@ -272,12 +282,11 @@ class ConfigSpecReader {
 
     private fun parseKeyTypes(
         node: JsonNode,
-        file: File,
         precedingKey: List<String> = emptyList()
     ): List<Key<*>> = node.fields().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
-            require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}` in $file" }
+            require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}`" }
 
             val fullKey = if (precedingKey.isEmpty()) key else "${precedingKey.joinToString(".")}.$key"
 
@@ -325,10 +334,10 @@ class ConfigSpecReader {
                         }
                     }
                     // TODO more specific exception
-                    throw IllegalArgumentException("Unsupported type: `${type}` in $file")
+                    throw IllegalArgumentException("Unsupported type: `${type}`")
                 }
             } else if (value.isObject) {
-                parseKeyTypes(value, file, precedingKey + listOf(key)).asSequence()
+                parseKeyTypes(value, precedingKey + listOf(key)).asSequence()
             } else {
                 // FIXME this is an error
                 emptySequence()
