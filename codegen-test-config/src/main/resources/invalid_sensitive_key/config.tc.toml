@@ -1,0 +1,5 @@
+class = "com.github.nanodeath.typedconfig.test.InvalidSensitiveKeyConfig"
+
+["intCantBeSensitive"]
+type = "int"
+sensitive = true

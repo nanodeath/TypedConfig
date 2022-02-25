@@ -302,12 +302,13 @@ class ConfigSpecReader {
                         ?.map(keyTypeGenerator::mapChecks)
                     val metadata = KeyMetadata(
                         description = value.get("description")?.textValue(),
-                        required = value.get("required")?.booleanValue() ?: true
+                        required = value.get("required")?.booleanValue() ?: true,
+                        sensitive = value.get("sensitive")?.booleanValue() ?: false
                     )
                     sequenceOf(
                         keyTypeGenerator.generate(
                             fullKey, value.get("default")?.asText(), checks.orEmpty(), metadata
-                        )
+                        ).validate(type)
                     )
                 } else {
                     val collectionPattern = Regex("(\\w+)<(\\w*)>")
@@ -319,11 +320,12 @@ class ConfigSpecReader {
                         if (collectionReader != null && valueTypeReader != null) {
                             val metadata = KeyMetadata(
                                 description = value.get("description")?.textValue(),
-                                required = value.get("required")?.booleanValue() ?: true
+                                required = value.get("required")?.booleanValue() ?: true,
+                                sensitive = value.get("sensitive")?.booleanValue() ?: false
                             )
                             val default = value.get("default")?.elements()?.asSequence()?.map { it.asText() }?.toList()
                             val genericKeyType = valueTypeReader
-                                .generate("", null, emptyList(), KeyMetadata(null, true))
+                                .generate("", null, emptyList(), KeyMetadata(null, required = true, sensitive = false))
                             return@flatMap sequenceOf(
                                 collectionReader.generate(
                                     fullKey,
@@ -345,4 +347,11 @@ class ConfigSpecReader {
             }
         }
         .toList()
+}
+
+private fun <T> Key<T>.validate(type: String): Key<T> = apply {
+    if (!supportsSensitiveFlag && metadata.sensitive) {
+        throw UnsupportedOperationException(
+            "The `$type` type (for key '${this.key}') doesn't support the `sensitive` attribute")
+    }
 }

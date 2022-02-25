@@ -7,7 +7,8 @@ class NullableStringKey(
     override val name: String,
     private val source: Source,
     @Suppress("unused") private val default: Unit?,
-    private val checks: List<StringCheck>
+    private val checks: List<StringCheck>,
+    override val sensitive: Boolean
 ) : Key<String?> {
     override fun resolve(): String? {
         val value = source.getString(this)

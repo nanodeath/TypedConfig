@@ -44,3 +44,8 @@ default = "100 milliseconds"
 [optionalDuration]
 type = "duration"
 required = false
+
+[sensitiveString]
+type = "str"
+description = "Special API token"
+sensitive = true
