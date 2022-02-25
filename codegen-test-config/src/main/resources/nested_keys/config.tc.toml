@@ -10,3 +10,6 @@ default = 5432
 
 [database.credentials.username]
 type = "str"
+
+[foo.bar.baz] # don't add any other keys to `foo`!
+type = "str"
