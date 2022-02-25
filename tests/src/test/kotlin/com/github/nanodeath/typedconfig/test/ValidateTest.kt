@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.test
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.should
@@ -24,15 +25,15 @@ class ValidateTest {
         RequiredKeyConfig(source).validate()
 
         verifyAll {
-            source.getInt("port")
-            source.getInt("database.port")
+            source.getInt(keyWithName("port"))
+            source.getInt(keyWithName("database.port"))
         }
     }
 
     @Test
     fun failsIfRequiredTopLevelKeyAbsent() {
         every { source.getInt(any()) } returns 80
-        every { source.getInt("port") } returns null
+        every { source.getInt(keyWithName("port")) } returns null
 
         shouldThrow<MissingConfigurationException> {
             RequiredKeyConfig(source).validate()
@@ -44,7 +45,7 @@ class ValidateTest {
     @Test
     fun failsIfRequiredNestedKeyAbsent() {
         every { source.getInt(any()) } returns 80
-        every { source.getInt("database.port") } returns null
+        every { source.getInt(keyWithName("database.port")) } returns null
 
         shouldThrow<MissingConfigurationException> {
             RequiredKeyConfig(source).validate()

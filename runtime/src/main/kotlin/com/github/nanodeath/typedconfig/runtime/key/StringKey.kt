@@ -5,7 +5,7 @@ import com.github.nanodeath.typedconfig.runtime.checks.StringCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
 class StringKey(
-    private val name: String,
+    override val name: String,
     private val source: Source,
     default: String?,
     private val checks: List<StringCheck>
@@ -14,7 +14,7 @@ class StringKey(
     private val parsedDefault: String? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): String {
-        val value = source.getString(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
+        val value = source.getString(this) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)

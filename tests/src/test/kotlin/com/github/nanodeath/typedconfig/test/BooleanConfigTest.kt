@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.test
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.beNull
@@ -24,7 +25,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).requiredBoolean shouldBe true
 
-        verifyAll { source.getBoolean("requiredBoolean") }
+        verifyAll { source.getBoolean(keyWithName("requiredBoolean")) }
     }
 
     @Test
@@ -35,7 +36,7 @@ class BooleanConfigTest {
             BooleanConfig(source).requiredBoolean
         }
 
-        verifyAll { source.getBoolean("requiredBoolean") }
+        verifyAll { source.getBoolean(keyWithName("requiredBoolean")) }
     }
 
     @Test
@@ -44,7 +45,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).optionalBoolean shouldBe true
 
-        verifyAll { source.getBoolean("optionalBoolean") }
+        verifyAll { source.getBoolean(keyWithName("optionalBoolean")) }
     }
 
     @Test
@@ -53,7 +54,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).optionalBoolean should beNull()
 
-        verifyAll { source.getBoolean("optionalBoolean") }
+        verifyAll { source.getBoolean(keyWithName("optionalBoolean")) }
     }
 
     @Test
@@ -62,7 +63,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).defaultTrue shouldBe false
 
-        verifyAll { source.getBoolean("defaultTrue") }
+        verifyAll { source.getBoolean(keyWithName("defaultTrue")) }
     }
 
     @Test
@@ -71,7 +72,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).defaultTrue shouldBe true
 
-        verifyAll { source.getBoolean("defaultTrue") }
+        verifyAll { source.getBoolean(keyWithName("defaultTrue")) }
     }
 
     @Test
@@ -80,7 +81,7 @@ class BooleanConfigTest {
 
         BooleanConfig(source).defaultFalse shouldBe true
 
-        verifyAll { source.getBoolean("defaultFalse") }
+        verifyAll { source.getBoolean(keyWithName("defaultFalse")) }
     }
 
     @Test
@@ -89,6 +90,6 @@ class BooleanConfigTest {
 
         BooleanConfig(source).defaultFalse shouldBe false
 
-        verifyAll { source.getBoolean("defaultFalse") }
+        verifyAll { source.getBoolean(keyWithName("defaultFalse")) }
     }
 }

@@ -1,5 +1,6 @@
 package com.github.nanodeath.typedconfig.test
 
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
@@ -23,7 +24,7 @@ class CollectionsTest {
 
         CollectionsConfig(source).adminUsers shouldBe listOf("root", "me")
 
-        verifyAll { source.getList("adminUsers") }
+        verifyAll { source.getList(keyWithName("adminUsers")) }
     }
 
     @Test
@@ -32,7 +33,7 @@ class CollectionsTest {
 
         CollectionsConfig(source).allowedPorts shouldBe listOf(80, 8080)
 
-        verifyAll { source.getList("allowedPorts") }
+        verifyAll { source.getList(keyWithName("allowedPorts")) }
     }
 
     @Test
@@ -41,7 +42,7 @@ class CollectionsTest {
 
         CollectionsConfig(source).uniqueIds shouldBe setOf(80, 8080)
 
-        verifyAll { source.getList("uniqueIds") }
+        verifyAll { source.getList(keyWithName("uniqueIds")) }
     }
 
     @Test
@@ -51,7 +52,7 @@ class CollectionsTest {
         CollectionsConfig(source).uniqueIdsWithDefaults shouldBe setOf(1, 2, 3)
         CollectionsConfig(source).uniqueIdsWithDefaults shouldBe setOf(80, 8080)
 
-        verify(exactly = 2) { source.getList("uniqueIdsWithDefaults") }
+        verify(exactly = 2) { source.getList(keyWithName("uniqueIdsWithDefaults")) }
     }
 
     @Test
@@ -61,6 +62,6 @@ class CollectionsTest {
         CollectionsConfig(source).optionalUniqueIds should beNull()
         CollectionsConfig(source).optionalUniqueIds shouldBe setOf(80, 8080)
 
-        verify(exactly = 2) { source.getList("optionalUniqueIds") }
+        verify(exactly = 2) { source.getList(keyWithName("optionalUniqueIds")) }
     }
 }

@@ -6,7 +6,7 @@ import com.github.nanodeath.typedconfig.runtime.checks.IntegerCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
 class IntegerKey(
-    private val name: String,
+    override val name: String,
     private val source: Source,
     default: String?,
     private val checks: List<IntegerCheck>
@@ -14,7 +14,7 @@ class IntegerKey(
     private val parsedDefault: Int? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): Int {
-        val value = source.getInt(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
+        val value = source.getInt(this) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)

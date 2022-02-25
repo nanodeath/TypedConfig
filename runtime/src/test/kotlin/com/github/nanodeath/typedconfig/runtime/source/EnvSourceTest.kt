@@ -2,6 +2,7 @@ package com.github.nanodeath.typedconfig.runtime.source
 
 import com.github.nanodeath.typedconfig.runtime.EPSILON
 import com.github.nanodeath.typedconfig.runtime.ParseException
+import com.github.nanodeath.typedconfig.runtime.key.SimpleKey
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.should
@@ -28,14 +29,14 @@ internal class EnvSourceTest {
         every { env.get(any()) } returns envValue
 
         when (type) {
-            "string" -> subject.getString(inputKey) shouldBe parsedValue
-            "int" -> subject.getInt(inputKey) shouldBe parsedValue
+            "string" -> subject.getString(SimpleKey(inputKey)) shouldBe parsedValue
+            "int" -> subject.getInt(SimpleKey(inputKey)) shouldBe parsedValue
             "double" -> {
                 val matcher = if (parsedValue == null) null else (parsedValue as Double plusOrMinus EPSILON)
-                subject.getDouble(inputKey) shouldBe matcher
+                subject.getDouble(SimpleKey(inputKey)) shouldBe matcher
             }
-            "bool" -> subject.getBoolean(inputKey) shouldBe parsedValue
-            "list" -> subject.getList(inputKey) shouldBe parsedValue
+            "bool" -> subject.getBoolean(SimpleKey(inputKey)) shouldBe parsedValue
+            "list" -> subject.getList(SimpleKey(inputKey)) shouldBe parsedValue
             else -> throw UnsupportedOperationException(type)
         }
 
@@ -49,11 +50,11 @@ internal class EnvSourceTest {
 
         shouldThrow<ParseException> {
             when (type) {
-                "string" -> subject.getString(inputKey)
-                "int" -> subject.getInt(inputKey)
-                "double" -> subject.getDouble(inputKey)
-                "bool" -> subject.getBoolean(inputKey)
-                "list" -> subject.getList(inputKey)
+                "string" -> subject.getString(SimpleKey(inputKey))
+                "int" -> subject.getInt(SimpleKey(inputKey))
+                "double" -> subject.getDouble(SimpleKey(inputKey))
+                "bool" -> subject.getBoolean(SimpleKey(inputKey))
+                "list" -> subject.getList(SimpleKey(inputKey))
                 else -> throw UnsupportedOperationException(type)
             }
         } should {

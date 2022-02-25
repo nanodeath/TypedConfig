@@ -8,6 +8,7 @@ dependencies {
     api("javax.annotation:javax.annotation-api:1.3.2")
     implementation(libs.slf4j)
     testImplementation(libs.bundles.tests)
+    testImplementation(project(":runtime-test-common"))
 }
 
 tasks.named<Test>("test") {

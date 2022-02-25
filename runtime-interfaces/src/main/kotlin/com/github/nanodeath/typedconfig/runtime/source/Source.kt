@@ -1,9 +1,11 @@
 package com.github.nanodeath.typedconfig.runtime.source
 
+import com.github.nanodeath.typedconfig.runtime.key.Key
+
 interface Source {
-    fun getInt(key: String): Int?
-    fun getString(key: String): String?
-    fun getDouble(key: String): Double?
-    fun getBoolean(key: String): Boolean?
-    fun getList(key: String): List<String>?
+    fun getInt(key: Key<*>): Int?
+    fun getString(key: Key<*>): String?
+    fun getDouble(key: Key<*>): Double?
+    fun getBoolean(key: Key<*>): Boolean?
+    fun getList(key: Key<*>): List<String>?
 }

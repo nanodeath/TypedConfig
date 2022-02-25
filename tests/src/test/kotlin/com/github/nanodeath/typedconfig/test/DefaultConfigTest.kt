@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.test
 
 import com.github.nanodeath.typedconfig.runtime.TypedConfig
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.EnvSource
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrowUnit
@@ -66,7 +67,7 @@ class DefaultConfigTest {
         val nameOfTestUser = GeneratedConfig.default().nameOfTestUser
         nameOfTestUser shouldBe "hello"
 
-        verifyAll { source.getString("nameOfTestUser") }
+        verifyAll { source.getString(keyWithName("nameOfTestUser")) }
     }
 
     @Test

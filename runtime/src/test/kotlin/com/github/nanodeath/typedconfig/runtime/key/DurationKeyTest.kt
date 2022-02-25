@@ -36,13 +36,14 @@ class DurationKeyTest {
         val source = mockk<Source>()
         every { source.getString(any()) } returns "a few seconds"
 
+        val durationKey = DurationKey("timeout", source, null, emptyList())
         shouldThrow<ParseException> {
-            DurationKey("timeout", source, null, emptyList()).resolve()
+            durationKey.resolve()
         } should { e ->
             e.shouldHaveMessage("Parse failure on key `timeout`: Not a valid duration: 'a few seconds'")
         }
 
-        verifyAll { source.getString("timeout") }
+        verifyAll { source.getString(durationKey) }
     }
 
     companion object {

@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime.source
 
 import com.fasterxml.jackson.jr.ob.JSON
+import com.github.nanodeath.typedconfig.runtime.key.SimpleKey
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.doubles.plusOrMinus
 import io.kotest.matchers.nulls.beNull
@@ -24,48 +25,48 @@ class JsonSourceTest {
 
     @Test
     fun intTopLevelKey() {
-        source.getInt("foo") shouldBe 1
+        source.getInt(SimpleKey("foo")) shouldBe 1
     }
 
     @Test
     fun intMissingTopLevelKey() {
-        source.getInt("missing") should beNull()
+        source.getInt(SimpleKey("missing")) should beNull()
     }
 
     @Test
     fun intNestedKey() {
-        source.getInt("bar.baz") shouldBe 2
+        source.getInt(SimpleKey("bar.baz")) shouldBe 2
     }
 
     @Test
     fun intNestedKeyObject() {
-        source.getInt("bar") should beNull()
+        source.getInt(SimpleKey("bar")) should beNull()
     }
 
     @Test
     fun intNestedKeyList() {
-        source.getInt("list.1") should beNull()
+        source.getInt(SimpleKey("list.1")) should beNull()
     }
 
     @Test
     fun stringKey() {
-        source.getString("str") shouldBe "foo"
-        source.getString("foo") shouldBe null
+        source.getString(SimpleKey("str")) shouldBe "foo"
+        source.getString(SimpleKey("foo")) shouldBe null
     }
 
     @Test
     fun doubleKey() {
-        source.getDouble("double") shouldBe (1.23 plusOrMinus 0.01)
-        source.getDouble("foo") shouldBe null
+        source.getDouble(SimpleKey("double")) shouldBe (1.23 plusOrMinus 0.01)
+        source.getDouble(SimpleKey("foo")) shouldBe null
     }
 
     @Test
     fun booleanKey() {
-        source.getBoolean("boolean") shouldBe true
-        source.getBoolean("unknown") shouldBe null
+        source.getBoolean(SimpleKey("boolean")) shouldBe true
+        source.getBoolean(SimpleKey("unknown")) shouldBe null
         shouldThrow<ClassCastException> {
             // Hmm...
-            source.getBoolean("foo")
+            source.getBoolean(SimpleKey("foo"))
         }
     }
 
@@ -74,7 +75,7 @@ class JsonSourceTest {
         val file = Files.createTempFile("TypedConfig.", ".json").toFile()
         try {
             JSON.std.write(mapOf("foo" to "bar"), file)
-            JsonSource(file).getString("foo") shouldBe "bar"
+            JsonSource(file).getString(SimpleKey("foo")) shouldBe "bar"
         } finally {
             Files.deleteIfExists(file.toPath())
         }

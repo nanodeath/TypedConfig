@@ -13,6 +13,7 @@ dependencies {
     testImplementation(project(":runtime"))
 
     testImplementation(libs.bundles.tests)
+    testImplementation(project(":runtime-test-common"))
 }
 
 tasks.named<Test>("test") {

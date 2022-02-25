@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":runtime-interfaces"))
     implementation("com.fasterxml.jackson.jr:jackson-jr-objects:${libs.versions.jackson.get()}")
     testImplementation(libs.bundles.tests)
+    testImplementation(project(":runtime-test-common"))
 }
 
 tasks.named<Test>("test") {

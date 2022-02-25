@@ -1,5 +1,7 @@
 package com.github.nanodeath.typedconfig.runtime
 
+import com.github.nanodeath.typedconfig.runtime.key.Key
+
 @Suppress("unused")
 sealed class TypedConfigException : RuntimeException {
     constructor() : super()
@@ -20,3 +22,5 @@ fun ParseException.appendKey(key: String): ParseException {
         newException.stackTrace = this.stackTrace
     }
 }
+
+fun ParseException.appendKey(key: Key<*>): ParseException = this.appendKey(key.name)

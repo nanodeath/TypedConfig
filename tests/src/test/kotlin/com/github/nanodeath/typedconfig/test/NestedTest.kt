@@ -1,5 +1,6 @@
 package com.github.nanodeath.typedconfig.test
 
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -22,7 +23,7 @@ class NestedTest {
 
         subject.app.port shouldBe 500
 
-        verifyAll { source.getInt("app.port") }
+        verifyAll { source.getInt(keyWithName("app.port")) }
     }
 
     @Test
@@ -31,6 +32,6 @@ class NestedTest {
 
         subject.database.credentials.username shouldBe "user"
 
-        verifyAll { source.getString("database.credentials.username") }
+        verifyAll { source.getString(keyWithName("database.credentials.username")) }
     }
 }

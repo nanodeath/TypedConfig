@@ -6,7 +6,7 @@ import com.github.nanodeath.typedconfig.runtime.checks.DoubleCheck
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
 class DoubleKey(
-    private val name: String,
+    override val name: String,
     private val source: Source,
     default: String?,
     private val checks: List<DoubleCheck>
@@ -14,7 +14,7 @@ class DoubleKey(
     private val parsedDefault: Double? = default?.let { parseWithName(it, name) }
 
     override fun resolve(): Double {
-        val value = source.getDouble(name) ?: parsedDefault ?: throw MissingConfigurationException(name)
+        val value = source.getDouble(this) ?: parsedDefault ?: throw MissingConfigurationException(name)
         if (checks.isNotEmpty()) {
             for (check in checks) {
                 check(value, name)

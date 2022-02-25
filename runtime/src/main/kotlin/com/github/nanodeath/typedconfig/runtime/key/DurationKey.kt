@@ -7,7 +7,7 @@ import java.time.Duration
 import java.time.format.DateTimeParseException
 
 class DurationKey(
-    private val name: String,
+    override val name: String,
     private val source: Source,
     default: String?,
     @Suppress("unused") private val checks: List<Unit>
@@ -15,7 +15,7 @@ class DurationKey(
     private val parsedDefault: Duration? = default?.let { parse(it) }
 
     override fun resolve(): Duration =
-        source.getString(name)?.let { parseWithName(it, name) }
+        source.getString(this)?.let { parseWithName(it, name) }
             ?: parsedDefault
             ?: throw MissingConfigurationException(name)
 
