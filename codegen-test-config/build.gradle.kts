@@ -4,6 +4,11 @@ plugins {
 
 dependencies {
     implementation(project(":codegen"))
+    testImplementation(libs.bundles.tests)
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }
 
 val generateConfigs = tasks.register<JavaExec>("generateConfigs") {

@@ -13,11 +13,11 @@ internal data class StringKey(
     override val type = String::class.asTypeName()
     override val keyClass =
         ClassName("$RUNTIME_PACKAGE.key", if (metadata.required) "StringKey" else "NullableStringKey")
-
-    override val templateString get() = "%T(%S, %N, %S, listOf(${checks.joinToString(", ") { "%T" }}))"
+    override val supportsSensitiveFlag = true
+    override val templateString get() = "%T(%S, %N, %S, listOf(${checks.joinToString(", ") { "%T" }}), %L)"
     override val templateArgs: Array<Any?>
         get() = arrayOf(
-            keyClass, key, "source", defaultValue, *checks.toTypedArray()
+            keyClass, key, "source", defaultValue, *checks.toTypedArray(), metadata.sensitive
         )
 
     internal object Generator : KeyGenerator<StringKey> {

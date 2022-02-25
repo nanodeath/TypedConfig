@@ -14,6 +14,7 @@ interface Key<T> {
     val metadata: KeyMetadata
     val templateString: String
     val templateArgs: Array<Any?>
+    val supportsSensitiveFlag: Boolean get() = false
 }
 
 val Key<*>.kdoc: CodeBlock

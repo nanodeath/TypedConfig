@@ -8,7 +8,8 @@ class StringKey(
     override val name: String,
     private val source: Source,
     default: String?,
-    private val checks: List<StringCheck>
+    private val checks: List<StringCheck>,
+    override val sensitive: Boolean
 ) : Key<String> {
     // this obviously doesn't do much; it's just for consistency with the other Keys.
     private val parsedDefault: String? = default?.let { parseWithName(it, name) }

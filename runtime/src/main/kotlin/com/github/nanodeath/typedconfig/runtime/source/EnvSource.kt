@@ -14,7 +14,7 @@ class EnvSource internal constructor(private val env: Env) : Source {
         .also { log.debug("getInt({}) => {}", key, it) }
 
     override fun getString(key: Key<*>): String? = key.parseUsing(StringKey::parse)
-        .also { log.debug("getString({}) => {}", key, it) }
+        .also { log.debug("getString({}) => {}", key, key.maskIfSensitive(it)) }
 
     override fun getDouble(key: Key<*>): Double? = key.parseUsing(DoubleKey::parse)
         .also { log.debug("getDouble({}) => {}", key, it) }
@@ -23,7 +23,11 @@ class EnvSource internal constructor(private val env: Env) : Source {
         .also { log.debug("getBoolean({}) => {}", key, it) }
 
     override fun getList(key: Key<*>): List<String>? = key.parseUsing(ListKey.Companion::parse)
-        .also { log.debug("getList({}) => {}", key, it) }
+        .also { list ->
+            if (log.isDebugEnabled) {
+                log.debug("getList({}) => {}", key, list?.map(key::maskIfSensitive))
+            }
+        }
 
     private inline fun <T> Key<*>.parseUsing(callback: (String) -> T): T? =
         try {
