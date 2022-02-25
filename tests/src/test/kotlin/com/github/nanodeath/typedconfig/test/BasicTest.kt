@@ -1,6 +1,7 @@
 package com.github.nanodeath.typedconfig.test
 
 import com.github.nanodeath.typedconfig.runtime.MissingConfigurationException
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.beNull
@@ -27,7 +28,7 @@ class BasicTest {
         val loginTries = GeneratedConfig(source).maxLoginTries
         loginTries shouldBe 5
 
-        verifyAll { source.getInt("maxLoginTries") }
+        verifyAll { source.getInt(keyWithName("maxLoginTries")) }
     }
 
     @Test
@@ -37,7 +38,7 @@ class BasicTest {
         val nameOfTestUser = GeneratedConfig(source).nameOfTestUser
         nameOfTestUser shouldBe "hello"
 
-        verifyAll { source.getString("nameOfTestUser") }
+        verifyAll { source.getString(keyWithName("nameOfTestUser")) }
     }
 
     @Test
@@ -51,7 +52,7 @@ class BasicTest {
                     "but could not be resolved and no default was provided"
         }
 
-        verifyAll { source.getString("requiredConfig") }
+        verifyAll { source.getString(keyWithName("requiredConfig")) }
     }
 
     @Test
@@ -96,9 +97,9 @@ class BasicTest {
         config.optionalStr should beNull()
 
         verifyAll {
-            source.getInt("optionalInt")
-            source.getDouble("optionalDouble")
-            source.getString("optionalStr")
+            source.getInt(keyWithName("optionalInt"))
+            source.getDouble(keyWithName("optionalDouble"))
+            source.getString(keyWithName("optionalStr"))
         }
     }
 }

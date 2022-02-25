@@ -1,5 +1,6 @@
 package com.github.nanodeath.typedconfig.test
 
+import com.github.nanodeath.typedconfig.runtime.key.keyWithName
 import com.github.nanodeath.typedconfig.runtime.source.Source
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -20,7 +21,7 @@ class NamespacedConfigTest {
 
         NamespacedConfig(source).app.port shouldBe 8080
 
-        verify { source.getInt("app.port") }
+        verify { source.getInt(keyWithName("app.port")) }
     }
 
     @Test
@@ -29,7 +30,7 @@ class NamespacedConfigTest {
 
         NamespacedConfig(source).app.databasePort shouldBe 5432
 
-        verify { source.getInt("app.databasePort") }
+        verify { source.getInt(keyWithName("app.databasePort")) }
     }
 
     @Test
@@ -38,6 +39,6 @@ class NamespacedConfigTest {
 
         NamespacedConfig(source).app.nested.key shouldBe 42
 
-        verify { source.getInt("app.nested.key") }
+        verify { source.getInt(keyWithName("app.nested.key")) }
     }
 }

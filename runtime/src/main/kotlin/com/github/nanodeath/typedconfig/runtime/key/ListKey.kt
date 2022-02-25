@@ -5,7 +5,7 @@ import com.github.nanodeath.typedconfig.runtime.ParseException
 import com.github.nanodeath.typedconfig.runtime.source.Source
 
 class ListKey<T>(
-    private val name: String,
+    override val name: String,
     private val source: Source,
     private val default: List<String>?,
     @Suppress("unused") private val checks: List<Unit>,
@@ -13,7 +13,7 @@ class ListKey<T>(
 ) : Key<List<T>> {
     @Suppress("TooGenericExceptionCaught")
     override fun resolve(): List<T> {
-        val strings = source.getList(name) ?: default ?: throw MissingConfigurationException(name)
+        val strings = source.getList(this) ?: default ?: throw MissingConfigurationException(name)
         return strings.mapIndexed { index, s: String ->
             try {
                 parse(s)
@@ -36,5 +36,6 @@ class ListKey<T>(
 
 // It'd be more efficient to dump it into a Set to begin with, but this is vastly simpler.
 fun <T> ListKey<T>.asSet(): Key<Set<T>> = object : Key<Set<T>> {
+    override val name: String = this@asSet.name
     override fun resolve(): Set<T> = this@asSet.resolve().toSet()
 }
