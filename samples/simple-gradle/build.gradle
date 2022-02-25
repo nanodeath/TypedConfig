@@ -21,8 +21,8 @@ application {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // These are the two important dependencies.
-    implementation "com.github.nanodeath:typedconfig-runtime:0.1" // Used by the generated config.
-    typedConfigGenerator "com.github.nanodeath:typedconfig-codegen:0.1" // Used to generate the config.
+    implementation "com.github.nanodeath:typedconfig-runtime:0.2-SNAPSHOT" // Used by the generated config.
+    typedConfigGenerator "com.github.nanodeath:typedconfig-codegen:0.2-SNAPSHOT" // Used to generate the config.
 }
 
 // Define where we want to put the generated config.
