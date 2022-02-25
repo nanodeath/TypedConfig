@@ -178,7 +178,9 @@ class ConfigSpecReader {
         // Note that this stub will end up getting overwritten if we actually do have properties (that is,
         // if propertiesByClass[mainConfigClass] is set).
         val stubForMainClass = mapOf(mainConfigClass to emptyList<PropertySpec>())
-        return stubForMainClass + propertiesByClass
+        // This can affect empty inner classes, too, e.g. outer.inner.key, where outer has no other keys.
+        val stubForInnerClasses = innerClasses.values.map { it to emptyList<PropertySpec>() }
+        return stubForMainClass + stubForInnerClasses + propertiesByClass
     }
 
     private fun initializeMainConfigClass(className: ClassName): TypeSpec.Builder =
