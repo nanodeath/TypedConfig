@@ -56,11 +56,10 @@ sourceSets {
     }
 }
 
-listOf("processResources", "sourcesJar").forEach { taskName ->
-    tasks.getByName(taskName).dependsOn(generateResourcesTask)
-}
-
 afterEvaluate {
+    listOf("processResources", "sourcesJar", "publishPluginJar").forEach { taskName ->
+        tasks.getByName(taskName).dependsOn(generateResourcesTask)
+    }
     (publishing.publications["TypedConfigPluginPluginMarkerMaven"] as MavenPublication).apply {
         pom {
             name.set("TypedConfig Gradle Plugin Marker")
