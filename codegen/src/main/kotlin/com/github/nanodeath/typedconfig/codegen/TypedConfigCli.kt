@@ -8,6 +8,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.path
 import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Path
+import java.time.Duration
+import java.time.Instant
 
 object TypedConfigCli : CliktCommand() {
     private val inputs: List<Path> by argument(help = "One or more *.tc.toml files").path(
@@ -25,10 +27,13 @@ object TypedConfigCli : CliktCommand() {
 
     override fun run() {
         for (path in inputs) {
+            val start = Instant.now()
             val fileSpec: FileSpec = ConfigSpecReader().translateIntoCode(path.toFile())
             fileSpec.writeTo(outputDirectory)
+            val executionTime = Duration.between(start, Instant.now())
             if (!quiet) {
-                echo("Generated ${fileSpec.packageName}.${fileSpec.name} in $outputDirectory", err = true)
+                echo("Generated ${fileSpec.packageName}.${fileSpec.name} into $outputDirectory " +
+                        "in ${executionTime.toMillis()}ms", err = true)
             }
         }
     }
