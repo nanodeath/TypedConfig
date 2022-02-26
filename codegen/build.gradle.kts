@@ -10,7 +10,9 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml")
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
+    implementation("org.apache.commons:commons-text:1.9")
     api("com.squareup:kotlinpoet:1.10.2")
+    testImplementation(libs.bundles.tests)
 }
 
 tasks.named<Test>("test") {
