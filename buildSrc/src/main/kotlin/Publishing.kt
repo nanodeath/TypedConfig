@@ -9,7 +9,7 @@ fun MavenPublication.attachCommonPomMetadata() {
         developer {
             id.set("nanodeath")
             name.set("Max Aller")
-            email.set("max@maxaller.name")
+            email.set("max@madetobuild.dev")
         }
     }
     pom.scm {

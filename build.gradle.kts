@@ -5,7 +5,7 @@ plugins {
     signing
 }
 
-group = "dev.madetobuild"
+group = "dev.madetobuild.typedconfig"
 version = "0.2-SNAPSHOT"
 
 allprojects {
@@ -26,14 +26,6 @@ subprojects {
         // Run Detekt towards the start of the build instead of the end, for time efficiency...
         tasks.test {
             shouldRunAfter("detekt")
-        }
-
-        // Attach Apache-2.0 license to everything that publishes.
-        plugins.withType<MavenPublishPlugin> {
-            val ext = extensions.getByType<PublishingExtension>()
-            ext.publications.filterIsInstance<MavenPublication>().forEach { publication ->
-                publication.artifactId = "typedconfig-$name"
-            }
         }
     }
 }

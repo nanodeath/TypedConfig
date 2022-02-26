@@ -16,7 +16,7 @@ tasks.named<Test>("test") {
 gradlePlugin {
     plugins {
         create("TypedConfigPlugin") {
-            id = "$group.typedconfig"
+            id = group.toString()
             displayName = "TypedConfig Gradle Plugin"
             description = "Automatically configure generator and runtime for TypedConfig, a strongly-typed " +
                     "configuration library"
