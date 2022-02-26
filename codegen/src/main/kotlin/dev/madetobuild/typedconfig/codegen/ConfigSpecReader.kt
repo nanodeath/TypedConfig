@@ -46,25 +46,20 @@ class ConfigSpecReader {
         translateIntoCode(tomlMapper.readTree(reader), name)
 
     private fun translateIntoCode(jsonNode: JsonNode, inputName: String): FileSpec {
-        val node: JsonNode = jsonNode
-        val className = node.get("class").textValue().let { classString ->
-            ClassName.bestGuess(classString)
-        }
-        val description: String? = node.path("description").textValue()
-        val namespace = node.path("namespace").textValue().takeUnless { it.isNullOrBlank() }
+        val configKeys = parseConfigKeys(jsonNode)
         val keys: List<Key<*>> =
-            parseKeyTypes(node, precedingKey = namespace?.let { listOf(it) } ?: emptyList())
+            parseKeys(jsonNode, precedingKey = configKeys.namespace?.let { listOf(it) } ?: emptyList())
 
-        val configClass = initializeMainConfigClass(className)
+        val configClass = initializeMainConfigClass(configKeys.className)
 
-        addDescription(configClass, description)
+        addDescription(configClass, configKeys.description)
         addGeneratedAnnotation(configClass, inputName)
         addSupertypes(configClass)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
 
         val configProperties: Map<TypeSpec.Builder, List<PropertySpec>> =
-            associateEnclosingClassToProperties(configClass, className, keys, innerClasses)
+            associateEnclosingClassToProperties(configClass, configKeys.className, keys, innerClasses)
 
         configProperties.forEach { (typeSpec, propertySpecs) -> typeSpec.addProperties(propertySpecs) }
 
@@ -73,12 +68,41 @@ class ConfigSpecReader {
 
         processInnerClasses(innerClasses)
 
-        addCompanionObject(configClass, className)
+        addCompanionObject(configClass, configKeys.className)
 
-        return FileSpec.builder(className.packageName, className.simpleName)
+        return FileSpec.builder(configKeys.className.packageName, configKeys.className.simpleName)
             .addType(configClass.build())
             .build()
     }
+
+    private fun parseConfigKeys(jsonNode: JsonNode): ConfigKeys {
+        val classKey = "class"
+        val descriptionKey = "description"
+        val namespaceKey = "namespace"
+        val validKeys = setOf(classKey, descriptionKey, namespaceKey)
+
+        val suggester by lazy(LazyThreadSafetyMode.NONE) { Suggester(validKeys) }
+
+        val givenKeys = jsonNode.fields().asSequence()
+            // Removes the actual keys that users are trying to configure
+            .filterNot { (_, node) -> node.isObject }
+            .map { (key, _) -> key }
+            .toSet()
+
+        (givenKeys - validKeys).firstOrNull()?.let { unrecognizedKey ->
+            suggester.suggest(unrecognizedKey)
+        }
+        require(classKey in givenKeys) { "The key `$classKey` is required." }
+
+        val className = jsonNode.get(classKey).textValue().let { classString ->
+            ClassName.bestGuess(classString)
+        }
+        val description: String? = jsonNode.path(descriptionKey).textValue()
+        val namespace = jsonNode.path(namespaceKey).textValue().takeUnless { it.isNullOrBlank() }
+        return ConfigKeys(className, description, namespace)
+    }
+
+    data class ConfigKeys(val className: ClassName, val description: String?, val namespace: String?)
 
     private fun generateValidateMethod(
         configClass: TypeSpec.Builder,
@@ -283,7 +307,7 @@ class ConfigSpecReader {
         val enclosingClassName: ClassName
     )
 
-    private fun parseKeyTypes(
+    private fun parseKeys(
         node: JsonNode,
         precedingKey: List<String> = emptyList()
     ): List<Key<*>> = node.fields().asSequence()
@@ -342,7 +366,7 @@ class ConfigSpecReader {
                     throw IllegalArgumentException("Unsupported type: `${type}`")
                 }
             } else if (value.isObject) {
-                parseKeyTypes(value, precedingKey + listOf(key)).asSequence()
+                parseKeys(value, precedingKey + listOf(key)).asSequence()
             } else {
                 // FIXME this is an error
                 emptySequence()
