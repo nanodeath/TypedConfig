@@ -21,8 +21,8 @@ application {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // These are the two important dependencies.
-    implementation "dev.madetobuild:typedconfig-runtime:0.2-SNAPSHOT" // Used by the generated config.
-    typedConfigGenerator "dev.madetobuild:typedconfig-codegen:0.2-SNAPSHOT" // Used to generate the config.
+    implementation "dev.madetobuild.typedconfig:runtime:0.2-SNAPSHOT" // Used by the generated config.
+    typedConfigGenerator "dev.madetobuild.typedconfig:codegen:0.2-SNAPSHOT" // Used to generate the config.
 }
 
 // Define where we want to put the generated config.
