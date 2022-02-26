@@ -21,8 +21,8 @@ application {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // These are the two important dependencies.
-    implementation "com.github.nanodeath:typedconfig-runtime:0.2-SNAPSHOT" // Used by the generated config.
-    typedConfigGenerator "com.github.nanodeath:typedconfig-codegen:0.2-SNAPSHOT" // Used to generate the config.
+    implementation "dev.madetobuild:typedconfig-runtime:0.2-SNAPSHOT" // Used by the generated config.
+    typedConfigGenerator "dev.madetobuild:typedconfig-codegen:0.2-SNAPSHOT" // Used to generate the config.
 }
 
 // Define where we want to put the generated config.
@@ -40,7 +40,7 @@ task generateConfig(type: JavaExec) {
     classpath = configurations.typedConfigGenerator
 
     // Class we're executing
-    mainClass.set("com.github.nanodeath.typedconfig.codegen.TypedConfigCliKt")
+    mainClass.set("dev.madetobuild.typedconfig.codegen.TypedConfigCliKt")
 
     // The Codegen CLI accepts an input file and an output directory.
     args(inputFile, generatedSourcesDirectory)

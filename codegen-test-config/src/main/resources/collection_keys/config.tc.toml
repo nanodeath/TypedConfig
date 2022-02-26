@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.CollectionsConfig"
+class = "dev.madetobuild.typedconfig.test.CollectionsConfig"
 description = "Here we support collections of things, e.g. lists."
 
 [adminUsers]

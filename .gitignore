@@ -1,3 +1,5 @@
+README.*
+!README.adoc
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+iml,gradle,kotlin
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+iml,gradle,kotlin

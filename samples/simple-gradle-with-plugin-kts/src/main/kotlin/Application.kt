@@ -1,8 +1,8 @@
 @file:Suppress("unused")
 
 import com.example.GeneratedConfig
-import com.github.nanodeath.typedconfig.runtime.TypedConfig
-import com.github.nanodeath.typedconfig.runtime.source.EnvSource
+import dev.madetobuild.typedconfig.runtime.TypedConfig
+import dev.madetobuild.typedconfig.runtime.source.EnvSource
 
 fun main() {
     // This is the conventional way to instantiate a configuration object.

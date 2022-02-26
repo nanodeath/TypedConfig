@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.RequiredKeyConfig"
+class = "dev.madetobuild.typedconfig.test.RequiredKeyConfig"
 
 [port]
 type = "int"

@@ -1,4 +1,4 @@
-import com.github.nanodeath.typedconfig.codegen.ConfigSpecReader
+import dev.madetobuild.typedconfig.codegen.ConfigSpecReader
 import java.io.File
 
 fun main(args: Array<String>) {
