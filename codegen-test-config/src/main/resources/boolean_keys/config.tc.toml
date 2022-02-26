@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.BooleanConfig"
+class = "dev.madetobuild.typedconfig.test.BooleanConfig"
 description = "All the keys in this config are some kind of boolean type."
 
 [requiredBoolean]

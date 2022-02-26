@@ -1,4 +1,4 @@
-package com.github.nanodeath.typedconfig
+package dev.madetobuild.typedconfig
 
 import io.kotest.matchers.should
 import io.kotest.matchers.string.shouldContain

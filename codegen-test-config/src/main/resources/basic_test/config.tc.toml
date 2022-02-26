@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.GeneratedConfig"
+class = "dev.madetobuild.typedconfig.test.GeneratedConfig"
 description = "This is the basic configuration file."
 
 [maxLoginTries]

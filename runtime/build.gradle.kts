@@ -14,7 +14,7 @@ dependencies {
 tasks.named<Test>("test") {
     useJUnitPlatform()
     systemProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn")
-    systemProperty("org.slf4j.simpleLogger.log.com.github.nanodeath.typedconfig", "debug")
+    systemProperty("org.slf4j.simpleLogger.log.dev.madetobuild.typedconfig", "debug")
     systemProperty("org.slf4j.simpleLogger.showThreadName", "false")
     systemProperty("org.slf4j.simpleLogger.showShortLogName", "true")
 }

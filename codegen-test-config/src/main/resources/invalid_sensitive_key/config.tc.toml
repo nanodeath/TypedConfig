@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.InvalidSensitiveKeyConfig"
+class = "dev.madetobuild.typedconfig.test.InvalidSensitiveKeyConfig"
 
 ["intCantBeSensitive"]
 type = "int"

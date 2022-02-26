@@ -18,7 +18,7 @@ tasks.named<Test>("test") {
 }
 
 application {
-    mainClass.set("com.github.nanodeath.typedconfig.codegen.TypedConfigCliKt")
+    mainClass.set("dev.madetobuild.typedconfig.codegen.TypedConfigCliKt")
 }
 
 publishing {

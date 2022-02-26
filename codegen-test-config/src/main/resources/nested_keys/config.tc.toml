@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.NestedConfig"
+class = "dev.madetobuild.typedconfig.test.NestedConfig"
 
 [app.port]
 type = "int"

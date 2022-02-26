@@ -18,7 +18,7 @@ This tool is still *very early in development*. Breaking changes are made all th
 image:https://circleci.com/gh/nanodeath/TypedConfig/tree/main.svg?style=svg&circle-token=01a83f9b8c3ae012c706f60bcfc861825a2f9770["CircleCI", link="https://circleci.com/gh/nanodeath/TypedConfig/tree/main"]
 image:https://codecov.io/gh/nanodeath/TypedConfig/branch/main/graph/badge.svg?token=A8OGZZOEYI["Codecov",link="https://app.codecov.io/gh/nanodeath/TypedConfig/"] image:https://img.shields.io/sonar/quality_gate/nanodeath_TypedConfig?server=https%3A%2F%2Fsonarcloud.io[Sonar Quality Gate,link="https://sonarcloud.io/summary/new_code?id=nanodeath_TypedConfig&branch=main"] image:https://wakatime.com/badge/github/nanodeath/TypedConfig.svg["wakatime", link="https://wakatime.com/badge/github/nanodeath/TypedConfig"]
 
-image:https://img.shields.io/maven-central/v/com.github.nanodeath/typedconfig-runtime?logo=java[Maven Central,link="https://mvnrepository.com/artifact/com.github.nanodeath/typedconfig-runtime"] image:https://img.shields.io/badge/license-Apache%202.0-blue[Apache 2.0,link="LICENSE"]
+image:https://img.shields.io/maven-central/v/dev.madetobuild/typedconfig-runtime?logo=java[Maven Central,link="https://mvnrepository.com/artifact/dev.madetobuild/typedconfig-runtime"] image:https://img.shields.io/badge/license-Apache%202.0-blue[Apache 2.0,link="LICENSE"]
 
 image:https://img.shields.io/badge/Development%20Phase-Early Alpha-important["Development Phase: Early Alpha"]
 
@@ -92,7 +92,7 @@ Add the following to your build logic:
 ----
 plugins {
     // ...
-    id "com.github.nanodeath.typedconfig" version "0.1"
+    id "dev.madetobuild.typedconfig" version "0.1"
 }
 ----
 
@@ -174,7 +174,7 @@ You can choose to provide these sources either to each config object as you cons
 
 There are a number of built-in sources that you can use to provide configuration.
 
-==== link:runtime/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/EnvSource.kt[EnvSource]
+==== link:runtime/src/main/kotlin/dev/madetobuild/typedconfig/runtime/source/EnvSource.kt[EnvSource]
 
 EnvSource reads environment variables to populate configuration.
 
@@ -187,13 +187,13 @@ Keys are translated from lower camel case to screaming snake case when checking 
 |`applicationPort`|`APPLICATION_PORT`
 |===
 
-==== link:runtime/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/MapSource.kt[MapSource]
+==== link:runtime/src/main/kotlin/dev/madetobuild/typedconfig/runtime/source/MapSource.kt[MapSource]
 
 MapSource simply takes a `Map<String, Any>` as a constructor argument that you provide when constructing the source. The map can be hardcoded or built any way you like.
 
 By default, keys are passed through as is -- the key `applicationPort` is queried directly against the map as `applicationPort`.
 
-==== link:runtime/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/MultiSource.kt[MultiSource]
+==== link:runtime/src/main/kotlin/dev/madetobuild/typedconfig/runtime/source/MultiSource.kt[MultiSource]
 
 MultiSource is a higher-order source that takes a list of other sources as an input. When querying the MultiSource, it simply queries each source provided until one provides a non-null value.
 
@@ -208,9 +208,9 @@ val port = config.port
 
 Then MultiSource will query `source1` for the configuration, and if none is found, query `source2`, and so on.
 
-If this behavior isn't to your needs, you can also implement your own link:runtime-interfaces/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/Source.kt[Source].
+If this behavior isn't to your needs, you can also implement your own link:runtime-interfaces/src/main/kotlin/dev/madetobuild/typedconfig/runtime/source/Source.kt[Source].
 
-==== link:runtime/src/main/kotlin/com/github/nanodeath/typedconfig/runtime/source/CachedSource.kt[CachedSource]
+==== link:runtime/src/main/kotlin/dev/madetobuild/typedconfig/runtime/source/CachedSource.kt[CachedSource]
 
 CachedSource is another higher-order source that wraps another, presumably slow, source, by calling through to the delegated source and saving its results internally.
 

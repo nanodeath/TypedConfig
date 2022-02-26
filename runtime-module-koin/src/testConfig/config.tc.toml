@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.KoinConfig"
+class = "dev.madetobuild.typedconfig.test.KoinConfig"
 
 [integer]
 type = "int"

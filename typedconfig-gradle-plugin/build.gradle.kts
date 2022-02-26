@@ -5,12 +5,6 @@ plugins {
     id("typedconfig.published-conventions")
 }
 
-if ("publishPlugins" in gradle.startParameter.taskNames) {
-    // why yes, I did feel bad writing this
-    // but Gradle Plugin Portal won't let me publish using com.github
-    group = "io.github.nanodeath"
-}
-
 dependencies {
     testImplementation(libs.bundles.tests)
 }
@@ -26,7 +20,7 @@ gradlePlugin {
             displayName = "TypedConfig Gradle Plugin"
             description = "Automatically configure generator and runtime for TypedConfig, a strongly-typed " +
                     "configuration library"
-            implementationClass = "com.github.nanodeath.typedconfig.TypedConfigPlugin"
+            implementationClass = "dev.madetobuild.typedconfig.TypedConfigPlugin"
         }
     }
 }
@@ -40,7 +34,7 @@ val generateResourcesTask = tasks.register("generateResources") {
     outputs.dir(generatedResourcesDirectory)
     outputs.files(fileTree(generatedResourcesDirectory))
     doLast {
-        val path = generatedResourcesDirectory.resolve("com/github/nanodeath/typedconfig/plugin.properties")
+        val path = generatedResourcesDirectory.resolve("dev/madetobuild/typedconfig/plugin.properties")
         path.parentFile.mkdirs()
         path.writeText(properties.entries.joinToString("\n") { (k, v) -> "$k=$v" })
     }

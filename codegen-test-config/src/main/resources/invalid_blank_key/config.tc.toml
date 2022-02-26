@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.InvalidIdentifierConfig"
+class = "dev.madetobuild.typedconfig.test.InvalidIdentifierConfig"
 
 [""]
 type = "int"

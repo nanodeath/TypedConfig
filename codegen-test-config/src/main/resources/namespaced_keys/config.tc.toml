@@ -1,4 +1,4 @@
-class = "com.github.nanodeath.typedconfig.test.NamespacedConfig"
+class = "dev.madetobuild.typedconfig.test.NamespacedConfig"
 namespace = "app"
 
 [port]

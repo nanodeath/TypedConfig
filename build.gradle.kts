@@ -5,7 +5,7 @@ plugins {
     signing
 }
 
-group = "com.github.nanodeath"
+group = "dev.madetobuild"
 version = "0.2-SNAPSHOT"
 
 allprojects {
