@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.madetobuild.typedconfig"
-version = "0.2-SNAPSHOT"
+version = "0.2"
 
 allprojects {
     group = rootProject.group
