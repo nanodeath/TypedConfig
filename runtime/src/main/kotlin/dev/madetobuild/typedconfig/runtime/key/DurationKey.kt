@@ -20,8 +20,8 @@ class DurationKey(
             ?: throw MissingConfigurationException(name)
 
     companion object : KeyObject<Duration> {
-        private val longRegex = Regex("(?<count>\\d+) (?<unit>milliseconds?|minutes?|hours?|days?)")
-        private val shortRegex = Regex("(?<count>\\d+)(?<unit>ms|m|h|d)")
+        private val longRegex = Regex("(?<count>\\d+) (?<unit>milliseconds?|seconds?|minutes?|hours?|days?)")
+        private val shortRegex = Regex("(?<count>\\d+)(?<unit>ms|s|m|h|d)")
 
         override fun parse(value: String): Duration = try {
             Duration.parse(value)
@@ -33,6 +33,7 @@ class DurationKey(
             }) ?: throw ParseException("Not a valid duration: '$value'")
             when (unit) {
                 "ms", "millisecond", "milliseconds" -> Duration.ofMillis(count)
+                "s", "second", "seconds" -> Duration.ofSeconds(count)
                 "m", "minute", "minutes" -> Duration.ofMinutes(count)
                 "h", "hour", "hours" -> Duration.ofHours(count)
                 "d", "day", "days" -> Duration.ofDays(count)
