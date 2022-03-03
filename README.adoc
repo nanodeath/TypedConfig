@@ -12,7 +12,7 @@ endif::[]
 [IMPORTANT]
 .Still in Early Development
 ====
-This tool is still *very early in development*. Breaking changes are made all the time, documentation is sparse, insufficient code coverage, hard to use, poor distribution options, no license, etc. _Do not use yet._
+This tool is still *very early in development*. Breaking changes are made all the time, documentation is sparse, insufficient code coverage, hard to use, etc. Feel free to use it in your own projects, but keep all that in mind. I'd love your feedback, too.
 ====
 
 image:https://circleci.com/gh/nanodeath/TypedConfig/tree/main.svg?style=svg&circle-token=01a83f9b8c3ae012c706f60bcfc861825a2f9770["CircleCI", link="https://circleci.com/gh/nanodeath/TypedConfig/tree/main"]
@@ -77,26 +77,15 @@ Good for both applications and libraries:: Making TypedConfig accessible to appl
 
 == Usage
 
-WARNING: At time of writing, TypedConfig still isn't published anywhere yet, which makes actual consumption of the tool impractical; eventually it'll be published to MavenCentral.
+Firstly, to set your expectations correctly: what this tool does a little tricky, and some of that trickiness leaks into the usage. It takes your configuration, turns it into source code, and then _your_ code can compile against it. That is, your code won't be able to rely on the generated source code until after it's generated! The Gradle plugin guarantees the config classes will be generated before they're used, but if you're using an IDE, you may need to perform a Gradle build first.
 
-Firstly, to set your expectations correctly: what this tool does a little bit tricky, and some of that trickiness leaks into the usage. It takes your configuration, turns it into source code, and then _your_ code can compile against it. That is, your code won't be able to rely on the generated source code until after it's generated! Obviously. Probably one reason why this isn't commonplace.
+=== Using the Gradle Plugin
 
-=== Automatically, using a Gradle plugin
+image:https://img.shields.io/gradle-plugin-portal/v/dev.madetobuild.typedconfig[Gradle Plugin Portal,link="https://plugins.gradle.org/plugin/dev.madetobuild.typedconfig"]
 
-==== Groovy syntax
+To apply the plugin itself, follow the directions on the https://plugins.gradle.org/plugin/dev.madetobuild.typedconfig[Gradle Plugin page].
 
-Add the following to your build logic:
-
-.build.gradle
-[source,groovy]
-----
-plugins {
-    // ...
-    id "dev.madetobuild.typedconfig" version "0.1"
-}
-----
-
-And create the following file in your project root:
+Next, create the following file in your project root (next to your settings.gradle file):
 
 .config.tc.toml
 [source,toml]
@@ -109,30 +98,15 @@ description = "A friendly greeting."
 default = "Hello!"
 ----
 
-Now when you run `./gradlew generateTypedConfigs` (or any `compile`-related task), a `GeneratedConfig` file will be generated for you in `build/generated-config`, which is automatically added to your main Gradle source sets.
+Now when you run `./gradlew generateTypedConfigs` (or any `compile`-related task), a `GeneratedConfig` file will be generated for you in `build/generated-config`, which is automatically added to your main Gradle source sets. Now you can adapt it to your requirements.
 
 See link:samples/simple-gradle-with-plugin/build.gradle[here] for a sample.
 
-=== Manually
-
-The compile workflow is basically this:
-
-* Process config spec into generated code.
-* Compile the rest of the application.
-
-For Gradle, the one-time setup is this:
-
-* Create a custom source set for the TypedConfig generator and add the generator to it.
-* Add the TypeConfig runtime to application's `implementation` dependencies.
-* Register a https://docs.gradle.org/7.4/dsl/org.gradle.api.tasks.JavaExec.html[JavaExec,window=_blank]-type task that executes it, and provide a path to your config and your output directory.
-* Add that directory to your Gradle Java source set (even if you write Kotlin).
-* Optionally, tell IntelliJ that it's a _generated_ sources directory with help from the https://docs.gradle.org/current/userguide/idea_plugin.html[idea] plugin.
-
-See link:samples/simple-gradle/build.gradle[here] for a sample.
+To use the `SNAPSHOT` version of TypedConfig instead of the officially released one, see https://github.com/nanodeath/TypedConfig/wiki/SNAPSHOT-Usage[SNAPSHOT Usage].
 
 == In your code
 
-Once the configuration class has been generated and it's in your source set, you just need to construct the generated class and query its properties like normal.
+Once the configuration class has been generated, you just need to construct the generated class and query its properties like any other class.
 
 If your generated config is called `GeneratedConfig`, this looks like this:
 
