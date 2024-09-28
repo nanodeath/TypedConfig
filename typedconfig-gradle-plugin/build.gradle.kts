@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "2.0.20"
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "0.18.0"
+    id("com.gradle.plugin-publish") version "1.3.0"
     id("typedconfig.published-conventions")
 }
 
@@ -14,9 +14,13 @@ tasks.named<Test>("test") {
 }
 
 gradlePlugin {
+    website = "https://github.com/nanodeath/TypedConfig"
+    vcsUrl = "https://github.com/nanodeath/TypedConfig"
+
     plugins {
         create("TypedConfigPlugin") {
             id = group.toString()
+            tags = listOf("config", "kotlin")
             displayName = "TypedConfig Gradle Plugin"
             description = "Automatically configure generator and runtime for TypedConfig, a strongly-typed " +
                     "configuration library"
@@ -51,7 +55,7 @@ sourceSets {
 }
 
 afterEvaluate {
-    listOf("processResources", "sourcesJar", "publishPluginJar").forEach { taskName ->
+    listOf("processResources", "sourcesJar", "publishPlugins").forEach { taskName ->
         tasks.getByName(taskName).dependsOn(generateResourcesTask)
     }
     (publishing.publications["TypedConfigPluginPluginMarkerMaven"] as MavenPublication).apply {
@@ -69,10 +73,4 @@ afterEvaluate {
             )
         }
     }
-}
-
-pluginBundle {
-    website = "https://github.com/nanodeath/TypedConfig"
-    vcsUrl = "https://github.com/nanodeath/TypedConfig"
-    tags = listOf("config", "kotlin")
 }

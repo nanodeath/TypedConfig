@@ -119,7 +119,7 @@ class ConfigSpecReader {
                     """.trimMargin(),
                     missingConfigurationExceptionName
                 )
-                beginControlFlow("return apply {")
+                beginControlFlow("return run {")
                 propertySpecs.forEach { addStatement("%N", it.name) }
                 myInnerTypes.forEach { addStatement("%N.validate()", it.fieldName) }
                 if (typeSpec !== configClass) {

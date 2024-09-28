@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
     id("typedconfig.published-conventions")
 }
@@ -9,9 +9,9 @@ dependencies {
     implementation(platform("com.fasterxml.jackson:jackson-bom:${libs.versions.jackson.get()}"))
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml")
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
-    implementation("org.apache.commons:commons-text:1.9")
-    api("com.squareup:kotlinpoet:1.10.2")
+    implementation("com.github.ajalt.clikt:clikt:5.0.0")
+    implementation("org.apache.commons:commons-text:1.12.0")
+    api("com.squareup:kotlinpoet:1.18.1")
     testImplementation(libs.bundles.tests)
 }
 

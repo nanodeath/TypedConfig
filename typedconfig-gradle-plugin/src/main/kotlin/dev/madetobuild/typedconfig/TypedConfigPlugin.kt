@@ -38,10 +38,10 @@ class TypedConfigPlugin : Plugin<Project> {
                 JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, versions.runtimeDependency
             )
         }
-        val generatedSourcesDir = project.buildDir.resolve("generated-config")
+        val generatedSourcesDir = project.layout.buildDirectory.file("generated-config")
         project.plugins.withType(IdeaPlugin::class.java) {
             project.extensions.getByType(IdeaModel::class.java).module { module ->
-                module.generatedSourceDirs.add(generatedSourcesDir)
+                module.generatedSourceDirs.add(generatedSourcesDir.get().asFile)
             }
         }
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
