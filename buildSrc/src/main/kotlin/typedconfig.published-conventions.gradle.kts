@@ -6,11 +6,18 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.kotlinx.binary-compatibility-validator")
+    id("org.jetbrains.dokka")
 }
 
 java {
     withSourcesJar()
-    withJavadocJar()
+}
+
+// Create a javadoc JAR from Dokka's HTML output
+val dokkaHtmlJar by tasks.registering(Jar::class) {
+    dependsOn("dokkaHtml")
+    archiveClassifier.set("javadoc")
+    from(File(buildDir, "dokka/html"))
 }
 
 afterEvaluate {
@@ -19,6 +26,9 @@ afterEvaluate {
     publishing.publications.asSequence()
         .filterIsInstance<MavenPublication>()
         .onEach { publication ->
+            publication.artifact(dokkaHtmlJar.get()) {
+                classifier = "javadoc"
+            }
             if (!IsCI) {
                 signing {
                     sign(publication)

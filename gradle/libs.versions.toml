@@ -15,6 +15,7 @@ detekt = "1.23.8"
 shadow = "9.3.2"
 gradle-plugin-publish = "2.1.0"
 binary-compatibility-validator = "0.18.1"
+dokka = "2.0.0"
 
 [libraries]
 jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
@@ -46,3 +47,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
