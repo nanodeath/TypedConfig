@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(project(":runtime-interfaces"))
-    implementation("com.fasterxml.jackson.jr:jackson-jr-objects:${libs.versions.jackson.get()}")
+    implementation(libs.jackson.jr.objects)
     testImplementation(libs.bundles.tests)
     testImplementation(project(":runtime-test-common"))
 }

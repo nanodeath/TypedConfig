@@ -1,17 +1,17 @@
 plugins {
     kotlin("jvm")
-    id("com.gradleup.shadow") version "9.0.0"
+    alias(libs.plugins.shadow)
     application
     id("typedconfig.published-conventions")
 }
 
 dependencies {
-    implementation(platform("com.fasterxml.jackson:jackson-bom:${libs.versions.jackson.get()}"))
-    implementation("com.fasterxml.jackson.core:jackson-databind")
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-toml")
-    implementation("com.github.ajalt.clikt:clikt:5.1.0")
-    implementation("org.apache.commons:commons-text:1.15.0")
-    api("com.squareup:kotlinpoet:2.2.0")
+    implementation(platform(libs.jackson.bom))
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.dataformat.toml)
+    implementation(libs.clikt)
+    implementation(libs.commons.text)
+    api(libs.kotlinpoet)
     testImplementation(libs.bundles.tests)
 }
 

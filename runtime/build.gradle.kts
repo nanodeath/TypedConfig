@@ -5,8 +5,8 @@ plugins {
 
 dependencies {
     api(project(":runtime-interfaces"))
-    api("javax.annotation:javax.annotation-api:1.3.2")
-    implementation(libs.slf4j)
+    api(libs.javax.annotation)
+    implementation(libs.slf4j.api)
     testImplementation(libs.bundles.tests)
     testImplementation(project(":runtime-test-common"))
 }

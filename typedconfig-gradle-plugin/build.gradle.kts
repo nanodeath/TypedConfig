@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.3.10"
+    kotlin("jvm")
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "2.1.0"
+    alias(libs.plugins.gradle.plugin.publish)
     id("typedconfig.published-conventions")
 }
 

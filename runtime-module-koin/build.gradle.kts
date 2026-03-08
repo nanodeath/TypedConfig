@@ -4,16 +4,14 @@ plugins {
     id("typedconfig.published-conventions")
 }
 
-val koinVersion: String by project
-
 val testCompiler: Configuration = configurations.create("testCompiler")
 
 dependencies {
     implementation(kotlin("reflect"))
     api(project(":runtime-interfaces"))
-    api("io.insert-koin:koin-core:$koinVersion")
-    testImplementation("io.insert-koin:koin-test:$koinVersion")
-    testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
+    api(libs.koin.core)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit5)
     testImplementation(libs.bundles.tests)
     testImplementation(project(":codegen"))
     testImplementation(project(":runtime"))
