@@ -1,0 +1,9 @@
+public final class dev/madetobuild/typedconfig/runtime/source/JsonSource : dev/madetobuild/typedconfig/runtime/source/Source {
+	public fun <init> (Ljava/io/File;)V
+	public fun getBoolean (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Boolean;
+	public fun getDouble (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Double;
+	public fun getInt (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Integer;
+	public fun getList (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/util/List;
+	public fun getString (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/String;
+}
+

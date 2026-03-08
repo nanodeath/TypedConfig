@@ -1,0 +1,75 @@
+public final class dev/madetobuild/typedconfig/codegen/ConfigSpecReader {
+	public fun <init> ()V
+	public final fun translateIntoCode (Ljava/io/File;)Lcom/squareup/kotlinpoet/FileSpec;
+	public final fun translateIntoCode (Ljava/io/InputStream;Ljava/lang/String;)Lcom/squareup/kotlinpoet/FileSpec;
+	public final fun translateIntoCode (Ljava/io/Reader;Ljava/lang/String;)Lcom/squareup/kotlinpoet/FileSpec;
+	public static synthetic fun translateIntoCode$default (Ldev/madetobuild/typedconfig/codegen/ConfigSpecReader;Ljava/io/InputStream;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/kotlinpoet/FileSpec;
+	public static synthetic fun translateIntoCode$default (Ldev/madetobuild/typedconfig/codegen/ConfigSpecReader;Ljava/io/Reader;Ljava/lang/String;ILjava/lang/Object;)Lcom/squareup/kotlinpoet/FileSpec;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/ConfigSpecReader$ConfigKeys {
+	public fun <init> (Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;Ljava/lang/String;)Ldev/madetobuild/typedconfig/codegen/ConfigSpecReader$ConfigKeys;
+	public static synthetic fun copy$default (Ldev/madetobuild/typedconfig/codegen/ConfigSpecReader$ConfigKeys;Lcom/squareup/kotlinpoet/ClassName;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ldev/madetobuild/typedconfig/codegen/ConfigSpecReader$ConfigKeys;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClassName ()Lcom/squareup/kotlinpoet/ClassName;
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getNamespace ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/TypedConfigCli : com/github/ajalt/clikt/core/CliktCommand {
+	public static final field INSTANCE Ldev/madetobuild/typedconfig/codegen/TypedConfigCli;
+	public fun run ()V
+}
+
+public final class dev/madetobuild/typedconfig/codegen/TypedConfigCliKt {
+	public static final fun main ([Ljava/lang/String;)V
+}
+
+public abstract interface class dev/madetobuild/typedconfig/codegen/keys/CollectionKeyGenerator {
+	public abstract fun generate (Ljava/lang/String;Ljava/util/List;Ldev/madetobuild/typedconfig/codegen/keys/KeyMetadata;Ldev/madetobuild/typedconfig/codegen/keys/Key;)Ldev/madetobuild/typedconfig/codegen/keys/Key;
+	public abstract fun getType ()Ljava/lang/String;
+}
+
+public abstract interface class dev/madetobuild/typedconfig/codegen/keys/Key {
+	public abstract fun getChecks ()Ljava/util/List;
+	public abstract fun getDefaultValue ()Ljava/lang/Object;
+	public abstract fun getKey ()Ljava/lang/String;
+	public abstract fun getKeyClass ()Lcom/squareup/kotlinpoet/ClassName;
+	public abstract fun getMetadata ()Ldev/madetobuild/typedconfig/codegen/keys/KeyMetadata;
+	public fun getSupportsSensitiveFlag ()Z
+	public abstract fun getTemplateArgs ()[Ljava/lang/Object;
+	public abstract fun getTemplateString ()Ljava/lang/String;
+	public abstract fun getType ()Lcom/squareup/kotlinpoet/TypeName;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/keys/Key$DefaultImpls {
+	public static fun getSupportsSensitiveFlag (Ldev/madetobuild/typedconfig/codegen/keys/Key;)Z
+}
+
+public abstract interface class dev/madetobuild/typedconfig/codegen/keys/KeyGenerator {
+	public abstract fun generate (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ldev/madetobuild/typedconfig/codegen/keys/KeyMetadata;)Ldev/madetobuild/typedconfig/codegen/keys/Key;
+	public abstract fun getType ()Ljava/lang/String;
+	public fun mapChecks (Ljava/lang/String;)Lcom/squareup/kotlinpoet/ClassName;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/keys/KeyGenerator$DefaultImpls {
+	public static fun mapChecks (Ldev/madetobuild/typedconfig/codegen/keys/KeyGenerator;Ljava/lang/String;)Lcom/squareup/kotlinpoet/ClassName;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/keys/KeyKt {
+	public static final fun getKdoc (Ldev/madetobuild/typedconfig/codegen/keys/Key;)Lcom/squareup/kotlinpoet/CodeBlock;
+}
+
+public final class dev/madetobuild/typedconfig/codegen/keys/KeyMetadata {
+	public fun <init> (Ljava/lang/String;ZZ)V
+	public final fun getDescription ()Ljava/lang/String;
+	public final fun getRequired ()Z
+	public final fun getSensitive ()Z
+}
+

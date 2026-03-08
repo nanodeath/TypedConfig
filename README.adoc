@@ -198,3 +198,18 @@ val source: Source = MySlowSource().cached()
 ----
 
 However, none of the built-in sources are slow enough to benefit from caching, so this is provided mainly for user-provided sources that perhaps pull configuration from the network.
+
+== Development
+
+=== API Compatibility
+
+Published modules are protected by https://github.com/Kotlin/binary-compatibility-validator[Binary Compatibility Validator] (BCV). If you change the public API of any published module, `./gradlew check` will fail with an `apiCheck` error.
+
+To update the API baseline after an intentional change, run:
+
+[source,bash]
+----
+./gradlew apiDump
+----
+
+This regenerates the `.api` files under each module's `api/` directory. Commit the updated dumps alongside your code changes.

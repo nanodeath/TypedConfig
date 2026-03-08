@@ -5,6 +5,7 @@ plugins {
     java
     `maven-publish`
     signing
+    id("org.jetbrains.kotlinx.binary-compatibility-validator")
 }
 
 java {

@@ -1,0 +1,19 @@
+public abstract interface class dev/madetobuild/typedconfig/TypedConfigExtension {
+	public abstract fun getConfigs ()Lorg/gradle/api/NamedDomainObjectContainer;
+}
+
+public abstract interface class dev/madetobuild/typedconfig/TypedConfigFile {
+	public abstract fun getFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public final class dev/madetobuild/typedconfig/TypedConfigPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class dev/madetobuild/typedconfig/TypedConfigPluginKt {
+	public static final field DEFAULT_CONFIG_FILENAME Ljava/lang/String;
+}
+

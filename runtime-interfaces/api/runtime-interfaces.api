@@ -1,0 +1,32 @@
+public abstract interface class dev/madetobuild/typedconfig/runtime/GeneratedConfig {
+	public abstract fun getAllKeys ()Lkotlin/sequences/Sequence;
+}
+
+public abstract interface annotation class dev/madetobuild/typedconfig/runtime/Key : java/lang/annotation/Annotation {
+	public abstract fun name ()Ljava/lang/String;
+}
+
+public abstract interface class dev/madetobuild/typedconfig/runtime/key/Key {
+	public abstract fun getName ()Ljava/lang/String;
+	public fun getSensitive ()Z
+	public fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+	public abstract fun resolve ()Ljava/lang/Object;
+}
+
+public final class dev/madetobuild/typedconfig/runtime/key/Key$DefaultImpls {
+	public static fun getSensitive (Ldev/madetobuild/typedconfig/runtime/key/Key;)Z
+	public static fun getValue (Ldev/madetobuild/typedconfig/runtime/key/Key;Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+}
+
+public final class dev/madetobuild/typedconfig/runtime/key/KeyKt {
+	public static final fun maskIfSensitive (Ldev/madetobuild/typedconfig/runtime/key/Key;Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class dev/madetobuild/typedconfig/runtime/source/Source {
+	public abstract fun getBoolean (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Boolean;
+	public abstract fun getDouble (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Double;
+	public abstract fun getInt (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/Integer;
+	public abstract fun getList (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/util/List;
+	public abstract fun getString (Ldev/madetobuild/typedconfig/runtime/key/Key;)Ljava/lang/String;
+}
+

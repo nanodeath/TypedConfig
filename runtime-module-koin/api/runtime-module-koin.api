@@ -1,0 +1,4 @@
+public final class dev/madetobuild/typedconfig/koin/KoinModuleFactoryKt {
+	public static final fun asKoinModule (Ldev/madetobuild/typedconfig/runtime/GeneratedConfig;)Lorg/koin/core/module/Module;
+}
+
