@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: gradle:7.4-jdk11
+      - image: gradle:9.4-jdk21
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx2g

@@ -17,7 +17,7 @@ val generateConfigs = tasks.register<JavaExec>("generateConfigs") {
     mainClass.set("TestCompilerKt")
 
     val inputDir = project.projectDir.resolve("src/main/resources")
-    val outputDir = project.buildDir.resolve("generated-sources-test")
+    val outputDir = project.layout.buildDirectory.dir("generated-sources-test").get().asFile
     inputs.dir(inputDir)
     outputs.dir(outputDir)
     args(inputDir, outputDir)

@@ -83,7 +83,7 @@ class ConfigSpecReader {
 
         val suggester by lazy(LazyThreadSafetyMode.NONE) { Suggester(validKeys) }
 
-        val givenKeys = jsonNode.fields().asSequence()
+        val givenKeys = jsonNode.properties().asSequence()
             // Removes the actual keys that users are trying to configure
             .filterNot { (_, node) -> node.isObject }
             .map { (key, _) -> key }
@@ -310,7 +310,7 @@ class ConfigSpecReader {
     private fun parseKeys(
         node: JsonNode,
         precedingKey: List<String> = emptyList()
-    ): List<Key<*>> = node.fields().asSequence()
+    ): List<Key<*>> = node.properties().asSequence()
         .filter { (_, v) -> v.isObject }
         .flatMap { (key, value) ->
             require(key.isNotBlank()) { "Key cannot be empty or blank, was `${key}`" }

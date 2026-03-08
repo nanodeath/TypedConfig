@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
-    id("org.jetbrains.kotlinx.kover") version "0.8.3"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    kotlin("jvm") version "2.3.10"
+    id("org.jetbrains.kotlinx.kover") version "0.9.7"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
     signing
 }
 
@@ -17,6 +17,11 @@ allprojects {
 }
 
 subprojects {
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    kotlin {
+        jvmToolchain(21)
+    }
+
     apply(plugin = "io.gitlab.arturbosch.detekt")
     detekt {
         buildUponDefaultConfig = true

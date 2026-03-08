@@ -16,18 +16,19 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             // Production dependencies
-            version("jackson", "2.18.0")
-            version("junit5", "5.11.1")
-            version("sl4fj", "2.0.16")
+            version("jackson", "2.21.1")
+            version("junit5", "6.0.3")
+            version("sl4fj", "2.0.17")
             library("slf4j", "org.slf4j", "slf4j-api").versionRef("sl4fj")
             library("slf4j-simple", "org.slf4j", "slf4j-simple").versionRef("sl4fj")
 
             // Test dependencies
             library("junit5", "org.junit.jupiter", "junit-jupiter").versionRef("junit5")
             library("junit5-params", "org.junit.jupiter", "junit-jupiter-params").versionRef("junit5")
-            library("kotest-assertions", "io.kotest:kotest-assertions-core:5.9.1")
-            library("mockk", "io.mockk:mockk:1.13.12")
-            bundle("tests", listOf("junit5", "kotest-assertions", "mockk", "slf4j-simple"))
+            library("junit-platform-launcher", "org.junit.platform", "junit-platform-launcher").versionRef("junit5")
+            library("kotest-assertions", "io.kotest:kotest-assertions-core:6.1.5")
+            library("mockk", "io.mockk:mockk:1.14.9")
+            bundle("tests", listOf("junit5", "junit-platform-launcher", "kotest-assertions", "mockk", "slf4j-simple"))
         }
     }
 }

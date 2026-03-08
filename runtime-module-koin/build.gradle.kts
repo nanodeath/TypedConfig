@@ -37,7 +37,7 @@ publishing {
     }
 }
 
-val generatedSourcesTest = project.buildDir.resolve("generated-sources-test")
+val generatedSourcesTest = project.layout.buildDirectory.dir("generated-sources-test").get().asFile
 val generateConfigs = tasks.register<JavaExec>("generateConfigs") {
     group = "verification"
     classpath = testCompiler

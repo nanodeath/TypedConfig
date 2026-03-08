@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.3.10"
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.3.0"
+    id("com.gradle.plugin-publish") version "2.1.0"
     id("typedconfig.published-conventions")
 }
 
@@ -29,7 +29,7 @@ gradlePlugin {
     }
 }
 
-val generatedResourcesDirectory = buildDir.resolve("generated-resources")
+val generatedResourcesDirectory = layout.buildDirectory.dir("generated-resources").get().asFile
 val generateResourcesTask = tasks.register("generateResources") {
     val properties = mapOf(
         "version" to rootProject.version
