@@ -1,9 +1,20 @@
+public abstract interface annotation class dev/madetobuild/typedconfig/runtime/ConfigMetadata : java/lang/annotation/Annotation {
+	public abstract fun description ()Ljava/lang/String;
+	public abstract fun namespace ()Ljava/lang/String;
+	public abstract fun sourceFile ()Ljava/lang/String;
+}
+
 public abstract interface class dev/madetobuild/typedconfig/runtime/GeneratedConfig {
 	public abstract fun getAllKeys ()Lkotlin/sequences/Sequence;
 }
 
 public abstract interface annotation class dev/madetobuild/typedconfig/runtime/Key : java/lang/annotation/Annotation {
+	public abstract fun defaultValue ()Ljava/lang/String;
+	public abstract fun description ()Ljava/lang/String;
 	public abstract fun name ()Ljava/lang/String;
+	public abstract fun required ()Z
+	public abstract fun sensitive ()Z
+	public abstract fun type ()Ljava/lang/String;
 }
 
 public abstract interface class dev/madetobuild/typedconfig/runtime/key/Key {

@@ -16,6 +16,7 @@ private val sourceClassName = ClassName("$RUNTIME_PACKAGE.source", "Source")
 private val keyClassName = ClassName(RUNTIME_PACKAGE, "Key")
 private val generatedConfigClassName = ClassName(RUNTIME_PACKAGE, "GeneratedConfig")
 private val typedConfigClassName = ClassName(RUNTIME_PACKAGE, "TypedConfig")
+private val configMetadataClassName = ClassName(RUNTIME_PACKAGE, "ConfigMetadata")
 
 @Suppress("TooManyFunctions")
 class ConfigSpecReader {
@@ -54,6 +55,7 @@ class ConfigSpecReader {
 
         addDescription(configClass, configKeys.description)
         addGeneratedAnnotation(configClass, inputName)
+        addConfigMetadata(configClass, configKeys, inputName)
         addSupertypes(configClass)
 
         val innerClasses = mutableMapOf<InnerTypeSpec, TypeSpec.Builder>()
@@ -187,6 +189,10 @@ class ConfigSpecReader {
                         AnnotationSpec
                             .builder(keyClassName)
                             .addMember("name = %S", key.key)
+                            .addMember("description = %S", key.metadata.description ?: "")
+                            .addMember("required = %L", key.metadata.required)
+                            .addMember("sensitive = %L", key.metadata.sensitive)
+                            .addMember("type = %S", key.metadata.typeName)
                             .useSiteTarget(AnnotationSpec.UseSiteTarget.PROPERTY)
                             .build()
                     )
@@ -234,6 +240,16 @@ class ConfigSpecReader {
                 .addMember("%S", ConfigSpecReader::class.qualifiedName!!)
                 .addMember("date = %S", Instant.now().truncatedTo(ChronoUnit.SECONDS))
                 .addMember("comments = %S", "Generated from $name")
+                .build()
+        )
+    }
+
+    private fun addConfigMetadata(configClass: TypeSpec.Builder, configKeys: ConfigKeys, sourceFile: String) {
+        configClass.addAnnotation(
+            AnnotationSpec.builder(configMetadataClassName)
+                .addMember("description = %S", configKeys.description ?: "")
+                .addMember("namespace = %S", configKeys.namespace ?: "")
+                .addMember("sourceFile = %S", sourceFile)
                 .build()
         )
     }
@@ -307,6 +323,7 @@ class ConfigSpecReader {
         val enclosingClassName: ClassName
     )
 
+    @Suppress("LongMethod")
     private fun parseKeys(
         node: JsonNode,
         precedingKey: List<String> = emptyList()
@@ -329,7 +346,8 @@ class ConfigSpecReader {
                     val metadata = KeyMetadata(
                         description = value.get("description")?.textValue(),
                         required = value.get("required")?.booleanValue() ?: true,
-                        sensitive = value.get("sensitive")?.booleanValue() ?: false
+                        sensitive = value.get("sensitive")?.booleanValue() ?: false,
+                        typeName = type
                     )
                     sequenceOf(
                         keyTypeGenerator.generate(
@@ -347,11 +365,14 @@ class ConfigSpecReader {
                             val metadata = KeyMetadata(
                                 description = value.get("description")?.textValue(),
                                 required = value.get("required")?.booleanValue() ?: true,
-                                sensitive = value.get("sensitive")?.booleanValue() ?: false
+                                sensitive = value.get("sensitive")?.booleanValue() ?: false,
+                                typeName = type
                             )
                             val default = value.get("default")?.elements()?.asSequence()?.map { it.asText() }?.toList()
-                            val genericKeyType = valueTypeReader
-                                .generate("", null, emptyList(), KeyMetadata(null, required = true, sensitive = false))
+                            val genericKeyType = valueTypeReader.generate(
+                                "", null, emptyList(),
+                                KeyMetadata(null, required = true, sensitive = false, typeName = valueType)
+                            )
                             return@flatMap sequenceOf(
                                 collectionReader.generate(
                                     fullKey,

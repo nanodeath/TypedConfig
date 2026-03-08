@@ -67,9 +67,11 @@ public final class dev/madetobuild/typedconfig/codegen/keys/KeyKt {
 }
 
 public final class dev/madetobuild/typedconfig/codegen/keys/KeyMetadata {
-	public fun <init> (Ljava/lang/String;ZZ)V
+	public fun <init> (Ljava/lang/String;ZZLjava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;ZZLjava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDescription ()Ljava/lang/String;
 	public final fun getRequired ()Z
 	public final fun getSensitive ()Z
+	public final fun getTypeName ()Ljava/lang/String;
 }
 
