@@ -38,7 +38,7 @@ class TypedConfigPlugin : Plugin<Project> {
                 JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME, versions.runtimeDependency
             )
         }
-        val generatedSourcesDir = project.layout.buildDirectory.file("generated-config")
+        val generatedSourcesDir = project.layout.buildDirectory.dir("generated-config")
         project.plugins.withType(IdeaPlugin::class.java) {
             project.extensions.getByType(IdeaModel::class.java).module { module ->
                 module.generatedSourceDirs.add(generatedSourcesDir.get().asFile)
@@ -47,6 +47,22 @@ class TypedConfigPlugin : Plugin<Project> {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         val javaSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).java
         javaSourceSet.srcDir(generatedSourcesDir)
+
+        // Register umbrella task eagerly so compile tasks can depend on it
+        val generateTypedConfigsTask = project.tasks.register("generateTypedConfigs") { t ->
+            t.group = "typed config"
+        }
+
+        // Wire compile tasks to depend on code generation before afterEvaluate.
+        // AbstractCompile covers Java; Kotlin 2.x's KotlinCompile no longer extends it.
+        project.tasks.withType(AbstractCompile::class.java).configureEach { t ->
+            t.dependsOn(generateTypedConfigsTask)
+        }
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            project.tasks.named("compileKotlin") { t ->
+                t.dependsOn(generateTypedConfigsTask)
+            }
+        }
 
         project.afterEvaluate {
             val configs = extension.configs.takeUnless { it.isEmpty() }?.asMap ?: mapOf(
@@ -61,16 +77,11 @@ class TypedConfigPlugin : Plugin<Project> {
                     t.outputs.dir(generatedSourcesDir)
                     t.classpath = configuration
                     t.mainClass.set("dev.madetobuild.typedconfig.codegen.TypedConfigCliKt")
-                    t.args(inputFile, generatedSourcesDir)
+                    t.args(inputFile, generatedSourcesDir.get())
                 }
             }
-            val generateTypedConfigsTask = project.tasks.register("generateTypedConfigs") { t ->
-                t.group = "typed config"
+            generateTypedConfigsTask.configure { t ->
                 t.dependsOn(tasks)
-            }
-
-            project.tasks.withType(AbstractCompile::class.java) { t ->
-                t.dependsOn(generateTypedConfigsTask)
             }
         }
     }

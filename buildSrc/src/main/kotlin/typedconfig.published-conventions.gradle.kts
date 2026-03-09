@@ -15,9 +15,21 @@ java {
 
 // Create a javadoc JAR from Dokka's HTML output
 val dokkaHtmlJar by tasks.registering(Jar::class) {
-    dependsOn("dokkaHtml")
+    dependsOn("dokkaGenerateModuleHtml")
     archiveClassifier.set("javadoc")
-    from(File(buildDir, "dokka/html"))
+    from(layout.buildDirectory.dir("dokka/html"))
+}
+
+// Ensure metadata generation tasks depend on the javadoc JAR
+tasks.withType<GenerateModuleMetadata>().configureEach {
+    dependsOn(dokkaHtmlJar)
+}
+
+if (IsCI) {
+    // Disable all signing tasks on CI (no signatory available)
+    tasks.withType<Sign>().configureEach {
+        enabled = false
+    }
 }
 
 afterEvaluate {
@@ -26,8 +38,9 @@ afterEvaluate {
     publishing.publications.asSequence()
         .filterIsInstance<MavenPublication>()
         .onEach { publication ->
-            publication.artifact(dokkaHtmlJar.get()) {
-                classifier = "javadoc"
+            // Only add javadoc JAR to the "maven" publication (ours), not plugin-publish's publications
+            if (publication.name == "maven") {
+                publication.artifact(dokkaHtmlJar)
             }
             if (!IsCI) {
                 signing {

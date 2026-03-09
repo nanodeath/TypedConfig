@@ -1,6 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.0.20"
-    id("idea")
+    id("org.jetbrains.kotlin.jvm") version "2.3.10"
     id("application")
     id("dev.madetobuild.typedconfig") version "0.3-SNAPSHOT"
 }

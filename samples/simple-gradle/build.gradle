@@ -1,6 +1,5 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.6.10"
-    id "idea"
+    id "org.jetbrains.kotlin.jvm" version "2.3.10"
     id "application"
 }
 
@@ -11,7 +10,7 @@ repositories {
 
 configurations {
     // Define a custom configuration so that we can construct a classpath just for the generator.
-    typedConfigGenerator
+    create("typedConfigGenerator")
 }
 
 application {
@@ -19,17 +18,16 @@ application {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     // These are the two important dependencies.
     implementation "dev.madetobuild.typedconfig:runtime:0.3-SNAPSHOT" // Used by the generated config.
-    typedConfigGenerator "dev.madetobuild.typedconfig:codegen:0.3-SNAPSHOT" // Used to generate the config.
+    "typedConfigGenerator" "dev.madetobuild.typedconfig:codegen:0.3-SNAPSHOT" // Used to generate the config.
 }
 
 // Define where we want to put the generated config.
 // Can be anywhere under build/, really.
-def generatedSourcesDirectory = "$buildDir/generated-sources"
+def generatedSourcesDirectory = layout.buildDirectory.dir("generated-sources")
 
-task generateConfig(type: JavaExec) {
+tasks.register("generateConfig", JavaExec) {
     def inputFile = "config.tc.toml" // This is just by convention.
 
     // Used by Gradle to only execute this task when inputs change.
@@ -37,17 +35,21 @@ task generateConfig(type: JavaExec) {
     outputs.dir(generatedSourcesDirectory)
 
     // Point the classpath at the custom configuration defined earlier
-    classpath = configurations.typedConfigGenerator
+    classpath = configurations.named("typedConfigGenerator").get()
 
     // Class we're executing
     mainClass.set("dev.madetobuild.typedconfig.codegen.TypedConfigCliKt")
 
     // The Codegen CLI accepts an input file and an output directory.
-    args(inputFile, generatedSourcesDirectory)
+    args(inputFile, generatedSourcesDirectory.get().asFile.absolutePath)
 }
 
 // Require every JVM compile step (Java or Kotlin) to generate config classes first.
-tasks.withType(AbstractCompile) {
+// In Kotlin 2.x, KotlinCompile no longer extends AbstractCompile, so we need both.
+tasks.withType(AbstractCompile).configureEach {
+    dependsOn("generateConfig")
+}
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     dependsOn("generateConfig")
 }
 
@@ -59,13 +61,5 @@ sourceSets {
         java {
             srcDir(generatedSourcesDirectory)
         }
-    }
-}
-
-// Tell IntelliJ that it's a generated sources directory.
-// This enables IntelliJ to warn you when you're directly modifying generated files.
-idea {
-    module {
-        generatedSourceDirs += file(generatedSourcesDirectory)
     }
 }
