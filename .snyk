@@ -1,0 +1,44 @@
+# Snyk (https://snyk.io) policy file
+version: v1.25.0
+
+# Revisit when the Kotlin Gradle Plugin bumps its embedded BouncyCastle
+# (currently pinned to [1.80, 1.81) by kotlinBouncyCastleConfiguration).
+ignore:
+  SNYK-JAVA-ORGBOUNCYCASTLE-16075260:
+    - '*':
+        reason: Build-time-only (Kotlin publishing validation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+  SNYK-JAVA-ORGBOUNCYCASTLE-16073606:
+    - '*':
+        reason: Build-time-only (Kotlin publishing validation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+  SNYK-JAVA-ORGBOUNCYCASTLE-16074612:
+    - '*':
+        reason: Build-time-only (Kotlin publishing validation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+  SNYK-JAVA-ORGBOUNCYCASTLE-16075266:
+    - '*':
+        reason: Build-time-only (Kotlin publishing validation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+  SNYK-JAVA-ORGBOUNCYCASTLE-16075254:
+    - '*':
+        reason: Build-time-only (Kotlin publishing validation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+
+  # Pulled in transitively by Dokka 2.2.0 (jackson-dataformat-xml@2.15.3).
+  # Revisit when Dokka updates its embedded Jackson chain to >=2.18.6.
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-15365924:
+    - '*':
+        reason: Build-time-only (Dokka doc generation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+  SNYK-JAVA-COMFASTERXMLJACKSONCORE-15907551:
+    - '*':
+        reason: Build-time-only (Dokka doc generation); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
+
+  # Pulled in transitively by detekt-cli@1.23.8.
+  # Revisit when Detekt updates its embedded Kotlin stdlib to >=2.1.0.
+  SNYK-JAVA-ORGJETBRAINSKOTLIN-2393744:
+    - '*':
+        reason: Build-time-only (Detekt linter); not in runtime classpath
+        expires: 2026-11-20T00:00:00.000Z
